@@ -9,7 +9,7 @@
     <i class="bi bi-search search-icon position-absolute"></i>
     <input
       type="text"
-      class="form-control ps-5"
+      class="form-control ps-5 search-input"
       placeholder="Search"
       [(ngModel)]="searchTerm"
       (ngModelChange)="onSearchTermChange($event)"
@@ -17,7 +17,7 @@
   </div>
 
   <!-- Form -->
-  <div class="note-form">
+  <div class="note-form" [style.backgroundColor]="noteColor">
     <h2>{{editingNoteID ? 'Edit note' : 'Add a note' }}</h2>
 
     <input
@@ -33,6 +33,19 @@
       placeholder="Take a note..."
       autoResize
     ></textarea>
+
+    <!-- Color Picker -->
+    <div class="color-picker">
+      <label *ngFor="let c of availableColors">
+        <input
+          type="radio"
+          name="noteColor"
+          [value]="c"
+          [(ngModel)]="noteColor"
+        />
+        <span [style.backgroundColor]="c" class="color-swatch"></span>
+      </label>
+    </div>
 
     <button (click)="addOrUpdateNote()">
       {{editingNoteID ? 'Update Note' : 'Add Note' }}
@@ -67,6 +80,7 @@
   <ul>
     <li
       *ngFor="let note of (filteredNotes$ | async)"
+      [style.backgroundColor]="note.color || '#ffffff'"
       (click)="openNoteModal(note)"
     >
       <div>
@@ -87,19 +101,28 @@
   </ul>
 
   <div class="note-modal" *ngIf="selectedNote" (click)="closeNoteModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      [style.backgroundColor]="isModalEditing ? modalColor : selectedNote.color || '#ffffff'"
+    >
       <!-- View mode -->
       <div *ngIf="!isModalEditing">
         <h3>{{ selectedNote.title }}</h3>
         <p>{{ selectedNote.content }}</p>
 
         <div class="buttons-container">
-          <button (click)="enableModalEdit()">
+          <button (click)="enableModalEdit()" class="buttons-container-edit">
             <i class="bi bi-pencil"></i> Edit
           </button>
-          <button (click)="deleteNote(selectedNote.id)">
+          <button
+            (click)="deleteNote(selectedNote.id)"
+            class="buttons-container-delete"
+          >
             <i class="bi bi-trash-fill"></i> Delete
           </button>
+
+          <button class="close-btn" (click)="closeNoteModal()">Close</button>
         </div>
       </div>
 
@@ -112,13 +135,28 @@
           placeholder="Edit your note"
         ></textarea>
 
+        <!-- Modal Color Picker -->
+        <div class="color-picker">
+          <label *ngFor="let c of availableColors">
+            <input
+              type="radio"
+              name="modalNoteColor"
+              [value]="c"
+              [(ngModel)]="modalColor"
+            />
+            <span [style.backgroundColor]="c" class="color-swatch"></span>
+          </label>
+        </div>
+
         <div class="buttons-container">
-          <button (click)="saveModalEdit()">Save</button>
-          <button (click)="cancelModalEdit()">Cancel</button>
+          <button (click)="saveModalEdit()" class="buttons-container-save">
+            Save
+          </button>
+          <button (click)="cancelModalEdit()" class="buttons-container-cancel">
+            Cancel
+          </button>
         </div>
       </div>
-
-      <button class="close-btn" (click)="closeNoteModal()">Close</button>
     </div>
   </div>
 </div>

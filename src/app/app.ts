@@ -44,6 +44,21 @@ export class App implements OnInit {
   modalTitle: string = '';
   modalContent: string = '';
 
+  // Color changes
+  noteColor: string = '#ffffff'; // Default cpolor for new notes
+  modalColor: string = '#ffffff'; // For modal editing
+
+  availableColors: string[] = [
+    '#ffffff', // White
+    '#f59b93', // Red
+    '#ffd559', // Orange
+    '#fff799', // Yellow
+    '#ccf69c', // Green
+    '#a7ffeb', // Teal
+    '#cbf0f8', // Light Blue
+    '#d0b5e8', // Purple
+  ];
+
   private searchTermSubject = new BehaviorSubject<string>('');
 
   constructor(private store: Store) {
@@ -74,7 +89,11 @@ export class App implements OnInit {
     if (this.editingNoteID) {
       const update = {
         id: this.editingNoteID,
-        changes: { title: this.noteTitle, content: this.noteContent },
+        changes: {
+          title: this.noteTitle,
+          content: this.noteContent,
+          color: this.noteColor,
+        },
       };
       this.store.dispatch(NoteActions.updateNote({ update }));
     } else {
@@ -82,6 +101,7 @@ export class App implements OnInit {
         id: uuidv4(),
         title: this.noteTitle,
         content: this.noteContent,
+        color: this.noteColor,
       };
       this.store.dispatch(NoteActions.addNote({ note: newNote }));
     }
@@ -93,6 +113,7 @@ export class App implements OnInit {
     this.editingNoteID = note.id;
     this.noteTitle = note.title;
     this.noteContent = note.content;
+    this.noteColor = note.color || '#ffffff';
   }
 
   deleteNote(id: string) {
@@ -111,6 +132,7 @@ export class App implements OnInit {
     this.editingNoteID = null;
     this.noteTitle = '';
     this.noteContent = '';
+    this.noteColor = '#ffffff';
 
     if (this.noteTextarea) {
       const el = this.noteTextarea.nativeElement;
@@ -135,6 +157,7 @@ export class App implements OnInit {
     this.isModalEditing = false;
     this.modalTitle = note.title;
     this.modalContent = note.content;
+    this.modalColor = note.color || '#ffffff';
   }
 
   closeNoteModal(): void {
@@ -151,6 +174,7 @@ export class App implements OnInit {
     if (this.selectedNote) {
       this.modalTitle = this.selectedNote.title;
       this.modalContent = this.selectedNote.content;
+      this.modalColor = this.selectedNote.color || '#ffffff';
     }
   }
 
@@ -160,11 +184,16 @@ export class App implements OnInit {
         ...this.selectedNote,
         title: this.modalTitle.trim(),
         content: this.modalContent.trim(),
+        color: this.modalColor,
       };
 
       const update = {
         id: updatedNote.id,
-        changes: { title: updatedNote.title, content: updatedNote.content },
+        changes: {
+          title: updatedNote.title,
+          content: updatedNote.content,
+          color: this.modalColor,
+        },
       };
 
       this.store.dispatch(NoteActions.updateNote({ update }));
