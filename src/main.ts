@@ -2,5 +2,9 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+
+bootstrapApplication(App, {
+  ...appConfig,
+  providers: [...(appConfig.providers ?? []), provideStoreDevtools()],
+}).catch((err) => console.error(err));
