@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng build --configuration production --base-href /notes-rxjs/ && npx angular-cli-ghpages --dir=dist/notes-rxjs/browser",
+    "deploy": "ng build --configuration production --base-href /notes-rxjs/ && npx angular-cli-ghpages --dir=dist/notes-rxjs/browser/browser",
     "serve:ssr:angular-ngrx-notes-app": "node dist/angular-ngrx-notes-app/server/server.mjs"
   },
   "private": true,
