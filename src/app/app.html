@@ -1,7 +1,7 @@
 <div class="main">
   <h1>My Notes</h1>
 
-  <!-- Search bar -->
+  <!-- Search bar ---------------------------------------------->
   <div
     class="search-container position-relative mx-auto mb-3"
     style="max-width: 600px"
@@ -16,7 +16,7 @@
     />
   </div>
 
-  <!-- Form -->
+  <!-- Form ------------------------------------------------------>
   <div class="note-form" [style.backgroundColor]="noteColor">
     <h2>{{editingNoteID ? 'Edit note' : 'Add a note' }}</h2>
 
@@ -34,6 +34,45 @@
       autoResize
     ></textarea>
 
+    <!-- Image Upload -->
+    <label for="imageInput" class="image-upload-label">
+      <i class="bi bi-image"></i> Add Image
+    </label>
+
+    <input
+      type="file"
+      accept="image/*"
+      multiple
+      (change)="onImageSelected($event)"
+    />
+
+    <!-- Thumbnails of selected images -->
+    <div class="image-preview">
+      <div
+        class="image-wrapper"
+        *ngFor="let img of selectedImages; let i = index"
+      >
+        <!-- Show spinner -->
+        <div class="spinner" *ngIf="imageLoading[i]"></div>
+
+        <!-- Image -->
+        <img
+          [src]="img"
+          class="preview-thumbnail"
+          (load)="imageLoading[i] = false"
+          [style.display]="imageLoading[i] ? 'none' : 'block'"
+        />
+
+        <!-- Remove button -->
+        <button
+          (click)="removeSelectedImage(i); $event.stopPropagation()"
+          class="remove-image-button"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+
     <!-- Color Picker -->
     <div class="color-picker">
       <label *ngFor="let c of availableColors">
@@ -50,13 +89,14 @@
     <button (click)="addOrUpdateNote()">
       {{editingNoteID ? 'Update Note' : 'Add Note' }}
     </button>
+
     <button *ngIf="editingNoteID" (click)="cancelEdit()">Cancel Editing</button>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading --------------------------------------------------->
   <div *ngIf="isLoading$ | async">Loading the notes ...</div>
 
-  <!-- No notes -->
+  <!-- No notes -------------------------------------------------->
   <div
     *ngIf="!(isLoading$ | async) && (filteredNotes$ | async)?.length === 0 && !searchTerm"
     class="empty-state"
@@ -64,7 +104,7 @@
     <p><i class="bi bi-emoji-frown me-2"></i>No notes yet. Add one!</p>
   </div>
 
-  <!-- No notes match -->
+  <!-- No notes match ---------------------------------------------->
   <div
     *ngIf="!(isLoading$ | async) && (filteredNotes$ | async)?.length === 0 && searchTerm"
     class="empty-state"
@@ -76,7 +116,7 @@
     </p>
   </div>
 
-  <!-- List of note(s) -->
+  <!-- List of note(s) -------------------------------------------->
   <ul>
     <li
       *ngFor="let note of (filteredNotes$ | async)"
@@ -86,7 +126,16 @@
       <div>
         <h3>{{ note.title }}</h3>
         <p>{{ note.content }}</p>
+
+        <!-- Thumbnails with delete buttons -->
+        <div class="image-preview" *ngIf="note.images?.length">
+          <div class="image-wrapper" *ngFor="let img of note.images">
+            <img [src]="img" class="preview-thumbnail" />
+          </div>
+        </div>
       </div>
+
+      <!-- Buttons -->
       <div class="buttons-container" (click)="$event.stopPropagation()">
         <button (click)="editNote(note)" title="Edit">
           <i class="bi bi-pencil"></i>
@@ -100,25 +149,37 @@
     </li>
   </ul>
 
+  <!-- Note Modal ------------------------------------------------------->
   <div class="note-modal" *ngIf="selectedNote" (click)="closeNoteModal()">
     <div
       class="modal-content"
       (click)="$event.stopPropagation()"
       [style.backgroundColor]="isModalEditing ? modalColor : selectedNote.color || '#ffffff'"
     >
-      <!-- View mode -->
-      <div *ngIf="!isModalEditing">
+      <!-- View mode -------------------------------->
+      <div *ngIf="!isModalEditing" class="modal-view">
         <h3>{{ selectedNote.title }}</h3>
-        <p>{{ selectedNote.content }}</p>
 
-        <div class="buttons-container">
-          <button (click)="enableModalEdit()" class="buttons-container-edit">
+        <div class="modal-scrollable-content">
+          <p>{{ selectedNote.content }}</p>
+        </div>
+
+        <!-- Thumbnails with delete buttons -->
+        <div class="image-preview">
+          <div
+            class="image-wrapper"
+            *ngFor="let img of modalImages; let i = index"
+          >
+            <img [src]="img" class="preview-thumbnail" />
+          </div>
+        </div>
+
+        <div class="modal-footer-buttons">
+          <button (click)="enableModalEdit()">
             <i class="bi bi-pencil"></i> Edit
           </button>
-          <button
-            (click)="deleteNote(selectedNote.id)"
-            class="buttons-container-delete"
-          >
+
+          <button (click)="deleteNote(selectedNote.id)">
             <i class="bi bi-trash-fill"></i> Delete
           </button>
 
@@ -126,7 +187,7 @@
         </div>
       </div>
 
-      <!-- Edit mode -->
+      <!-- Edit mode --------------------------------->
       <div *ngIf="isModalEditing">
         <input type="text" [(ngModel)]="modalTitle" class="note-title-input" />
         <textarea
@@ -134,6 +195,33 @@
           class="modal-textarea"
           placeholder="Edit your note"
         ></textarea>
+
+        <!-- Thumbnails with delete buttons -->
+        <div class="image-preview">
+          <div
+            class="image-wrapper"
+            *ngFor="let img of modalImages; let i = index"
+          >
+            <!-- Spinner -->
+            <div class="spinner" *ngIf="modalImageLoading[i]"></div>
+
+            <!-- Image -->
+            <img
+              [src]="img"
+              class="preview-thumbnail"
+              (load)="modalImageLoading[i] = false"
+              [style.display]="modalImageLoading[i] ? 'none' : 'block'"
+            />
+
+            <!-- Remove -->
+            <button
+              (click)="removeModalImage(i); $event.stopPropagation()"
+              class="remove-image-button"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
 
         <!-- Modal Color Picker -->
         <div class="color-picker">
@@ -149,6 +237,22 @@
         </div>
 
         <div class="buttons-container">
+          <!-- Image Upload -->
+          <div class="image-upload-container">
+            <input
+              type="file"
+              id="modalImageInput"
+              accept="image/*"
+              multiple
+              (change)="onModalImageSelected($event)"
+              class="hidden-file-input"
+            />
+
+            <label for="modalImageInput" class="custom-file-button">
+              <i class="bi bi-image"></i> Add Image
+            </label>
+          </div>
+
           <button (click)="saveModalEdit()" class="buttons-container-save">
             Save
           </button>

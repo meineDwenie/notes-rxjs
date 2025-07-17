@@ -44,19 +44,25 @@ export class App implements OnInit {
   modalTitle: string = '';
   modalContent: string = '';
 
+  // Adding Images
+  selectedImages: string[] = [];
+  modalImages: string[] = [];
+  imageLoading: boolean[] = [];
+  modalImageLoading: boolean[] = [];
+
   // Color changes
   noteColor: string = '#ffffff'; // Default cpolor for new notes
   modalColor: string = '#ffffff'; // For modal editing
 
   availableColors: string[] = [
     '#ffffff', // White
-    '#f59b93', // Red
-    '#ffd559', // Orange
-    '#fff799', // Yellow
-    '#ccf69c', // Green
-    '#a7ffeb', // Teal
+    '#e8a49dff', // Red
+    '#ffd67eff', // Orange
+    '#fdf6adff', // Yellow
+    '#d8f7b5ff', // Green
+    '#bcede3', // Teal
     '#cbf0f8', // Light Blue
-    '#d0b5e8', // Purple
+    '#dbd2e2ff', // Purple
   ];
 
   private searchTermSubject = new BehaviorSubject<string>('');
@@ -93,6 +99,7 @@ export class App implements OnInit {
           title: this.noteTitle,
           content: this.noteContent,
           color: this.noteColor,
+          images: [...this.selectedImages],
         },
       };
       this.store.dispatch(NoteActions.updateNote({ update }));
@@ -102,6 +109,8 @@ export class App implements OnInit {
         title: this.noteTitle,
         content: this.noteContent,
         color: this.noteColor,
+        createdAt: Date.now(),
+        images: [...this.selectedImages],
       };
       this.store.dispatch(NoteActions.addNote({ note: newNote }));
     }
@@ -114,6 +123,8 @@ export class App implements OnInit {
     this.noteTitle = note.title;
     this.noteContent = note.content;
     this.noteColor = note.color || '#ffffff';
+    this.selectedImages = note.images || [];
+    this.modalImages = [...this.selectedImages];
   }
 
   deleteNote(id: string) {
@@ -133,6 +144,8 @@ export class App implements OnInit {
     this.noteTitle = '';
     this.noteContent = '';
     this.noteColor = '#ffffff';
+    this.selectedImages = [];
+    this.imageLoading = [];
 
     if (this.noteTextarea) {
       const el = this.noteTextarea.nativeElement;
@@ -140,24 +153,66 @@ export class App implements OnInit {
     }
   }
 
-  filterNotes(notes: Note[], term: string) {
-    if (!term) return notes;
+  filterNotes(notes: Note[], term: string): Note[] {
+    let filtered = notes;
 
-    const lowerTerm = term.toLowerCase();
-    return notes.filter(
-      (note) =>
-        note.title.toLowerCase().includes(lowerTerm) ||
-        note.content.toLowerCase().includes(lowerTerm)
-    );
+    if (term) {
+      const lowerTerm = term.toLowerCase();
+      filtered = notes.filter(
+        (note) =>
+          note.title.toLowerCase().includes(lowerTerm) ||
+          note.content.toLowerCase().includes(lowerTerm)
+      );
+    }
+
+    // Sort by newest first
+    try {
+      return [...filtered].sort(
+        (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
+      );
+    } catch (err) {
+      console.error('Sorting failed:', err, filtered);
+      return filtered;
+    }
   }
 
-  // === MODAL LOGIC ===
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files) {
+      Array.from(input.files).forEach((file, index) => {
+        const reader = new FileReader();
+        this.imageLoading.push(true);
+
+        const currentIndex = this.selectedImages.length;
+
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            this.selectedImages.push(reader.result);
+            this.imageLoading[currentIndex] = false; // Mark loading as complete
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  // MODAL
   openNoteModal(note: Note): void {
     this.selectedNote = note;
     this.isModalEditing = false;
     this.modalTitle = note.title;
     this.modalContent = note.content;
     this.modalColor = note.color || '#ffffff';
+    this.modalImages = note.images || [];
+  }
+
+  removeModalImage(index: number): void {
+    this.modalImages.splice(index, 1);
+  }
+
+  removeSelectedImage(index: number) {
+    this.selectedImages.splice(index, 1);
   }
 
   closeNoteModal(): void {
@@ -185,6 +240,7 @@ export class App implements OnInit {
         title: this.modalTitle.trim(),
         content: this.modalContent.trim(),
         color: this.modalColor,
+        images: [...this.modalImages],
       };
 
       const update = {
@@ -193,12 +249,28 @@ export class App implements OnInit {
           title: updatedNote.title,
           content: updatedNote.content,
           color: this.modalColor,
+          images: updatedNote.images,
         },
       };
 
       this.store.dispatch(NoteActions.updateNote({ update }));
       this.selectedNote = updatedNote;
       this.isModalEditing = false;
+    }
+  }
+
+  onModalImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      Array.from(input.files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            this.modalImages.push(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   }
 }
