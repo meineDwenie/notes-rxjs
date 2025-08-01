@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
-
 import { routes } from './app.routes';
 import { ActionReducer, provideState, provideStore } from '@ngrx/store';
 import {
@@ -14,10 +13,17 @@ import {
 } from '@angular/platform-browser';
 
 import * as fromNotes from './notes/note.reducer';
+import * as fromNotebooks from './notebooks/notebook.reducer';
 
 import { localStorageSync } from 'ngrx-store-localstorage';
 
-const keyToSync = [fromNotes.notesFeatureKey];
+const keyToSync = [
+  fromNotes.notesFeatureKey,
+  fromNotebooks.notebooksFeatureKey,
+
+  fromNotes.notesFeatureKey,
+  fromNotebooks.notebooksFeatureKey
+];
 
 function localStorageSyncReducer(
   reducer: ActionReducer<any>
@@ -41,6 +47,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideStore({}, { metaReducers }),
     provideState(fromNotes.notesFeatureKey, fromNotes.notesReducer),
+    provideState(
+      fromNotebooks.notebooksFeatureKey,
+      fromNotebooks.notebooksReducer
+    ),
     provideEffects([]),
     provideClientHydration(withEventReplay()),
   ],

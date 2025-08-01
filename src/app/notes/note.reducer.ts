@@ -44,5 +44,12 @@ export const notesReducer = createReducer(
     ...state,
     notes: notes,
     loading: false,
+  })),
+
+  on(NoteActions.togglePinNote, (state, { id }) => ({
+    ...state,
+    notes: state.notes.map((note) =>
+      note.id === id ? { ...note, pinned: !note.pinned } : note
+    ),
   }))
 );

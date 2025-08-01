@@ -5,4 +5,5 @@ export interface Note {
   color?: string;
   createdAt?: number;
   images?: string[];
+  pinned?: boolean;
 }

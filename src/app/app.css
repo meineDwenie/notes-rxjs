@@ -6,32 +6,45 @@ body {
   font-family: "Reddit Sans", sans-serif;
   background-color: #f2fbfb;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .main {
+  display: flex;
+  flex-direction: row-reverse;
   background-color: #f2fbfb;
   min-height: 100vh;
-  padding: 2rem auto;
+  padding: 0 4rem 0;
   font-family: "Reddit Sans", sans-serif;
 }
 
 h1 {
-  text-align: center;
   margin-bottom: 1rem;
   font-weight: 700;
-  padding-top: 2rem;
   cursor: default;
 }
 
-h2 {
+h3 {
   font-size: 1.5rem;
   text-align: left;
   margin-bottom: 1rem;
   cursor: default;
 }
 
+/* LEFT PANEL */
+.left-panel {
+  position: fixed;
+  top: 0;
+  left: 0; /* right: 0;*/
+  height: 100vh;
+  width: 30%;
+  padding: 2rem 2rem 2rem 4.5rem;
+  overflow-y: auto;
+}
+
 /* Form Section */
 .note-form {
+  position: relative;
   background-color: #fff;
   padding: 1rem;
   border-radius: 8px;
@@ -39,68 +52,387 @@ h2 {
   margin-bottom: 2.5rem;
   max-width: 600px;
   margin-inline: auto;
+
+  input {
+    width: 92%;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    font-family: "Reddit Sans", sans-serif;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: transparent;
+    /*border: 1px solid #ccc;*/
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: "Reddit Sans", sans-serif;
+  }
+
+  textarea::placeholder {
+    color: #4d4d4d;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.25rem 0 1rem 0;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: "Reddit Sans", sans-serif;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+    resize: none;
+  }
+
+  title-input {
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  title-input::placeholder {
+    color: #4d4d4d;
+  }
+
+  button {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #2c7be5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #4f94ee;
+    color: white;
+  }
+
+  button:last-child {
+    background-color: #5e7e9a;
+  }
+
+  button:last-child:hover {
+    background-color: #7396b4;
+  }
+
+  .notebook-dropdown {
+    margin-bottom: 1rem;
+  }
 }
 
-.note-form input,
-.note-form textarea {
-  width: 100%;
-  padding: 0.5rem;
-  margin: 0;
-  background-color: transparent;
-  /*border: 1px solid #ccc;*/
+/* Add to Pin Icon */
+.pin-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #575757;
+  z-index: 10;
+}
+
+.pin-icon:hover {
+  color: #000;
+}
+
+/* Notebook Creation */
+.notebook-form {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  margin-bottom: 2rem;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notebook-form-content {
+  flex: 1;
+}
+
+.notebook-form-icon {
+  font-size: 3rem;
+  color: #7c7d7f;
+}
+
+.notebook-form-content .title-input {
+  font-size: 1.2rem;
+}
+
+.notebook-form-content .title-input::placeholder {
+  font-size: 1.2rem;
+}
+
+.create-notebook-btn {
+  background-color: #5e7e9a;
+  color: white;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
+  cursor: pointer;
   font-size: 1rem;
-  font-family: "Reddit Sans", sans-serif;
 }
 
-.note-title-input {
-  font-weight: 600;
+.create-notebook-btn:hover {
+  background-color: #7396b4;
+  color: white;
+  border-radius: 4px;
+}
+
+/* Navigation Grid */
+.nav-grid {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: rgba(71, 71, 71, 0.5);
+  /* aspect-ratio: 1; */
+  min-width: 100px;
+}
+
+.nav-item:hover {
+  background-color: rgb(255, 255, 255);
+  color: #4d4d4d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item.active {
+  background-color: #ffffff;
+  border: 1px solid #8d8d8d;
+
+  .nav-icon {
+    color: rgb(82, 82, 82);
+  }
+
+  .nav-label {
+    color: rgb(77, 77, 77);
+  }
+}
+
+.nav-icon {
   font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: rgba(71, 71, 71, 0.5);
 }
 
-.note-title-input::placeholder {
-  color: #4d4d4d;
+.nav-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
 }
 
-.note-form textarea::placeholder {
-  color: #4d4d4d;
+/* RIGHT PANEL */
+.right-panel {
+  width: 70%;
+  background-color: #f2fbfb;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
-.note-form textarea {
+/* Sections */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Notebooks Row */
+.notebooks-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.5rem;
+}
+
+.notebook-item {
+  min-width: 250px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.notebook-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.notebook-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-direction: column;
+}
+
+.notebook-icon {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.notebook-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.notebook-meta {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Notebook Options */
+.notebook-options {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.notebook-item:hover .notebook-options {
+  opacity: 1;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 80%;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  padding: 8px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  padding: 4px 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.options-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.options-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* NOTEBOOK EDIT MODAL */
+.notebook-edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* higher than other elements */
+}
+
+.notebook-edit-modal .modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.notebook-edit-modal h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.notebook-edit-modal input {
   width: 100%;
   padding: 0.5rem;
-  margin: 0.25rem 0 1rem 0;
-  border-radius: 4px;
+  margin-bottom: 1rem;
   font-size: 1rem;
-  font-family: "Reddit Sans", sans-serif;
-  min-height: 100px;
-  max-height: 300px;
-  overflow-y: auto;
-  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.note-form button {
-  margin-right: 0.5rem;
+.edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.edit-buttons button {
   padding: 0.5rem 1rem;
-  background-color: #2c7be5;
-  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.note-form button:hover {
-  background-color: #4f94ee;
+.edit-buttons button:first-child {
+  background-color: #007bff;
   color: white;
 }
 
-.note-form button:last-child {
-  background-color: #5e7e9a;
-}
-
-.note-form button:last-child:hover {
-  background-color: #7396b4;
+.edit-buttons button:last-child {
+  background-color: #ccc;
+  color: #333;
 }
 
 /* Search input only */
@@ -108,7 +440,7 @@ h2 {
   display: block;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto 1rem auto;
+  margin: 0;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border-radius: 40px;
@@ -118,7 +450,7 @@ h2 {
 }
 
 /* Title inputs for notes and modal */
-.note-title-input {
+.title-input {
   width: 100%;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
@@ -160,24 +492,25 @@ h2 {
 /* Notes List */
 ul {
   list-style-type: none;
-  padding: 0 0 2rem 0;
-  max-width: 90%; /* 1200px widen for 5 columns */
-  margin: 0 auto;
+  padding: 0;
+  max-width: 100%; /* 1200px widen for 5 columns */
+  margin: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 
 li {
+  position: relative;
   background-color: #fff;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   padding: 1rem;
   outline: 0.5px solid rgba(150, 150, 150, 0.3);
   border-radius: 6px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: flex-start;
   cursor: default;
   overflow: hidden;
@@ -185,12 +518,12 @@ li {
   /* Remove fixed height to allow min height from content */
   min-height: 120px; /* minimum height for small notes */
   max-height: 380px; /* max height before truncation */
-  transition: box-shadow 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 li:hover {
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 li h3 {
@@ -209,6 +542,7 @@ li p {
   text-overflow: ellipsis;
   /* fallback */
   max-height: 220px;
+  white-space: pre-wrap;
 }
 
 .buttons-container {
@@ -415,6 +749,24 @@ li button:hover {
   padding-bottom: 0;
 }
 
+.image-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.image-upload-btn:hover {
+  background-color: #f5f5f5;
+}
+
 .hidden-file-input {
   display: none;
 }
@@ -439,7 +791,7 @@ li button:hover {
 
 .image-preview {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -454,8 +806,8 @@ li button:hover {
 }
 
 .preview-thumbnail {
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid #ccc;

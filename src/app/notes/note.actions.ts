@@ -25,5 +25,11 @@ export const loadNotes = createAction('[Notes] Load Note');
 // loading note success
 export const loadNotesSuccess = createAction(
   '[Notes] Load Note Success',
-  props<{ notes: Note[]}>()
+  props<{ notes: Note[] }>()
+);
+
+// pin notes
+export const togglePinNote = createAction(
+  '[Note] Toggle Pin',
+  props<{ id: string }>()
 );

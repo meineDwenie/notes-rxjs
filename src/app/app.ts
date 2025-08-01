@@ -1,10 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  HostListener,
+  Host,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-import * as NoteActions from './notes/note.actions';
-import * as NoteSelectors from './notes/note.selectors';
-import { Note } from './notes/note.model';
 
 import { Store } from '@ngrx/store';
 import {
@@ -19,6 +22,13 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { autoResizeDirective } from './directives/auto-resize.directive';
 
+import * as NoteActions from './notes/note.actions';
+import * as NoteSelectors from './notes/note.selectors';
+import { Note } from './notes/note.model';
+import * as NotebookActions from './notebooks/notebook.actions';
+import * as NotebookSelectors from './notebooks/notebook.selectors';
+import { Notebook } from './notebooks/notebook.model';
+
 @Component({
   selector: 'app-root',
   imports: [FormsModule, CommonModule, autoResizeDirective],
@@ -29,15 +39,25 @@ export class App implements OnInit {
   protected title = 'angular-ngrx-notes-app';
 
   allNotes$!: Observable<Note[]>;
-  isLoading$!: Observable<boolean>;
   filteredNotes$!: Observable<Note[]>;
+  pinnedNotes$!: Observable<Note[]>;
 
+  // Boolean observables
+  isLoading$!: Observable<boolean>;
+  hasNotes$!: Observable<boolean>;
+  hasNotebooks$!: Observable<boolean>;
+  hasPins$!: Observable<boolean>;
+  hasUnpinnedNotes$!: Observable<boolean>;
+
+  // NOTE
   noteTitle: string = '';
   noteContent: string = '';
   editingNoteID: string | null = null;
   searchTerm: string = '';
 
   selectedNote: Note | null = null;
+  notePinned: boolean = false;
+  selectedNotebookId: string | null = null;
 
   // Modal edit state
   isModalEditing: boolean = false;
@@ -65,18 +85,64 @@ export class App implements OnInit {
     '#dbd2e2ff', // Purple
   ];
 
+  // NOTEBOOKS
+  notebooks$!: Observable<Notebook[]>;
+  notebookTitle: string = '';
+  editingNotebook: boolean = false;
+  editingNotebookId: string | null = null;
+  editingNotebookName: string = '';
+  openNotebookOptionsId: string | null = null;
+  selectedNotebook: Notebook | null = null;
+
   private searchTermSubject = new BehaviorSubject<string>('');
 
   constructor(private store: Store) {
-    this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
+    this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
+    this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
 
     this.filteredNotes$ = combineLatest([
       this.allNotes$,
       this.searchTermSubject
         .asObservable()
         .pipe(debounceTime(300), distinctUntilChanged(), startWith('')),
-    ]).pipe(map(([notes, term]) => this.filterNotes(notes, term)));
+    ]).pipe(
+      map(([notes, term]) =>
+        this.filterNotes(
+          notes.filter((n) => !n.pinned),
+          term
+        )
+      )
+    );
+
+    // Notes hasNotes?
+    this.hasNotes$ = this.allNotes$.pipe(map((notes) => notes.length > 0));
+
+    // Notebooks hasNotebooks?
+    this.hasNotebooks$ = this.notebooks$.pipe(
+      map((notebooks) => notebooks.length > 0)
+    );
+
+    // Filter pinned notes from allNotes$
+    this.pinnedNotes$ = this.allNotes$.pipe(
+      map((notes) => notes.filter((note) => note.pinned))
+    );
+
+    this.hasUnpinnedNotes$ = this.filteredNotes$.pipe(
+      map((notes) => notes.length > 0)
+    );
+
+    this.hasPins$ = this.pinnedNotes$.pipe(map((pinned) => pinned.length > 0));
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const clickedInside = (event.target as HTMLElement).closest(
+      '.notebook-options'
+    );
+    if (!clickedInside) {
+      this.openNotebookOptionsId = null; // Hide dropdown if clicked outside
+    }
   }
 
   ngOnInit(): void {}
@@ -99,6 +165,7 @@ export class App implements OnInit {
           title: this.noteTitle,
           content: this.noteContent,
           color: this.noteColor,
+          pinned: this.notePinned,
           images: [...this.selectedImages],
         },
       };
@@ -109,10 +176,38 @@ export class App implements OnInit {
         title: this.noteTitle,
         content: this.noteContent,
         color: this.noteColor,
+        pinned: this.notePinned,
         createdAt: Date.now(),
         images: [...this.selectedImages],
       };
+
       this.store.dispatch(NoteActions.addNote({ note: newNote }));
+
+      // Add to selected notebook (if any)
+      if (this.selectedNotebookId) {
+        const allNotebooks = this.notebooks$; // Observable
+        allNotebooks
+          .subscribe((notebooks) => {
+            const notebook = notebooks.find(
+              (nb) => nb.id === this.selectedNotebookId
+            );
+            if (notebook) {
+              const updatedNotebook = {
+                ...notebook,
+                notes: [...notebook.notes, newNote],
+              };
+              this.store.dispatch(
+                NotebookActions.updateNotebook({
+                  update: {
+                    id: updatedNotebook.id,
+                    changes: { notes: updatedNotebook.notes },
+                  },
+                })
+              );
+            }
+          })
+          .unsubscribe();
+      }
     }
 
     this.resetForm();
@@ -123,6 +218,7 @@ export class App implements OnInit {
     this.noteTitle = note.title;
     this.noteContent = note.content;
     this.noteColor = note.color || '#ffffff';
+    this.notePinned = note.pinned ?? false;
     this.selectedImages = note.images || [];
     this.modalImages = [...this.selectedImages];
   }
@@ -144,6 +240,8 @@ export class App implements OnInit {
     this.noteTitle = '';
     this.noteContent = '';
     this.noteColor = '#ffffff';
+    this.notePinned = false;
+    this.selectedNotebookId = null;
     this.selectedImages = [];
     this.imageLoading = [];
 
@@ -272,5 +370,76 @@ export class App implements OnInit {
         reader.readAsDataURL(file);
       });
     }
+  }
+
+  togglePin(note: Note, event: MouseEvent) {
+    event.stopPropagation();
+    this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
+  }
+
+  // NOTEBOOKS
+  addNotebook() {
+    if (!this.notebookTitle.trim()) {
+      alert('Notebook title cannot be empty.');
+      return;
+    }
+
+    const newNotebook: Notebook = {
+      id: uuidv4(),
+      name: this.notebookTitle.trim(),
+      notes: [],
+      createdAt: Date.now(),
+    };
+
+    this.store.dispatch(NotebookActions.addNotebook({ notebook: newNotebook }));
+    this.notebookTitle = ''; // clears input
+  }
+
+  deleteNotebook(id: string) {
+    if (confirm('Are you sure you want to delete this notebook?')) {
+      this.store.dispatch(NotebookActions.deleteNotebook({ id }));
+    }
+  }
+
+  toggleOptions(id: string | null) {
+    this.openNotebookOptionsId = this.openNotebookOptionsId === id ? null : id;
+  }
+
+  selectNotebook(nb: Notebook): void {
+    this.selectedNotebook = nb;
+    this.openNotebookOptionsId = null;
+  }
+
+  startEditingNotebook(nb: Notebook) {
+    this.editingNotebook = true;
+
+    this.editingNotebookId = nb.id;
+    this.editingNotebookName = nb.name;
+  }
+
+  saveNotebookEdit() {
+    if (!this.editingNotebookId) return;
+
+    const trimmedName = this.editingNotebookName.trim();
+    if (!trimmedName) {
+      alert('Notebook name cannot be empty.');
+      return;
+    }
+
+    this.store.dispatch(
+      NotebookActions.updateNotebook({
+        update: {
+          id: this.editingNotebookId,
+          changes: { name: this.editingNotebookName.trim() },
+        },
+      })
+    );
+    this.cancelNotebookEdit();
+  }
+
+  cancelNotebookEdit() {
+    this.editingNotebook = false;
+    this.editingNotebookId = null;
+    this.editingNotebookName = '';
   }
 }
