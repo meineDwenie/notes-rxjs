@@ -1,0 +1,44 @@
+<aside class="sidebar">
+  <div class="upper-part">
+    <!-- App Title & Current View -->
+    <div class="title-section">
+      <h1 class="app-title">
+        <img src="{{ appIcon }}" alt="App icon" />
+        {{ appTitle }}
+      </h1>
+    </div>
+
+    <!-- User Profile Section -->
+    <div class="user-profile">
+      <img [src]="userAvatar" alt="User Avatar" class="avatar" />
+      <h2 class="username">{{ username }}</h2>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <div class="stat-item">
+        <span class="stat-number">{{ totalNotes }}</span>
+        <div class="stat-label">Notes</div>
+      </div>
+
+      <div class="stat-item">
+        <span class="stat-number">{{ totalNotebooks }}</span>
+        <div class="stat-label">Notebooks</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <div class="nav-menu">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkeActive="active"
+      class="nav-item"
+      [attr.data-testid]="item.id + '-nav'"
+    >
+      <iconify-icon [attr.icon]="item.icon" class="nav-icon"></iconify-icon>
+      <h3>{{ item.label }}</h3>
+    </a>
+  </div>
+</aside>

@@ -1,15 +1,26 @@
-import { Directive, ElementRef, HostListener } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  AfterViewInit,
+} from '@angular/core';
 
 @Directive({
   selector: 'textarea[autoResize]',
 })
-export class autoResizeDirective {
+export class autoResizeDirective implements AfterViewInit {
   constructor(private el: ElementRef<HTMLTextAreaElement>) {}
 
   @HostListener('input')
   adjustHeight() {
     const textarea = this.el.nativeElement;
     textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 300) + 'px'; // Max 300px
+    textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px'; // Max 300px
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.adjustHeight();
+    });
   }
 }

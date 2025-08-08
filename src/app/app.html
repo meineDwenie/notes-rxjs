@@ -1,369 +1,30 @@
-<div class="main">
-  <!-- LEFT PANEL **************************************************-->
-  <div class="left-panel">
-    <!-- Search bar ---------------------------------------------->
-    <div
-      class="search-container position-relative mx-auto mb-4"
-      style="max-width: 600px"
-    >
-      <i class="bi bi-search search-icon position-absolute"></i>
-      <input
-        type="text"
-        class="form-control ps-5 search-input"
-        placeholder="Search"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchTermChange($event)"
-      />
-    </div>
+<div class="app-layout">
+  <!-- LEFT PANEL - Sidebar -->
+  <app-sidebar [appTitle]="'Noteboard'"></app-sidebar>
 
-    <!-- Form ------------------------------------------------------>
-    <div class="note-form" [style.backgroundColor]="noteColor">
-      <!-- <h2>{{editingNoteID ? 'Edit note' : 'Add a note' }}</h2> -->
+  <!-- Header -->
+  <app-header></app-header>
 
-      <input
-        type="text"
-        [(ngModel)]="noteTitle"
-        placeholder="Title"
-        class="title-input"
-      />
-
-      <textarea
-        #noteTextArea
-        [(ngModel)]="noteContent"
-        placeholder="Take a note..."
-        autoResize
-      ></textarea>
-
-      <!-- Pin Icon -->
-      <div class="pin-icon" (click)="notePinned = !notePinned">
-        <i class="bi" [ngClass]="notePinned ? 'bi-pin-fill' : 'bi-pin'"></i>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="image-upload">
-        <label for="imageInput" class="image-upload-btn">
-          <i class="bi bi-image"></i> Add Image
-        </label>
-
-        <input
-          type="file"
-          accept="image/*"
-          class="hidden-file-input"
-          multiple
-          (change)="onImageSelected($event)"
-        />
-      </div>
-
-      <!-- Thumbnails of selected images -->
-      <div class="image-preview">
-        <div
-          class="image-wrapper"
-          *ngFor="let img of selectedImages; let i = index"
-        >
-          <!-- Show spinner -->
-          <div class="spinner" *ngIf="imageLoading[i]"></div>
-
-          <!-- Image -->
-          <img
-            [src]="img"
-            class="preview-thumbnail"
-            (load)="imageLoading[i] = false"
-            [style.display]="imageLoading[i] ? 'none' : 'block'"
-          />
-
-          <!-- Remove button -->
-          <button
-            (click)="removeSelectedImage(i); $event.stopPropagation()"
-            class="remove-image-button"
-          >
-            &times;
-          </button>
-        </div>
-      </div>
-
-      <!-- Color Picker -->
-      <div class="color-picker">
-        <label *ngFor="let c of availableColors">
-          <input
-            type="radio"
-            name="noteColor"
-            [value]="c"
-            [(ngModel)]="noteColor"
-          />
-          <span [style.backgroundColor]="c" class="color-swatch"></span>
-        </label>
-      </div>
-
-      <!-- Notebook Selector -->
-      <div class="notebook-dropdown">
-        <select [(ngModel)]="selectedNotebookId" class="form-select">
-          <option [ngValue]="null">No notebook</option>
-          <option *ngFor="let nb of (notebooks$ | async)" [ngValue]="nb.id">
-            {{ nb.name }}
-          </option>
-        </select>
-      </div>
-
-      <button (click)="addOrUpdateNote()">
-        {{editingNoteID ? 'Update Note' : 'Add Note' }}
-      </button>
-
-      <button *ngIf="editingNoteID" (click)="cancelEdit()">
-        Cancel Editing
-      </button>
-    </div>
-
-    <!-- NOTEBOOK CREATION FORM -->
-    <div class="notebook-form">
-      <div class="notebook-form-content">
-        <input
-          type="text"
-          class="title-input"
-          placeholder="Notebook Title"
-          [(ngModel)]="notebookTitle"
-        />
-        <button class="create-notebook-btn" (click)="addNotebook()">
-          Create Notebook
-        </button>
-      </div>
-      <i class="bi bi-journal-bookmark notebook-form-icon"></i>
-    </div>
-
-    <!-- NAVIGATION GRID -->
-    <div class="nav-grid">
-      <a href="#" class="nav-item active" data-view="notes">
-        <i class="bi bi-sticky nav-icon"></i>
-        <span class="nav-label">Notes</span>
-      </a>
-
-      <a href="#" class="nav-item" data-view="notebooks">
-        <i class="bi bi-journal-bookmark nav-icon"></i>
-        <span class="nav-label">Notebooks</span>
-      </a>
-
-      <a href="#" class="nav-item" data-view="archive">
-        <i class="bi bi-archive nav-icon"></i>
-        <span class="nav-label">Archive</span>
-      </a>
-
-      <a href="#" class="nav-item" data-view="trash">
-        <i class="bi bi-trash nav-icon"></i>
-        <span class="nav-label">Trash</span>
-      </a>
-    </div>
+  <!-- RIGHT PANEL - Main Content -->
+  <div class="main-content">
+    <!-- Router Outlet for different views -->
+    <router-outlet></router-outlet>
   </div>
 
-  <!-- RIGHT PANEL-->
-  <div class="right-panel">
-    <div class="header">
-      <!-- App Title -->
-      <h1>Noteboard</h1>
-    </div>
-
-    <!-- Loading --------------------------------------------------->
-    <div *ngIf="isLoading$ | async">Loading the notes ...</div>
-
-    <!-- No notes -------------------------------------------------->
-    <!-- PREVIOUSLY: *ngIf="!(isLoading$ | async) && (filteredNotes$ | async)?.length === 0 && !searchTerm" -->
-    <div
-      *ngIf="!(isLoading$ | async) && !(hasNotes$ | async)"
-      class="empty-state"
-    >
-      <p><i class="bi bi-emoji-frown me-2"></i>No notes yet. Add one!</p>
-    </div>
-
-    <!-- No notes match ---------------------------------------------->
-    <div
-      *ngIf="!(isLoading$ | async) && (filteredNotes$ | async)?.length === 0 && searchTerm"
-      class="empty-state"
-    >
-      <p>
-        <i class="bi bi-search me-2"></i>No notes match your search "<strong
-          >{{ searchTerm }}</strong
-        >"
-      </p>
-    </div>
-
-    <!-- MY NOTEBOOKS -->
-    <div class="section" *ngIf="hasNotebooks$ | async">
-      <h3 class="section-title">My Notebooks</h3>
-      <div class="notebooks-row" id="notebooksContainer">
-        <!-- Notebooks List -->
-        <div
-          class="notebook-item"
-          *ngFor="let notebook of (notebooks$ | async)"
-        >
-          <!-- Header & Click Handler -->
-          <div class="notebook-header" (click)="selectNotebook(notebook)">
-            <i class="bi bi-journal-bookmark notebook-icon"></i>
-            <span class="notebook-title">{{ notebook.name }}</span>
-          </div>
-
-          <!-- Options Dropdown -->
-          <div class="notebook-options">
-            <button (click)="toggleOptions(notebook.id)">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-
-            <div
-              class="dropdown-menu"
-              *ngIf="openNotebookOptionsId === notebook.id"
-            >
-              <button (click)="startEditingNotebook(notebook)">Edit</button>
-              <button (click)="deleteNotebook(notebook.id)">Delete</button>
-            </div>
-          </div>
-
-          <div class="notebook-meta">
-            <div class="ntbk-note-count">{{ notebook.notes.length }} notes</div>
-            <div class="ntbk-date-added">
-              {{ notebook.createdAt | date: 'MM/dd/yyyy' }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Notes in selected notebook -->
-    <div class="section" *ngIf="selectedNotebook">
-      <h3 class="section-title">Notes in "{{ selectedNotebook.name }}"</h3>
-
-      <div class="notes-grid">
-        <div
-          class="note-item"
-          *ngFor="let note of selectedNotebook.notes"
-          [style.backgroundColor]="note.color || '#ffffff'"
-          (click)="openNoteModal(note)"
-        >
-          <!-- Pin Icon -->
-          <div class="pin-icon" (click)="notePinned = !notePinned">
-            <i class="bi" [ngClass]="notePinned ? 'bi-pin-fill' : 'bi-pin'"></i>
-          </div>
-
-          <div class="note-title">{{ note.title }}</div>
-          <div class="note-content">{{ note.content }}</div>
-
-          <div class="note-images" *ngIf="note.images?.length">
-            <img
-              *ngFor="let img of note.images"
-              [src]="img"
-              alt="Note image"
-              class="note-image"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MY PINS -->
-    <div class="section" *ngIf="hasPins$ | async">
-      <h3 class="section-title">My Pins</h3>
-
-      <ul>
-        <li
-          *ngFor="let pinnedNote of pinnedNotes$ | async"
-          [style.backgroundColor]="pinnedNote.color || '#ffffff'"
-          (click)="openNoteModal(pinnedNote)"
-        >
-          <div>
-            <h3>
-              {{ pinnedNote.title }}
-              <!-- Pin icon just to the right of the title -->
-              <i
-                class="bi bi-pin-fill pin-icon"
-                title="Unpin"
-                (click)="togglePin(pinnedNote, $event)"
-              ></i>
-            </h3>
-
-            <p>{{ pinnedNote.content }}</p>
-
-            <!-- Thumbnails with delete buttons -->
-            <div class="image-preview" *ngIf="pinnedNote.images?.length">
-              <div class="image-wrapper" *ngFor="let img of pinnedNote.images">
-                <img [src]="img" class="preview-thumbnail" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="buttons-container" (click)="$event.stopPropagation()">
-            <button (click)="editNote(pinnedNote)" title="Edit">
-              <i class="bi bi-pencil"></i>
-              Edit
-            </button>
-            <button (click)="deleteNote(pinnedNote.id)" title="Delete">
-              <i class="bi bi-trash-fill"></i>
-              Delete
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- List of note(s) -------------------------------------------->
-    <div class="section" *ngIf="hasUnpinnedNotes$ | async">
-      <h3 class="section-title">RECENT NOTES</h3>
-      <ul>
-        <li
-          *ngFor="let note of (filteredNotes$ | async)"
-          [style.backgroundColor]="note.color || '#ffffff'"
-          (click)="openNoteModal(note)"
-        >
-          <div>
-            <!-- pin icon -->
-            <div class="pin-icon">
-              <i
-                class="bi"
-                [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
-                title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
-                (click)="togglePin(note, $event)"
-              ></i>
-            </div>
-
-            <h3>{{ note.title }}</h3>
-            <p>{{ note.content }}</p>
-
-            <!-- Thumbnails with delete buttons -->
-            <div class="image-preview" *ngIf="note.images?.length">
-              <div class="image-wrapper" *ngFor="let img of note.images">
-                <img [src]="img" class="preview-thumbnail" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="buttons-container" (click)="$event.stopPropagation()">
-            <button (click)="editNote(note)" title="Edit">
-              <i class="bi bi-pencil"></i>
-              Edit
-            </button>
-            <button (click)="deleteNote(note.id)" title="Delete">
-              <i class="bi bi-trash-fill"></i>
-              Delete
-            </button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Note Modal ------------------------------------------------------->
+  <!-- Modals -->
+  <!-- Note Modal -->
   <div class="note-modal" *ngIf="selectedNote" (click)="closeNoteModal()">
     <div
       class="modal-content"
       (click)="$event.stopPropagation()"
       [style.backgroundColor]="isModalEditing ? modalColor : selectedNote.color || '#ffffff'"
     >
-      <!-- View mode -------------------------------->
+      <!-- View mode -->
       <div *ngIf="!isModalEditing" class="modal-view">
-        <h3>{{ selectedNote.title }}</h3>
-
-        <div class="modal-scrollable-content">
+        <h3 (click)="enableModalEdit()">{{ selectedNote.title }}</h3>
+        <div class="modal-scrollable-content" (click)="enableModalEdit()">
           <p>{{ selectedNote.content }}</p>
         </div>
-
-        <!-- Thumbnails with delete buttons -->
         <div class="image-preview">
           <div
             class="image-wrapper"
@@ -372,47 +33,35 @@
             <img [src]="img" class="preview-thumbnail" />
           </div>
         </div>
-
         <div class="modal-footer-buttons">
-          <button (click)="enableModalEdit()">
-            <i class="bi bi-pencil"></i> Edit
-          </button>
-
           <button (click)="deleteNote(selectedNote.id)">
             <i class="bi bi-trash-fill"></i> Delete
           </button>
-
           <button class="close-btn" (click)="closeNoteModal()">Close</button>
         </div>
       </div>
 
-      <!-- Edit mode --------------------------------->
+      <!-- Edit mode -->
       <div *ngIf="isModalEditing">
         <input type="text" [(ngModel)]="modalTitle" class="title-input" />
         <textarea
+          autoResize
           [(ngModel)]="modalContent"
           class="modal-textarea"
           placeholder="Edit your note"
         ></textarea>
-
-        <!-- Thumbnails with delete buttons -->
         <div class="image-preview">
           <div
             class="image-wrapper"
             *ngFor="let img of modalImages; let i = index"
           >
-            <!-- Spinner -->
             <div class="spinner" *ngIf="modalImageLoading[i]"></div>
-
-            <!-- Image -->
             <img
               [src]="img"
               class="preview-thumbnail"
-              (load)="modalImageLoading[i] = false"
+              (load)="onImageLoad(i)"
               [style.display]="modalImageLoading[i] ? 'none' : 'block'"
             />
-
-            <!-- Remove -->
             <button
               (click)="removeModalImage(i); $event.stopPropagation()"
               class="remove-image-button"
@@ -421,8 +70,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Modal Color Picker -->
         <div class="color-picker">
           <label *ngFor="let c of availableColors">
             <input
@@ -434,9 +81,7 @@
             <span [style.backgroundColor]="c" class="color-swatch"></span>
           </label>
         </div>
-
         <div class="buttons-container">
-          <!-- Image Upload -->
           <div class="image-upload-container">
             <input
               type="file"
@@ -446,12 +91,10 @@
               (change)="onModalImageSelected($event)"
               class="hidden-file-input"
             />
-
             <label for="modalImageInput" class="custom-file-button">
               <i class="bi bi-image"></i> Add Image
             </label>
           </div>
-
           <button (click)="saveModalEdit()" class="buttons-container-save">
             Save
           </button>
@@ -463,7 +106,7 @@
     </div>
   </div>
 
-  <!-- Notebook Edit Form ---------------------------------------------->
+  <!-- Notebook Edit Modal -->
   <div
     class="notebook-edit-modal"
     *ngIf="editingNotebook"
@@ -472,7 +115,6 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <h3>Edit Notebook</h3>
       <input [(ngModel)]="editingNotebookName" placeholder="Notebook Name" />
-
       <div class="edit-buttons">
         <button (click)="saveNotebookEdit()">Save</button>
         <button (click)="cancelNotebookEdit()">Cancel</button>

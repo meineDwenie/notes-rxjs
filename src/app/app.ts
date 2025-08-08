@@ -8,8 +8,9 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
+import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { EventBusService } from './services/event-bus.service';
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,25 +23,40 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { autoResizeDirective } from './directives/auto-resize.directive';
 
-import * as NoteActions from './notes/note.actions';
-import * as NoteSelectors from './notes/note.selectors';
 import { Note } from './notes/note.model';
-import * as NotebookActions from './notebooks/notebook.actions';
-import * as NotebookSelectors from './notebooks/notebook.selectors';
 import { Notebook } from './notebooks/notebook.model';
+import * as NoteActions from './notes/note.actions';
+import * as NotebookActions from './notebooks/notebook.actions';
+import * as NoteSelectors from './notes/note.selectors';
+import * as NotebookSelectors from './notebooks/notebook.selectors';
+
+import { Sidebar } from './components/sidebar/sidebar';
+import { Header } from './components/header/header';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, autoResizeDirective],
+  imports: [
+    FormsModule,
+    CommonModule,
+    RouterOutlet,
+    autoResizeDirective,
+    Header,
+    Sidebar,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App implements OnInit {
   protected title = 'angular-ngrx-notes-app';
 
+  // Observables
   allNotes$!: Observable<Note[]>;
-  filteredNotes$!: Observable<Note[]>;
-  pinnedNotes$!: Observable<Note[]>;
+  // filteredNotes$!: Observable<Note[]>;
+  // pinnedNotes$!: Observable<Note[]>;
+  filteredPinnedNotes$!: Observable<Note[]>;
+  filteredNotebookNotes$!: Observable<Note[]>;
+  filteredNotebooks$!: Observable<Notebook[]>;
 
   // Boolean observables
   isLoading$!: Observable<boolean>;
@@ -96,44 +112,13 @@ export class App implements OnInit {
 
   private searchTermSubject = new BehaviorSubject<string>('');
 
-  constructor(private store: Store) {
-    this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
-    this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
+  constructor(private store: Store, private eventBus: EventBusService) {
+    // this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
+    // this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
-
-    this.filteredNotes$ = combineLatest([
-      this.allNotes$,
-      this.searchTermSubject
-        .asObservable()
-        .pipe(debounceTime(300), distinctUntilChanged(), startWith('')),
-    ]).pipe(
-      map(([notes, term]) =>
-        this.filterNotes(
-          notes.filter((n) => !n.pinned),
-          term
-        )
-      )
-    );
-
-    // Notes hasNotes?
-    this.hasNotes$ = this.allNotes$.pipe(map((notes) => notes.length > 0));
-
-    // Notebooks hasNotebooks?
-    this.hasNotebooks$ = this.notebooks$.pipe(
-      map((notebooks) => notebooks.length > 0)
-    );
-
-    // Filter pinned notes from allNotes$
-    this.pinnedNotes$ = this.allNotes$.pipe(
-      map((notes) => notes.filter((note) => note.pinned))
-    );
-
-    this.hasUnpinnedNotes$ = this.filteredNotes$.pipe(
-      map((notes) => notes.length > 0)
-    );
-
-    this.hasPins$ = this.pinnedNotes$.pipe(map((pinned) => pinned.length > 0));
   }
+
+  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -145,95 +130,83 @@ export class App implements OnInit {
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.eventBus.noteSelected$.subscribe((note) => {
+      this.openNoteModal(note);
+    });
+
+    this.eventBus.notebookSelected$.subscribe((notebook) => {
+      this.selectNotebook(notebook);
+    });
+
+    this.eventBus.notebookEditRequested$.subscribe((notebook) => {
+      this.startEditingNotebook(notebook);
+    });
+  }
 
   onSearchTermChange(newSearchTerm: string) {
     this.searchTerm = newSearchTerm;
-    this.searchTermSubject.next(newSearchTerm);
+    // this.searchTermSubject.next(newSearchTerm);
   }
 
-  addOrUpdateNote() {
+  onImageLoad(index: number) {
+    this.modalImageLoading[index] = false;
+  }
+
+  // NOTES methods
+  addNote() {
     if (!this.noteTitle.trim() || !this.noteContent.trim()) {
       alert('Note title and content cannot be empty.');
       return;
     }
 
-    if (this.editingNoteID) {
-      const update = {
-        id: this.editingNoteID,
-        changes: {
-          title: this.noteTitle,
-          content: this.noteContent,
-          color: this.noteColor,
-          pinned: this.notePinned,
-          images: [...this.selectedImages],
-        },
-      };
-      this.store.dispatch(NoteActions.updateNote({ update }));
-    } else {
-      const newNote: Note = {
-        id: uuidv4(),
-        title: this.noteTitle,
-        content: this.noteContent,
-        color: this.noteColor,
-        pinned: this.notePinned,
-        createdAt: Date.now(),
-        images: [...this.selectedImages],
-      };
+    const newNote: Note = {
+      id: uuidv4(),
+      title: this.noteTitle,
+      content: this.noteContent,
+      color: this.noteColor,
+      pinned: this.notePinned,
+      createdAt: Date.now(),
+      images: [...this.selectedImages],
+    };
 
-      this.store.dispatch(NoteActions.addNote({ note: newNote }));
+    this.store.dispatch(NoteActions.addNote({ note: newNote }));
 
-      // Add to selected notebook (if any)
-      if (this.selectedNotebookId) {
-        const allNotebooks = this.notebooks$; // Observable
-        allNotebooks
-          .subscribe((notebooks) => {
-            const notebook = notebooks.find(
-              (nb) => nb.id === this.selectedNotebookId
+    // Add to selected notebook (if any)
+    if (this.selectedNotebookId) {
+      const allNotebooks = this.notebooks$;
+      allNotebooks
+        .subscribe((notebooks) => {
+          const notebook = notebooks.find(
+            (nb) => nb.id === this.selectedNotebookId
+          );
+          if (notebook) {
+            const updatedNotebook = {
+              ...notebook,
+              notes: [...notebook.notes, newNote],
+            };
+            this.store.dispatch(
+              NotebookActions.updateNotebook({
+                update: {
+                  id: updatedNotebook.id,
+                  changes: { notes: updatedNotebook.notes },
+                },
+              })
             );
-            if (notebook) {
-              const updatedNotebook = {
-                ...notebook,
-                notes: [...notebook.notes, newNote],
-              };
-              this.store.dispatch(
-                NotebookActions.updateNotebook({
-                  update: {
-                    id: updatedNotebook.id,
-                    changes: { notes: updatedNotebook.notes },
-                  },
-                })
-              );
-            }
-          })
-          .unsubscribe();
-      }
+          }
+        })
+        .unsubscribe();
     }
 
     this.resetForm();
-  }
-
-  editNote(note: Note) {
-    this.editingNoteID = note.id;
-    this.noteTitle = note.title;
-    this.noteContent = note.content;
-    this.noteColor = note.color || '#ffffff';
-    this.notePinned = note.pinned ?? false;
-    this.selectedImages = note.images || [];
-    this.modalImages = [...this.selectedImages];
   }
 
   deleteNote(id: string) {
     if (confirm('Are you sure you want to delete the note?')) {
       this.store.dispatch(NoteActions.deleteNote({ id }));
+      this.closeNoteModal();
     }
   }
-
-  cancelEdit() {
-    this.resetForm();
-  }
-
-  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
 
   resetForm() {
     this.editingNoteID = null;
@@ -243,7 +216,9 @@ export class App implements OnInit {
     this.notePinned = false;
     this.selectedNotebookId = null;
     this.selectedImages = [];
+    this.modalImages = []; // Also reset modal images
     this.imageLoading = [];
+    this.modalImageLoading = []; // Also reset modal loading states
 
     if (this.noteTextarea) {
       const el = this.noteTextarea.nativeElement;
@@ -251,66 +226,41 @@ export class App implements OnInit {
     }
   }
 
-  filterNotes(notes: Note[], term: string): Note[] {
-    let filtered = notes;
-
-    if (term) {
-      const lowerTerm = term.toLowerCase();
-      filtered = notes.filter(
-        (note) =>
-          note.title.toLowerCase().includes(lowerTerm) ||
-          note.content.toLowerCase().includes(lowerTerm)
-      );
-    }
-
-    // Sort by newest first
-    try {
-      return [...filtered].sort(
-        (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
-      );
-    } catch (err) {
-      console.error('Sorting failed:', err, filtered);
-      return filtered;
-    }
-  }
-
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-
     if (input.files) {
-      Array.from(input.files).forEach((file, index) => {
+      Array.from(input.files).forEach((file) => {
         const reader = new FileReader();
-        this.imageLoading.push(true);
-
         const currentIndex = this.selectedImages.length;
+        this.imageLoading.push(true);
 
         reader.onload = () => {
           if (typeof reader.result === 'string') {
             this.selectedImages.push(reader.result);
-            this.imageLoading[currentIndex] = false; // Mark loading as complete
+            this.imageLoading[currentIndex] = false;
           }
         };
         reader.readAsDataURL(file);
       });
+      input.value = '';
     }
   }
 
-  // MODAL
+  removeSelectedImage(index: number) {
+    this.selectedImages.splice(index, 1);
+    this.modalImageLoading.splice(index, 1);
+  }
+
+  // MODAL methods
   openNoteModal(note: Note): void {
     this.selectedNote = note;
     this.isModalEditing = false;
     this.modalTitle = note.title;
     this.modalContent = note.content;
     this.modalColor = note.color || '#ffffff';
-    this.modalImages = note.images || [];
-  }
-
-  removeModalImage(index: number): void {
-    this.modalImages.splice(index, 1);
-  }
-
-  removeSelectedImage(index: number) {
-    this.selectedImages.splice(index, 1);
+    this.modalImages = note.images ? [...note.images] : []; // create a copy
+    // Initialize loading states for existing images
+    this.modalImageLoading = new Array(this.modalImages.length).fill(false);
   }
 
   closeNoteModal(): void {
@@ -357,19 +307,38 @@ export class App implements OnInit {
     }
   }
 
+  onModalImageLoad(index: number): void {
+    this.modalImageLoading[index] = false;
+  }
+
   onModalImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
+
     if (input.files) {
       Array.from(input.files).forEach((file) => {
         const reader = new FileReader();
+
+        // Add loading state for the new image
+        const currentIndex = this.modalImages.length;
+        this.modalImageLoading.push(true);
+
         reader.onload = () => {
           if (typeof reader.result === 'string') {
             this.modalImages.push(reader.result);
+            this.modalImageLoading[currentIndex] = false; // Mark loading as complete
           }
         };
         reader.readAsDataURL(file);
       });
+
+      // Clear the input so the same file can be selected again if needed
+      input.value = '';
     }
+  }
+
+  removeModalImage(index: number): void {
+    this.modalImages.splice(index, 1);
+    this.modalImageLoading.splice(index, 1);
   }
 
   togglePin(note: Note, event: MouseEvent) {
@@ -377,7 +346,7 @@ export class App implements OnInit {
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
   }
 
-  // NOTEBOOKS
+  // NOTEBOOKS methods
   addNotebook() {
     if (!this.notebookTitle.trim()) {
       alert('Notebook title cannot be empty.');

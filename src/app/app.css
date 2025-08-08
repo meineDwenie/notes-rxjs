@@ -125,24 +125,45 @@ h3 {
     background-color: #7396b4;
   }
 
+  .feature-container {
+    display: flex;
+
+    button .archive-button {
+      background-color: transparent;
+      color: var(--feature-button-color);
+    }
+  }
+
   .notebook-dropdown {
     margin-bottom: 1rem;
+
+    .form-select {
+      background-color: transparent;
+      border: solid 1px #ccc;
+
+      &:focus {
+        border: solid 1px #ccc;
+      }
+    }
   }
 }
 
 /* Add to Pin Icon */
 .pin-icon {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 14px;
+  right: 14px;
+  padding: 0.5rem 0.5rem;
   cursor: pointer;
   font-size: 1.2rem;
   color: #575757;
   z-index: 10;
-}
 
-.pin-icon:hover {
-  color: #000;
+  &:hover {
+    color: #000;
+    background-color: var(--feature-button-hover-color);
+    border-radius: 20%;
+  }
 }
 
 /* Notebook Creation */
@@ -191,62 +212,6 @@ h3 {
   border-radius: 4px;
 }
 
-/* Navigation Grid */
-.nav-grid {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  color: rgba(71, 71, 71, 0.5);
-  /* aspect-ratio: 1; */
-  min-width: 100px;
-}
-
-.nav-item:hover {
-  background-color: rgb(255, 255, 255);
-  color: #4d4d4d;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.nav-item.active {
-  background-color: #ffffff;
-  border: 1px solid #8d8d8d;
-
-  .nav-icon {
-    color: rgb(82, 82, 82);
-  }
-
-  .nav-label {
-    color: rgb(77, 77, 77);
-  }
-}
-
-.nav-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: rgba(71, 71, 71, 0.5);
-}
-
-.nav-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-align: center;
-}
-
 /* RIGHT PANEL */
 .right-panel {
   width: 70%;
@@ -261,10 +226,10 @@ h3 {
 }
 
 .section-title {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   margin-bottom: 1rem;
-  color: #555;
+  color: rgba(56, 56, 56, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -337,42 +302,31 @@ h3 {
   position: absolute;
   top: 80%;
   right: 0;
-  background: #ffffff;
+  background: white;
   border: 1px solid #ccc;
   z-index: 1000;
-  padding: 8px 0;
+  padding: 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   min-width: 120px;
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
 
-.dropdown-menu button {
-  background: none;
-  border: none;
-  padding: 4px 12px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-}
+  button {
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 4px 12px;
+    width: 100%;
+    cursor: pointer;
 
-.dropdown-menu button:hover {
-  background-color: #f0f0f0;
-}
-
-.options-btn {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: #666;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-}
-
-.options-btn:hover {
-  background-color: #f0f0f0;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
 }
 
 /* NOTEBOOK EDIT MODAL */
@@ -489,94 +443,6 @@ h3 {
   margin-bottom: 0;
 }
 
-/* Notes List */
-ul {
-  list-style-type: none;
-  padding: 0;
-  max-width: 100%; /* 1200px widen for 5 columns */
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-li {
-  position: relative;
-  background-color: #fff;
-  margin-bottom: 0;
-  padding: 1rem;
-  outline: 0.5px solid rgba(150, 150, 150, 0.3);
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  cursor: default;
-  overflow: hidden;
-
-  /* Remove fixed height to allow min height from content */
-  min-height: 120px; /* minimum height for small notes */
-  max-height: 380px; /* max height before truncation */
-  transition: all 0.2s ease;
-}
-
-li:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-li h3 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-li p {
-  margin: 0.6rem 0 0 0;
-  color: #141414;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 10; /* limit to about 6 lines (adjust as needed) */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* fallback */
-  max-height: 220px;
-  white-space: pre-wrap;
-}
-
-.buttons-container {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 1rem 0 0 0;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease-in-out;
-}
-
-/* Show buttons on note hover */
-li:hover .buttons-container {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-button {
-  font-family: "Reddit Sans", sans-serif;
-}
-
-li button {
-  margin-left: 0;
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-family: "Reddit Sans", sans-serif;
-}
-
 /* Modal */
 .note-modal {
   position: fixed;
@@ -646,8 +512,8 @@ li button {
 
 .modal-textarea {
   width: 100%;
-  min-height: 200px;
-  max-height: 550px;
+  /* min-height: 200px; */
+  max-height: 400px;
   padding: 0.5rem;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -656,7 +522,8 @@ li button {
   background-color: transparent;
   border: none;
   border-radius: 4px;
-  resize: vertical;
+  overflow-y: auto;
+  resize: none;
 }
 
 .modal-content h3,
@@ -681,7 +548,7 @@ li button {
 button:hover,
 li button:hover {
   border-radius: 20px;
-  background-color: rgba(209, 209, 209, 0.4);
+  background-color: rgba(0, 0, 0, 0.067);
 }
 
 .buttons-container-save {
@@ -753,18 +620,18 @@ li button:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 20%;
+  background-color: transparent;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #666;
   transition: all 0.2s ease;
 }
 
 .image-upload-btn:hover {
-  background-color: #f5f5f5;
+  background-color: var(--feature-button-hover-color);
 }
 
 .hidden-file-input {
@@ -791,18 +658,19 @@ li button:hover {
 
 .image-preview {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
   overflow-x: auto;
   width: auto;
-  height: 100%;
+  height: 70%;
 }
 
 .image-wrapper {
   position: relative;
   display: inline-block;
+  padding-top: 1rem;
 }
 
 .preview-thumbnail {
@@ -818,14 +686,14 @@ li button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  top: -6px;
+  top: 6px;
   right: -6px;
-  background-color: #776f70;
+  background-color: rgba(170, 184, 189, 0.6);
   color: white;
   border: none;
-  border-radius: 12px;
-  width: 20px;
-  height: 20px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
