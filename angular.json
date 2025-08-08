@@ -16,10 +16,16 @@
             "outputPath": "dist/notes-rxjs/browser",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": ["deepmerge"],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "input": "src/assets/",
+                "output": "assets/",
+                "glob": "**/*"
               }
             ],
             "styles": ["src/styles.css"],
@@ -39,8 +45,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "20kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
