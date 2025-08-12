@@ -1,0 +1,147 @@
+.modal-background {
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 30%;
+}
+
+.header-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.create-notebook-button {
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  margin: 0.8rem 0 1.5rem;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: var(--modal-button-background-color);
+  color: white;
+
+  box-sizing: border-box;
+
+  &:hover {
+    background-color: var(--modal-button-background-color-hover);
+  }
+}
+
+.divider {
+  height: 0.6rem;
+  width: 100%;
+  padding: 0;
+  margin: 0 0 1rem;
+  background-color: #eaeaea;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+li {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+h6 {
+  margin-bottom: 1.4rem;
+  color: #6d6d6d;
+  font-size: medium;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.close-button {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4em;
+  align-items: center;
+  padding: 0.5rem 0.6rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--feature-button-color);
+
+  &:hover:not(:disabled) {
+    color: var(--feature-button-color-hover);
+    background-color: var(--feature-button-hover-background-color);
+  }
+}
+
+.feature-button {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  gap: 0.4em;
+  padding: 0.5rem 0.6rem;
+  margin: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--feature-button-color);
+
+  box-sizing: border-box;
+}
+
+.feature-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.feature-button:hover:not(:disabled) {
+  color: var(--feature-button-color-hover);
+  background-color: var(--feature-button-hover-background-color);
+}
+
+.feature-button:hover:not(:disabled) iconify-icon,
+.feature-button:hover:not(:disabled) p {
+  color: var(--feature-button-color-hover);
+}

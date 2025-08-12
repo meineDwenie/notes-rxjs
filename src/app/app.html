@@ -3,7 +3,14 @@
   <app-sidebar [appTitle]="'Noteboard'"></app-sidebar>
 
   <!-- Header -->
-  <app-header></app-header>
+  <app-header
+    (createNotebook)="openNotebookModal()"
+    [searchTerm]="searchTerm"
+    [viewMode]="viewMode"
+    [activeFilters]="activeFilters"
+    (searchChange)="onSearchChange($event)"
+    (filterRemove)="removeFilter($event)"
+  ></app-header>
 
   <!-- RIGHT PANEL - Main Content -->
   <div class="main-content">
@@ -120,5 +127,16 @@
         <button (click)="cancelNotebookEdit()">Cancel</button>
       </div>
     </div>
+  </div>
+
+  <!-- Notebook Create or Add to Notebook Modal -->
+  <div>
+    <app-modal-add-to-notebook
+      *ngIf="showAddToNotebookModal"
+      [note]="noteToAddToNotebook"
+      (notebookSelected)="handleNotebookSelected($event)"
+      (edit)="startEditingNotebook($event)"
+      (close)="closeAddToNotebookModal()"
+    ></app-modal-add-to-notebook>
   </div>
 </div>

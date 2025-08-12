@@ -63,14 +63,14 @@
         title="More"
       ></app-button-feature>
     </div>
-  </div>
 
-  <div class="pin-icon">
-    <i
-      class="bi"
-      [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
-      title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
-      (click)="onTogglePin($event)"
-    ></i>
+    <div class="pin-icon">
+      <i
+        class="bi"
+        [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
+        title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
+        (click)="onTogglePin($event)"
+      ></i>
+    </div>
   </div>
 </li>

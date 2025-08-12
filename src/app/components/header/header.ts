@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class Header {
+export class HeaderComponent {
   @Input() currentView = '';
   @Input() searchTerm = '';
   @Input() viewMode: 'grid' | 'column' = 'grid';

@@ -35,6 +35,10 @@ body {
   --feature-button-color: #666;
   --feature-button-hover-color: rgba(33, 33, 33, 0.8);
   --feature-button-hover-background-color: rgba(163, 163, 163, 0.2);
+
+  /* MODAL BUTTON COLORS */
+  --modal-button-background-color: #5e7e9a;
+  --modal-button-background-color-hover: #6f8da6;
 }
 
 h1 {

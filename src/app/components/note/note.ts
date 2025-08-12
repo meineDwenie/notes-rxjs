@@ -6,10 +6,11 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 
-import { Observable } from 'rxjs';
-
 import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { EventBusService } from '../../services/event-bus.service';
+
 import { ButtonFeatureComponent } from '../shared/button-feature/button-feature';
 
 import { Note } from '../../notes/note.model';
@@ -39,7 +40,7 @@ export class NoteComponent {
 
   notebooks$: Observable<Notebook[]>;
 
-  constructor(private store: Store) {
+  constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
   }
 
@@ -69,25 +70,7 @@ export class NoteComponent {
   }
 
   openAddToNotebookModal(note: Note) {
-    // For simplicity, just pick notebook by name with prompt
-    this.notebooks$
-      .subscribe((notebooks) => {
-        const notebookNames = notebooks.map((nb) => nb.name).join(', ');
-        const selectedNotebookName = prompt(
-          `Enter notebook name to add note to (available: ${notebookNames}):`
-        );
-        if (!selectedNotebookName) return;
-
-        const notebook = notebooks.find(
-          (nb) => nb.name.toLowerCase() === selectedNotebookName.toLowerCase()
-        );
-        if (!notebook) {
-          alert('Notebook not found!');
-          return;
-        }
-        this.addNoteToNotebook(note, notebook);
-      })
-      .unsubscribe();
+    this.eventBus.triggerAddToNotebookModal(note);
   }
 
   addNoteToNotebook(note: Note, notebook: Notebook) {

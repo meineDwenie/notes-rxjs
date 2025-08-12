@@ -31,8 +31,8 @@ import * as NoteSelectors from './notes/note.selectors';
 import * as NotebookSelectors from './notebooks/notebook.selectors';
 
 import { Sidebar } from './components/sidebar/sidebar';
-import { Header } from './components/header/header';
-import { RouterModule } from '@angular/router';
+import { HeaderComponent } from './components/header/header';
+import { ModalAddToNotebookComponent } from './components/shared/modals/modal-add-to-notebook/modal-add-to-notebook';
 
 @Component({
   selector: 'app-root',
@@ -41,8 +41,9 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     RouterOutlet,
     autoResizeDirective,
-    Header,
+    HeaderComponent,
     Sidebar,
+    ModalAddToNotebookComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -52,8 +53,6 @@ export class App implements OnInit {
 
   // Observables
   allNotes$!: Observable<Note[]>;
-  // filteredNotes$!: Observable<Note[]>;
-  // pinnedNotes$!: Observable<Note[]>;
   filteredPinnedNotes$!: Observable<Note[]>;
   filteredNotebookNotes$!: Observable<Note[]>;
   filteredNotebooks$!: Observable<Notebook[]>;
@@ -79,6 +78,8 @@ export class App implements OnInit {
   isModalEditing: boolean = false;
   modalTitle: string = '';
   modalContent: string = '';
+  showAddToNotebookModal: boolean = false;
+  noteToAddToNotebook: Note | null = null;
 
   // Adding Images
   selectedImages: string[] = [];
@@ -89,6 +90,9 @@ export class App implements OnInit {
   // Color changes
   noteColor: string = '#ffffff'; // Default cpolor for new notes
   modalColor: string = '#ffffff'; // For modal editing
+
+  viewMode: 'grid' | 'column' = 'grid'; // Default view mode
+  activeFilters: Array<{ id: string; label: string }> = [];
 
   availableColors: string[] = [
     '#ffffff', // White
@@ -141,6 +145,11 @@ export class App implements OnInit {
 
     this.eventBus.notebookEditRequested$.subscribe((notebook) => {
       this.startEditingNotebook(notebook);
+    });
+
+    this.eventBus.openAddToNotebookModal$.subscribe((note: Note) => {
+      this.noteToAddToNotebook = note;
+      this.showAddToNotebookModal = true;
     });
   }
 
@@ -347,36 +356,6 @@ export class App implements OnInit {
   }
 
   // NOTEBOOKS methods
-  /*
-  addNotebook() {
-    if (!this.notebookTitle.trim()) {
-      alert('Notebook title cannot be empty.');
-      return;
-    }
-
-    const newNotebook: Notebook = {
-      id: uuidv4(),
-      name: this.notebookTitle.trim(),
-      notes: [],
-      createdAt: Date.now(),
-    };
-
-    this.store.dispatch(NotebookActions.addNotebook({ notebook: newNotebook }));
-    this.notebookTitle = ''; // clears input
-  }
-
-  deleteNotebook(id: string) {
-    if (confirm('Are you sure you want to delete this notebook?')) {
-      this.store.dispatch(NotebookActions.deleteNotebook({ id }));
-    }
-  }
-
-  toggleOptions(id: string | null) {
-    this.openNotebookOptionsId = this.openNotebookOptionsId === id ? null : id;
-  }
-
-  */
-
   selectNotebook(nb: Notebook): void {
     this.selectedNotebook = nb;
     this.openNotebookOptionsId = null;
@@ -413,5 +392,46 @@ export class App implements OnInit {
     this.editingNotebook = false;
     this.editingNotebookId = null;
     this.editingNotebookName = '';
+  }
+
+  openNotebookModal() {
+    this.showAddToNotebookModal = true;
+  }
+
+  closeAddToNotebookModal() {
+    this.showAddToNotebookModal = false;
+    this.noteToAddToNotebook = null;
+  }
+
+  handleNotebookSelected(notebook: Notebook) {
+    const newNote: Note = {
+      id: uuidv4(),
+      title: 'New Note',
+      content: '',
+      createdAt: Date.now(),
+      pinned: false,
+      color: '#fff',
+      images: [],
+    };
+
+    const updatedNotes = [...notebook.notes, newNote];
+
+    this.store.dispatch(
+      NotebookActions.updateNotebook({
+        update: {
+          id: notebook.id,
+          changes: { notes: updatedNotes },
+        },
+      })
+    );
+  }
+
+  /* HEADER METHODS */
+  onSearchChange(value: string) {
+    this.searchTerm = value;
+  }
+
+  removeFilter(filter: { id: string; label: string }) {
+    this.activeFilters = this.activeFilters.filter((f) => f.id !== filter.id);
   }
 }
