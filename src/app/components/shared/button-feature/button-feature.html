@@ -1,0 +1,17 @@
+<button
+  [class]="customClass"
+  (click)="options.length ? toggleMenu($event) : onClick($event)"
+  [disabled]="disabled"
+  type="button"
+>
+  <!-- Optional icon -->
+  <iconify-icon
+    *ngIf="icon"
+    [icon]="icon"
+    [class]="icon"
+    aria-hidden="true"
+  ></iconify-icon>
+
+  <!-- Optional label with spacing -->
+  <p *ngIf="label">{{ label }}</p>
+</button>

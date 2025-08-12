@@ -31,169 +31,171 @@
 
   <!-- MY NOTEBOOKS -->
   <div class="section" *ngIf="hasNotebooks$ | async">
-    <h3 class="section-title">MY NOTEBOOKS</h3>
+    <h3 class="section-title">NOTEBOOKS</h3>
 
     <div class="notebooks-row" id="notebooksContainer">
-      <div class="notebook-item" *ngFor="let notebook of (notebooks$ | async)">
-        <!-- Notebook box -->
-        <div class="notebook-box">
-          <!-- Notebook Header (Clickable) -->
-          <div class="notebook-header" (click)="selectNotebook(notebook)">
-            <iconify-icon icon="emojione-v1:notebook"></iconify-icon>
-            <h3>{{ notebook.name }}</h3>
-          </div>
+      <ng-container *ngIf="!selectedNotebook">
+        <div
+          class="notebook-item"
+          *ngFor="let notebook of (notebooks$ | async)"
+        >
+          <!-- Notebook box -->
+          <div class="notebook-box">
+            <!-- Notebook Header (Clickable) -->
+            <div class="notebook-header" (click)="selectNotebook(notebook)">
+              <iconify-icon
+                class="icon-default"
+                icon="fluent:notebook-subsection-24-filled"
+              ></iconify-icon>
 
-          <!-- Three-dots Button -->
-          <button
-            class="ntbk-three-dots"
-            (click)="toggleNotebookOptions(notebook.id); $event.stopPropagation()"
-          >
-            <i class="bi bi-three-dots-vertical"></i>
-          </button>
+              <iconify-icon
+                class="icon-hover"
+                icon="solar:notebook-minimalistic-bold-duotone"
+              ></iconify-icon>
 
-          <!-- Dropdown menu -->
-          <div
-            class="dropdown-menu"
-            *ngIf="openNotebookOptionsId === notebook.id"
-            (click)="$event.stopPropagation()"
-          >
-            <button (click)="startEditingNotebook(notebook)">Edit</button>
-            <button (click)="deleteNotebook(notebook.id)">Delete</button>
-          </div>
+              <h3 class="notebook-title">{{ notebook.name }}</h3>
 
-          <!-- Note count & date -->
-          <div class="notebook-meta">
-            <div class="ntbk-note-count">{{ notebook.notes.length }} notes</div>
-            <div class="ntbk-date-added">
-              {{ notebook.createdAt | date: 'MM/dd/yyyy' }}
+              <!-- Note count & date -->
+              <div class="notebook-meta" (click)="selectNotebook(notebook)">
+                <div class="ntbk-note-count">
+                  {{ notebook.notes.length }} notes
+                </div>
+
+                <!-- Three-dots Button -->
+                <div>
+                  <button
+                    class="ntbk-three-dots"
+                    (click)="toggleNotebookOptions(notebook.id); $event.stopPropagation()"
+                    title="More"
+                  >
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dropdown menu -->
+            <div
+              class="dropdown-menu"
+              *ngIf="openNotebookOptionsId === notebook.id"
+              (click)="$event.stopPropagation()"
+              (clickOutside)="openNotebookOptionsId = null"
+            >
+              <button (click)="startEditingNotebook(notebook)">Edit</button>
+              <button (click)="deleteNotebook(notebook.id)">Delete</button>
             </div>
           </div>
         </div>
-      </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedNotebook">
+        <div class="notebook-item">
+          <!-- Render only the selected notebook -->
+          <div class="notebook-box">
+            <div
+              class="notebook-header"
+              (click)="selectNotebook(selectedNotebook)"
+            >
+              <iconify-icon
+                class="icon-default"
+                icon="fluent:notebook-subsection-24-filled"
+              ></iconify-icon>
+              <iconify-icon
+                class="icon-hover"
+                icon="solar:notebook-minimalistic-bold-duotone"
+              ></iconify-icon>
+              <h3 class="notebook-title">{{ selectedNotebook.name }}</h3>
+              <div class="notebook-meta">
+                <div class="ntbk-note-count">
+                  {{ selectedNotebook.notes.length }} notes
+                </div>
+                <div>
+                  <button
+                    class="ntbk-three-dots"
+                    (click)="toggleNotebookOptions(selectedNotebook.id); $event.stopPropagation()"
+                    title="More"
+                  >
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="dropdown-menu"
+              *ngIf="openNotebookOptionsId === selectedNotebook.id"
+              (click)="$event.stopPropagation()"
+              (clickOutside)="openNotebookOptionsId = null"
+            >
+              <button (click)="startEditingNotebook(selectedNotebook)">
+                Edit
+              </button>
+              <button (click)="deleteNotebook(selectedNotebook.id)">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 
   <!-- Notes in selected notebook -->
   <div class="section" *ngIf="selectedNotebook">
-    <h3 class="section-title">NOTES IN "{{ selectedNotebook.name }}"</h3>
+    <h3 class="section-title">
+      NOTES IN "{{ selectedNotebook.name }} ({{ selectedNotebook.notes.length
+      }})"
+    </h3>
 
-    <div class="notes-grid">
-      <div
-        class="note-item"
-        *ngFor="let note of selectedNotebook.notes"
-        [style.backgroundColor]="note.color || '#ffffff'"
-        (click)="openNoteModal(note)"
-      >
-        <div class="pin-icon" (click)="togglePin(note, $event)">
-          <i class="bi" [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"></i>
-        </div>
-
-        <h3 class="note-title">{{ note.title }}</h3>
-        <div class="note-content">{{ note.content }}</div>
-
-        <div class="note-images" *ngIf="note.images?.length">
-          <img
-            *ngFor="let img of note.images"
-            [src]="img"
-            alt="Note image"
-            class="note-image"
-          />
-        </div>
-      </div>
+    <div class="close-button-container-in-list">
+      <app-button-main
+        label="Close Notebook"
+        (clicked)="closeNotebook()"
+        class="close-notebook-button"
+      ></app-button-main>
     </div>
+
+    <ul class="note-grid">
+      <app-note
+        *ngFor="let note of selectedNotebook.notes"
+        [note]="note"
+        (open)="openNoteModal($event)"
+        (delete)="deleteNote($event)"
+        (togglePin)="togglePin($event.note, $event.event)"
+        (optionSelected)="handleNoteOptionSelected($event, note)"
+      ></app-note>
+    </ul>
   </div>
 
   <!-- MY PINS ------------------------------------------------>
-  <div class="section" *ngIf="hasPins$ | async">
-    <h3 class="section-title">MY PINS</h3>
+  <div class="section" *ngIf="(hasPins$ | async) && !selectedNotebook">
+    <h3 class="section-title">PINNED</h3>
 
-    <ul>
-      <li
+    <ul class="note-grid">
+      <app-note
         *ngFor="let pinnedNote of pinnedNotes$ | async"
-        [style.backgroundColor]="pinnedNote.color || '#ffffff'"
-        (click)="openNoteModal(pinnedNote)"
-      >
-        <div>
-          <h3 class="note-title">{{ pinnedNote.title }}</h3>
-
-          <p>{{ pinnedNote.content }}</p>
-
-          <!-- Thumbnails with delete buttons -->
-          <div class="image-preview" *ngIf="pinnedNote.images?.length">
-            <div class="image-wrapper" *ngFor="let img of pinnedNote.images">
-              <img [src]="img" class="preview-thumbnail" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="buttons-container" (click)="$event.stopPropagation()">
-          <!-- <button (click)="editNote(pinnedNote)" title="Edit">
-              <i class="bi bi-pencil"></i>
-              Edit
-            </button> -->
-
-          <button (click)="deleteNote(pinnedNote.id)" title="Delete">
-            <i class="bi bi-trash-fill"></i>
-            Delete
-          </button>
-
-          <!-- Pin icon just to the right of the title -->
-          <i
-            class="bi bi-pin-fill pin-icon"
-            title="Unpin"
-            (click)="togglePin(pinnedNote, $event)"
-          ></i>
-        </div>
-      </li>
+        [note]="pinnedNote"
+        (open)="openNoteModal($event)"
+        (delete)="deleteNote($event)"
+        (togglePin)="togglePin($event.note, $event.event)"
+        (optionSelected)="handleNoteOptionSelected($event, pinnedNote)"
+      ></app-note>
     </ul>
   </div>
 
   <!-- RECENT NOTE(S) -------------------------------------------->
-  <div class="section" *ngIf="hasUnpinnedNotes$ | async">
-    <h3 class="section-title">RECENT NOTES</h3>
+  <div class="section" *ngIf="(hasUnpinnedNotes$ | async) && !selectedNotebook">
+    <h3 class="section-title">NOTES</h3>
     <ul>
-      <li
+      <app-note
         *ngFor="let note of (filteredNotes$ | async)"
-        [style.backgroundColor]="note.color || '#ffffff'"
-        (click)="openNoteModal(note)"
+        [note]="note"
+        (open)="openNoteModal($event)"
+        (delete)="deleteNote($event)"
+        (togglePin)="togglePin($event.note, $event.event)"
+        (optionSelected)="handleNoteOptionSelected($event, note)"
       >
-        <div>
-          <h3 class="note-title">{{ note.title }}</h3>
-
-          <p>{{ note.content }}</p>
-
-          <!-- Thumbnails with delete buttons -->
-          <div class="image-preview" *ngIf="note.images?.length">
-            <div class="image-wrapper" *ngFor="let img of note.images">
-              <img [src]="img" class="preview-thumbnail" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="buttons-container" (click)="$event.stopPropagation()">
-          <!-- <button (click)="editNote(note)" title="Edit">
-              <i class="bi bi-pencil"></i>
-              Edit
-            </button> -->
-
-          <button (click)="deleteNote(note.id)" title="Delete">
-            <i class="bi bi-trash-fill"></i>
-            Delete
-          </button>
-
-          <!-- pin icon -->
-          <div class="pin-icon">
-            <i
-              class="bi"
-              [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
-              title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
-              (click)="togglePin(note, $event)"
-            ></i>
-          </div>
-        </div>
-      </li>
+      </app-note>
     </ul>
   </div>
 </div>

@@ -1,0 +1,41 @@
+button {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.8rem 1.2rem;
+  margin: 1rem 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #98aeae;
+  color: white;
+
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  color: var(--feature-button-color-hover);
+  background-color: var(--sidebar-gradient-color3);
+}
+
+button:hover:not(:disabled) iconify-icon,
+button:hover:not(:disabled) p {
+  color: white;
+}
+
+label,
+p {
+  color: white;
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+}

@@ -347,6 +347,7 @@ export class App implements OnInit {
   }
 
   // NOTEBOOKS methods
+  /*
   addNotebook() {
     if (!this.notebookTitle.trim()) {
       alert('Notebook title cannot be empty.');
@@ -373,6 +374,8 @@ export class App implements OnInit {
   toggleOptions(id: string | null) {
     this.openNotebookOptionsId = this.openNotebookOptionsId === id ? null : id;
   }
+
+  */
 
   selectNotebook(nb: Notebook): void {
     this.selectedNotebook = nb;

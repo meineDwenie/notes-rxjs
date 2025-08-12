@@ -18,17 +18,26 @@ import {
   startWith,
 } from 'rxjs';
 
+import { ClickOutsideDirective } from '../../../directives/click-outside-directive';
+
 import { Note } from '../../../notes/note.model';
 import { Notebook } from '../../../notebooks/notebook.model';
 import * as NoteSelectors from '../../../notes/note.selectors';
 import * as NotebookSelectors from '../../../notebooks/notebook.selectors';
 import * as NoteActions from '../../../notes/note.actions';
 import * as NotebookActions from '../../../notebooks/notebook.actions';
+import { NoteComponent } from '../../note/note';
+import { ButtonMainComponent } from '../../shared/button-main/button-main';
 
 @Component({
   selector: 'app-all-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ClickOutsideDirective,
+    NoteComponent,
+    ButtonMainComponent,
+  ],
   templateUrl: './all-view.html',
   styleUrl: './all-view.css',
 
@@ -167,15 +176,14 @@ export class AllView implements OnInit {
     this.eventBus.emitNotebookSelected(notebook);
   }
 
-  // Where is the edit notebook?
-  editNotebook(notebook: Notebook) {
-    console.log('Edit notebook:', notebook);
-  }
-
   deleteNotebook(id: string): void {
     if (confirm('Are you sure you want to delete this notebook?')) {
       this.store.dispatch(NotebookActions.deleteNotebook({ id }));
     }
+  }
+
+  closeNotebook(): void {
+    this.selectedNotebook = null;
   }
 
   // Toggle dropdown menu
@@ -188,5 +196,58 @@ export class AllView implements OnInit {
   startEditingNotebook(notebook: Notebook): void {
     this.openNotebookOptionsId = null;
     this.eventBus.emitNotebookEdit(notebook); // now valid
+  }
+
+  handleNoteOptionSelected(action: string, note: Note) {
+    switch (action) {
+      case 'addToNotebook':
+        // Open modal or whatever logic you want here
+        this.openAddToNotebookModal(note);
+        break;
+      case 'delete':
+        this.deleteNote(note.id);
+        break;
+    }
+  }
+
+  openAddToNotebookModal(note: Note) {
+    // For simplicity, just pick notebook by name with prompt
+    this.notebooks$
+      .subscribe((notebooks) => {
+        const notebookNames = notebooks.map((nb) => nb.name).join(', ');
+        const selectedNotebookName = prompt(
+          `Enter notebook name to add note to (available: ${notebookNames}):`
+        );
+        if (!selectedNotebookName) return;
+
+        const notebook = notebooks.find(
+          (nb) => nb.name.toLowerCase() === selectedNotebookName.toLowerCase()
+        );
+        if (!notebook) {
+          alert('Notebook not found!');
+          return;
+        }
+        this.addNoteToNotebook(note, notebook);
+      })
+      .unsubscribe();
+  }
+
+  addNoteToNotebook(note: Note, notebook: Notebook) {
+    if (notebook.notes.some((n) => n.id === note.id)) {
+      alert('Note already in this notebook');
+      return;
+    }
+    const updatedNotebook = {
+      ...notebook,
+      notes: [...notebook.notes, note],
+    };
+    this.store.dispatch(
+      NotebookActions.updateNotebook({
+        update: {
+          id: updatedNotebook.id,
+          changes: { notes: updatedNotebook.notes },
+        },
+      })
+    );
   }
 }

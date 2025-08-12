@@ -1,0 +1,76 @@
+<li [style.backgroundColor]="note.color || '#ffffff'" (click)="onOpen()">
+  <div>
+    <h3 class="note-title">{{ note.title }}</h3>
+
+    <p>{{ note.content }}</p>
+
+    <!-- Thumbnails -->
+    <div class="image-preview" *ngIf="note.images?.length">
+      <div class="image-wrapper" *ngFor="let img of note.images">
+        <img [src]="img" class="preview-thumbnail" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="buttons-container" (click)="$event.stopPropagation()">
+    <!-- Left Buttons -->
+    <div class="left-buttons">
+      <app-button-feature
+        customClass="image-button"
+        icon="cuida:image-outline"
+        title="Upload image"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="archive-button"
+        icon="mage:archive"
+        title="Archive note"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="reminder-button"
+        icon="carbon:reminder"
+        title="Add reminder"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="add-to-notebook-button"
+        icon="fluent:notebook-arrow-curve-down-20-regular"
+        title="Add to notebook"
+        (clicked)="openAddToNotebookModal(note)"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="add-to-notebook-button"
+        icon="mage:trash"
+        title="Delete note"
+        (clicked)="onDelete($event)"
+      ></app-button-feature>
+    </div>
+
+    <!-- Right Button -->
+    <div class="three-dot-button-container">
+      <app-button-feature
+        [options]="[
+        { label: 'Add to notebook', action: 'addToNotebook' },
+        { label: 'Delete note', action: 'delete' },
+        { label: 'Add checkboxes', action: 'addToNotebook' }
+      ]"
+        (optionSelected)="onOptionSelected($event)"
+        customClass="three-dot-container"
+        icon="bi:three-dots-vertical"
+        title="More"
+      ></app-button-feature>
+    </div>
+  </div>
+
+  <div class="pin-icon">
+    <i
+      class="bi"
+      [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
+      title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
+      (click)="onTogglePin($event)"
+    ></i>
+  </div>
+</li>
