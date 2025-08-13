@@ -28,12 +28,12 @@ import * as NotebookSelectors from '../../../notebooks/notebook.selectors';
 import * as NoteActions from '../../../notes/note.actions';
 import * as NotebookActions from '../../../notebooks/notebook.actions';
 import { NoteComponent } from '../../note/note';
-import { ButtonMainComponent } from '../../shared/button-main/button-main';
+import { ButtonFeatureComponent } from '../../shared/button-feature/button-feature';
 
 @Component({
   selector: 'app-all-view',
   standalone: true,
-  imports: [CommonModule, NoteComponent],
+  imports: [CommonModule, NoteComponent, ButtonFeatureComponent],
   templateUrl: './all-view.html',
   styleUrl: './all-view.css',
 

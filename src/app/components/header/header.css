@@ -133,7 +133,7 @@ iconify-icon {
   left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: var(--sidebar-menu-txt-color1);
   font-size: 1rem;
   pointer-events: none;
 }
@@ -147,6 +147,10 @@ iconify-icon {
   margin: 0;
   transition: all 0.2s ease;
   background: #f9fafb;
+}
+
+.search-input::placeholder {
+  color: rgba(0, 0, 0, 0.266);
 }
 
 .search-input:focus {
