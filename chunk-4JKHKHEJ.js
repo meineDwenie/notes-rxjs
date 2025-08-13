@@ -1,0 +1,1 @@
+import{Cb as c,Ya as t,ob as n,pb as a}from"./chunk-WAOKH6ES.js";var o=class i{static \u0275fac=function(e){return new(e||i)};static \u0275cmp=t({type:i,selectors:[["app-archive-view"]],decls:2,vars:0,template:function(e,s){e&1&&(n(0,"p"),c(1,"archive-view works!"),a())},encapsulation:2})};export{o as ArchiveView};
