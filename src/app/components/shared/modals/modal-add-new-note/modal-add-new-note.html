@@ -1,0 +1,99 @@
+<div class="modal-background">
+  <div class="modal-container" [style.backgroundColor]="noteColor">
+    <div class="header-title-container">
+      <h2>Take a Note</h2>
+
+      <!-- Close button -->
+      <div>
+        <button (click)="close.emit()" class="close-button">
+          <iconify-icon icon="lets-icons:close-round"></iconify-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Note Title and Content -->
+    <div class="header">
+      <input
+        type="text"
+        [(ngModel)]="noteTitle"
+        class="title-input"
+        placeholder="Note Title"
+      />
+
+      <textarea
+        #noteTextArea
+        placeholder="Take a note..."
+        autoResize
+        [(ngModel)]="noteContent"
+      ></textarea>
+    </div>
+
+    <!-- Thumbnails -->
+    <div class="image-preview" *ngIf="selectedImages.length">
+      <div class="image-wrapper" *ngFor="let img of selectedImages">
+        <img [src]="img" class="preview-thumbnail" />
+      </div>
+    </div>
+
+    <div class="pin-icon">
+      <i
+        class="bi"
+        [ngClass]="notePinned ? 'bi-pin-fill' : 'bi-pin'"
+        [title]="notePinned ? 'Unpin' : 'Pin'"
+        (click)="togglePin()"
+      ></i>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="color-picker">
+      <label *ngFor="let c of availableColors">
+        <input
+          type="radio"
+          name="noteColor"
+          [value]="c"
+          [(ngModel)]="noteColor"
+        />
+        <span [style.backgroundColor]="c" class="color-swatch"></span>
+      </label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="buttons-container" (click)="$event.stopPropagation()">
+      <div class="left-buttons">
+        <app-button-feature
+          customClass="image-button"
+          icon="cuida:image-outline"
+          title="Upload image"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="archive-button"
+          icon="mage:archive"
+          title="Archive note"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="reminder-button"
+          icon="carbon:reminder"
+          title="Add reminder"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="add-to-notebook-button"
+          icon="fluent:notebook-arrow-curve-down-20-regular"
+          title="Add to notebook"
+          (clicked)="openAddToNotebookModal(getNoteForEmit())"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="add-to-notebook-button"
+          icon="mage:trash"
+          title="Delete note"
+          (clicked)="onDeleteClick()"
+        ></app-button-feature>
+      </div>
+    </div>
+
+    <button (click)="addNote()" class="add-note-button">Add Note</button>
+  </div>
+</div>

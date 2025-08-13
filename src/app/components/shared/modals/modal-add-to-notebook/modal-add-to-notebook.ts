@@ -7,7 +7,15 @@ import {
 } from '@angular/core';
 import { EventBusService } from '../../../../services/event-bus.service';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  Observable,
+  startWith,
+} from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Note } from '../../../../notes/note.model';
@@ -37,35 +45,79 @@ export class ModalAddToNotebookComponent {
 
   notebookTitle: string = '';
 
+  searchTerm: string = '';
+  private searchSubject = new BehaviorSubject<string>('');
+
   selectedNotebook: Notebook | null = null;
   notebooks$: Observable<Notebook[]>;
+  filteredNotebooks$: Observable<Notebook[]> | undefined;
 
   constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
+
+    this.filteredNotebooks$ = combineLatest([
+      this.notebooks$,
+      this.searchSubject.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        startWith('')
+      ),
+    ]).pipe(map(([notebooks, term]) => this.filterNotebooks(notebooks, term)));
   }
 
-  selectNotebook(nb: Notebook): void {
-    if (this.note) {
-      const alreadyInNotebook = nb.notes.some((n) => n.id === this.note!.id);
-      if (!alreadyInNotebook) {
-        const updatedNotebook = {
-          ...nb,
-          notes: [...nb.notes, this.note],
-        };
-        this.store.dispatch(
-          NotebookActions.updateNotebook({
-            update: {
-              id: nb.id,
-              changes: { notes: updatedNotebook.notes },
-            },
-          })
-        );
-      }
+  private filterNotebooks(notebooks: Notebook[], term: string): Notebook[] {
+    if (!term) return notebooks;
+    const lowerTerm = term.toLowerCase();
+    return notebooks.filter((notebook) =>
+      notebook.name.toLowerCase().includes(lowerTerm)
+    );
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    this.searchSubject.next(term);
+  }
+
+  selectNotebook(notebook: Notebook): void {
+    if (!this.note) return;
+
+    if (this.notebookContainsNote(notebook)) {
+      alert('This note is already in the selected notebook.');
+      return;
     }
 
-    this.selectedNotebook = nb;
-    this.notebookSelected.emit(nb);
+    // Create a clean copy of the note
+    const noteToAdd: Note = {
+      ...this.note,
+    };
+
+    const updatedNotebook = {
+      ...notebook,
+      notes: [...notebook.notes, noteToAdd],
+      updatedAt: Date.now(),
+    };
+
+    this.store.dispatch(
+      NotebookActions.updateNotebook({
+        update: {
+          id: notebook.id,
+          changes: {
+            notes: updatedNotebook.notes,
+          },
+        },
+      })
+    );
+
     this.close.emit();
+  }
+
+  notebookContainsNote(notebook: Notebook): boolean {
+    return notebook.notes.some((n) => n.id === this.note?.id);
+  }
+
+  openCreateNotebook(): void {
+    this.close.emit();
+    this.eventBus.emitCreateNotebook();
   }
 
   addNotebook() {

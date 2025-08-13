@@ -1,10 +1,11 @@
 <div class="app-layout">
-  <!-- LEFT PANEL - Sidebar -->
+  <!-- LEFT PANEL - Sidebar ---------------------------------------->
   <app-sidebar [appTitle]="'Noteboard'"></app-sidebar>
 
-  <!-- Header -->
+  <!-- Header ------------------------------------------------------>
   <app-header
-    (createNotebook)="openNotebookModal()"
+    (createNote)="openNewNoteModal()"
+    (createNotebook)="openCreateNotebookModal()"
     [searchTerm]="searchTerm"
     [viewMode]="viewMode"
     [activeFilters]="activeFilters"
@@ -12,13 +13,13 @@
     (filterRemove)="removeFilter($event)"
   ></app-header>
 
-  <!-- RIGHT PANEL - Main Content -->
+  <!-- RIGHT PANEL - Main Content ---------------------------------->
   <div class="main-content">
     <!-- Router Outlet for different views -->
     <router-outlet></router-outlet>
   </div>
 
-  <!-- MODALS -->
+  <!-- MODALS ------------------------------------------------------->
   <!-- Note Modal -->
   <div class="note-modal" *ngIf="selectedNote" (click)="closeNoteModal()">
     <div
@@ -113,6 +114,33 @@
     </div>
   </div>
 
+  <!-- Add New Note Modal -->
+  <div>
+    <app-modal-add-new-note
+      *ngIf="showAddNoteModal"
+      (close)="closeNoteModal()"
+    ></app-modal-add-new-note>
+  </div>
+
+  <!-- Create Notebook Modal -->
+  <div>
+    <app-modal-create-notebook
+      *ngIf="showCreateNotebookModal"
+      (close)="closeCreateNotebookModal()"
+      (notebookCreated)="onNotebookCreated($event)"
+    >
+    </app-modal-create-notebook>
+  </div>
+
+  <!-- Add to Notebook Modal -->
+  <div>
+    <app-modal-add-to-notebook
+      *ngIf="showAddToNotebookModal"
+      [note]="noteToAddToNotebook"
+      (close)="closeAddToNotebookModal()"
+    ></app-modal-add-to-notebook>
+  </div>
+
   <!-- Notebook Edit Modal -->
   <div
     class="notebook-edit-modal"
@@ -127,16 +155,5 @@
         <button (click)="cancelNotebookEdit()">Cancel</button>
       </div>
     </div>
-  </div>
-
-  <!-- Notebook Create or Add to Notebook Modal -->
-  <div>
-    <app-modal-add-to-notebook
-      *ngIf="showAddToNotebookModal"
-      [note]="noteToAddToNotebook"
-      (notebookSelected)="handleNotebookSelected($event)"
-      (edit)="startEditingNotebook($event)"
-      (close)="closeAddToNotebookModal()"
-    ></app-modal-add-to-notebook>
   </div>
 </div>

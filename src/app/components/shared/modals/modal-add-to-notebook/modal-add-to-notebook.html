@@ -2,46 +2,68 @@
   <div class="modal-container">
     <div class="header-title-container">
       <h2>Add Note to Notebook</h2>
-
-      <div>
-        <button (click)="close.emit()" class="close-button">
-          <iconify-icon icon="lets-icons:close-round"></iconify-icon>
-        </button>
-      </div>
-    </div>
-
-    <div class="header">
-      <input
-        type="text"
-        [(ngModel)]="notebookTitle"
-        placeholder="Write New Notebook Title"
-      />
-
-      <button (click)="addNotebook()" class="create-notebook-button">
-        Create Notebook
+      <button (click)="close.emit()" class="close-button">
+        <iconify-icon icon="lets-icons:close-round"></iconify-icon>
       </button>
     </div>
 
-    <div class="divider"></div>
+    <div class="note-preview" *ngIf="note">
+      <h4>Adding: "{{ note.title }}"</h4>
+      <p class="note-content-preview">{{ note.content | slice:0:100 }}...</p>
+    </div>
 
-    <h6>Add notes to existing notebooks</h6>
+    <div class="notebooks-section">
+      <h6>Select a notebook:</h6>
 
-    <ul class="notebook-list">
-      <li
-        *ngFor="let notebook of notebooks$ | async"
-        (click)="selectNotebook(notebook)"
+      <div class="search-notebooks" *ngIf="(notebooks$ | async)!.length > 5">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search notebooks..."
+          class="search-input"
+        />
+      </div>
+
+      <ul
+        class="notebook-list"
+        *ngIf="(filteredNotebooks$ | async)!.length > 0"
       >
-        {{ notebook.name }}
+        <li
+          *ngFor="let notebook of filteredNotebooks$ | async"
+          (click)="selectNotebook(notebook)"
+          class="notebook-item"
+          [class.already-contains]="notebookContainsNote(notebook)"
+        >
+          <div class="notebook-info">
+            <span class="notebook-name">{{ notebook.name }}</span>
+            <span class="note-count">{{ notebook.notes.length }} notes</span>
+          </div>
 
-        <div class="buttons-container">
-          <button (click)="editNotebook(notebook)" class="feature-button">
-            <iconify-icon icon="fluent:edit-12-regular"></iconify-icon>
+          <div class="notebook-status" *ngIf="notebookContainsNote(notebook)">
+            <iconify-icon
+              icon="lets-icons:check-fill"
+              class="check-icon"
+            ></iconify-icon>
+            <span>Already added</span>
+          </div>
+        </li>
+      </ul>
+
+      <div
+        class="empty-state"
+        *ngIf="(filteredNotebooks$ | async)!.length === 0"
+      >
+        <p>
+          No notebooks found.
+          <button (click)="openCreateNotebook()" class="link-button">
+            Create one?
           </button>
-          <button (click)="editNotebook(notebook)" class="feature-button">
-            <iconify-icon icon="ph:trash"></iconify-icon>
-          </button>
-        </div>
-      </li>
-    </ul>
+        </p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="close.emit()" class="cancel-button">Cancel</button>
+    </div>
   </div>
 </div>

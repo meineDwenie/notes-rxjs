@@ -4,22 +4,16 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
-  Host,
 } from '@angular/core';
+
+import { BehaviorSubject, Observable } from 'rxjs';
+
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { EventBusService } from './services/event-bus.service';
-import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  Observable,
-  startWith,
-} from 'rxjs';
+
 import { v4 as uuidv4 } from 'uuid';
 import { autoResizeDirective } from './directives/auto-resize.directive';
 
@@ -27,12 +21,13 @@ import { Note } from './notes/note.model';
 import { Notebook } from './notebooks/notebook.model';
 import * as NoteActions from './notes/note.actions';
 import * as NotebookActions from './notebooks/notebook.actions';
-import * as NoteSelectors from './notes/note.selectors';
 import * as NotebookSelectors from './notebooks/notebook.selectors';
 
 import { Sidebar } from './components/sidebar/sidebar';
 import { HeaderComponent } from './components/header/header';
 import { ModalAddToNotebookComponent } from './components/shared/modals/modal-add-to-notebook/modal-add-to-notebook';
+import { ModalAddNewNoteComponent } from './components/shared/modals/modal-add-new-note/modal-add-new-note';
+import { ModalCreateNotebookComponent } from './components/shared/modals/modal-create-notebook/modal-create-notebook';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +39,8 @@ import { ModalAddToNotebookComponent } from './components/shared/modals/modal-ad
     HeaderComponent,
     Sidebar,
     ModalAddToNotebookComponent,
+    ModalAddNewNoteComponent,
+    ModalCreateNotebookComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -72,13 +69,15 @@ export class App implements OnInit {
 
   selectedNote: Note | null = null;
   notePinned: boolean = false;
-  selectedNotebookId: string | null = null;
 
   // Modal edit state
   isModalEditing: boolean = false;
   modalTitle: string = '';
   modalContent: string = '';
+
+  showAddNoteModal: boolean = false;
   showAddToNotebookModal: boolean = false;
+  showCreateNotebookModal = false;
   noteToAddToNotebook: Note | null = null;
 
   // Adding Images
@@ -114,6 +113,8 @@ export class App implements OnInit {
   openNotebookOptionsId: string | null = null;
   selectedNotebook: Notebook | null = null;
 
+  selectedNotebookId: string | null = null;
+
   private searchTermSubject = new BehaviorSubject<string>('');
 
   constructor(private store: Store, private eventBus: EventBusService) {
@@ -123,16 +124,6 @@ export class App implements OnInit {
   }
 
   @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const clickedInside = (event.target as HTMLElement).closest(
-      '.notebook-options'
-    );
-    if (!clickedInside) {
-      this.openNotebookOptionsId = null; // Hide dropdown if clicked outside
-    }
-  }
 
   ngOnInit(): void {
     this.eventBus.noteSelected$.subscribe((note) => {
@@ -147,9 +138,21 @@ export class App implements OnInit {
       this.startEditingNotebook(notebook);
     });
 
+    this.eventBus.createNote$.subscribe(() => {
+      this.openNewNoteModal();
+    });
+
+    this.eventBus.openAddNoteModal$.subscribe(() => {
+      this.showAddNoteModal = true;
+    });
+
     this.eventBus.openAddToNotebookModal$.subscribe((note: Note) => {
       this.noteToAddToNotebook = note;
       this.showAddToNotebookModal = true;
+    });
+
+    this.eventBus.createNotebook$.subscribe(() => {
+      this.openCreateNotebookModal();
     });
   }
 
@@ -162,7 +165,7 @@ export class App implements OnInit {
     this.modalImageLoading[index] = false;
   }
 
-  // NOTES methods
+  // NOTES methods ---------------------------------------------------
   addNote() {
     if (!this.noteTitle.trim() || !this.noteContent.trim()) {
       alert('Note title and content cannot be empty.');
@@ -260,21 +263,34 @@ export class App implements OnInit {
     this.modalImageLoading.splice(index, 1);
   }
 
-  // MODAL methods
-  openNoteModal(note: Note): void {
-    this.selectedNote = note;
-    this.isModalEditing = false;
-    this.modalTitle = note.title;
-    this.modalContent = note.content;
-    this.modalColor = note.color || '#ffffff';
-    this.modalImages = note.images ? [...note.images] : []; // create a copy
-    // Initialize loading states for existing images
+  // MODAL methods --------------------------------------------------
+  openNoteModal(note?: Note): void {
+    this.selectedNote = note || {
+      id: '',
+      title: '',
+      content: '',
+      color: '#ffffff',
+      pinned: false,
+      createdAt: Date.now(),
+      images: [],
+    };
+    this.isModalEditing = !note; // if new note, open in edit mode
+    this.modalTitle = this.selectedNote.title;
+    this.modalContent = this.selectedNote.content;
+    this.modalColor = this.selectedNote?.color || '#ffffff';
+    this.modalImages = [...(this.selectedNote.images || [])];
     this.modalImageLoading = new Array(this.modalImages.length).fill(false);
+    // this.showAddNoteModal = true;
+  }
+
+  openNewNoteModal() {
+    this.showAddNoteModal = true;
   }
 
   closeNoteModal(): void {
     this.selectedNote = null;
     this.isModalEditing = false;
+    this.showAddNoteModal = false;
   }
 
   enableModalEdit(): void {
@@ -355,7 +371,7 @@ export class App implements OnInit {
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
   }
 
-  // NOTEBOOKS methods
+  // NOTEBOOKS methods ----------------------------------------------
   selectNotebook(nb: Notebook): void {
     this.selectedNotebook = nb;
     this.openNotebookOptionsId = null;
@@ -433,5 +449,18 @@ export class App implements OnInit {
 
   removeFilter(filter: { id: string; label: string }) {
     this.activeFilters = this.activeFilters.filter((f) => f.id !== filter.id);
+  }
+
+  openCreateNotebookModal(): void {
+    this.showCreateNotebookModal = true; // You'll need this property
+  }
+
+  closeCreateNotebookModal(): void {
+    this.showCreateNotebookModal = false;
+  }
+
+  onNotebookCreated(notebook: Notebook): void {
+    // Handle notebook creation if needed
+    console.log('New notebook created:', notebook);
   }
 }

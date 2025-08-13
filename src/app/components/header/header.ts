@@ -55,8 +55,4 @@ export class HeaderComponent {
   removeFilter(filter: { id: string; label: string }) {
     this.filterRemove.emit(filter);
   }
-
-  openSettings() {
-    this.settingsClick.emit();
-  }
 }

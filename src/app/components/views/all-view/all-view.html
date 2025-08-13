@@ -1,203 +1,145 @@
 <div class="all-view">
   <!-- Loading -->
-  <div *ngIf="isLoading$ | async">Loading the notes ...</div>
-
-  <!-- No notes -->
-  <div
-    *ngIf="!(isLoading$ | async) && !(hasNotes$ | async)"
-    class="empty-state"
-  >
-    <p><i class="bi bi-emoji-frown me-2"></i>No notes yet. Add one!</p>
+  <div *ngIf="isLoading$ | async" class="loading-state">
+    <i class="bi bi-arrow-clockwise"></i>
+    Loading your content...
   </div>
 
-  <!-- No notes match search -->
+  <!-- No content at all -->
   <div
-    *ngIf="!(isLoading$ | async) 
-        && (filteredNotes$ | async)?.length === 0 
-        && (pinnedNotes$ | async) 
-        && (filteredNotebooks$ | async )?.length ===0
-        && searchTerm"
+    *ngIf="!(isLoading$ | async) && !(hasNotes$ | async) && !(hasNotebooks$ | async)"
     class="empty-state"
   >
-    <p>
-      <i class="bi bi-search me-2"></i>No notes match your search "<strong
-        >{{ searchTerm }}</strong
-      >"
-    </p>
+    <iconify-icon
+      icon="fluent:notebook-add-20-regular"
+      class="empty-icon"
+    ></iconify-icon>
+    <h3>Welcome to Noteboard!</h3>
+    <p>Start by creating your first note or notebook</p>
+    <div class="empty-actions">
+      <button (click)="createNewNote()" class="primary-button">
+        <iconify-icon icon="fluent:note-add-16-regular"></iconify-icon>
+        Create Note
+      </button>
+      <button (click)="createNewNotebook()" class="secondary-button">
+        <iconify-icon icon="fluent:notebook-add-20-regular"></iconify-icon>
+        Create Notebook
+      </button>
+    </div>
   </div>
 
-  <!-- Light Blue secondary background -->
-  <div class="secondary-background"></div>
+  <!-- No search results -->
+  <div
+    *ngIf="!(isLoading$ | async) && searchTerm && 
+           (filteredNotes$ | async)?.length === 0 && 
+           (filteredNotebooks$ | async)?.length === 0"
+    class="empty-state"
+  >
+    <iconify-icon icon="bi:search" class="empty-icon"></iconify-icon>
+    <h3>No results found</h3>
+    <p>No notes or notebooks match "<strong>{{ searchTerm }}</strong>"</p>
+    <button (click)="clearSearch()" class="secondary-button">
+      Clear search
+    </button>
+  </div>
 
-  <!-- MY NOTEBOOKS -->
-  <div class="section" *ngIf="hasNotebooks$ | async">
-    <h3 class="section-title">NOTEBOOKS</h3>
+  <!-- Content sections -->
+  <div class="content-sections" *ngIf="!(isLoading$ | async)">
+    <!-- NOTEBOOKS Section -->
+    <div class="section" *ngIf="(hasNotebooks$ | async) && !selectedNotebook">
+      <div class="section-header">
+        <h2 class="section-title">
+          <iconify-icon icon="hugeicons:notebook-01"></iconify-icon>
+          NOTEBOOKS
+        </h2>
+        <span class="section-count">({{ (notebooks$ | async)?.length }})</span>
+      </div>
 
-    <div class="notebooks-row" id="notebooksContainer">
-      <ng-container *ngIf="!selectedNotebook">
+      <div class="notebooks-grid">
         <div
-          class="notebook-item"
-          *ngFor="let notebook of (notebooks$ | async)"
+          class="notebook-card"
+          *ngFor="let notebook of (filteredNotebooks$ | async); trackBy: trackByNotebookId"
+          (click)="openNotebook(notebook)"
         >
-          <!-- Notebook box -->
-          <div class="notebook-box">
-            <!-- Notebook Header (Clickable) -->
-            <div class="notebook-header" (click)="selectNotebook(notebook)">
-              <iconify-icon
-                class="icon-default"
-                icon="fluent:notebook-subsection-24-filled"
-              ></iconify-icon>
-
-              <iconify-icon
-                class="icon-hover"
-                icon="solar:notebook-minimalistic-bold-duotone"
-              ></iconify-icon>
-
-              <h3 class="notebook-title">{{ notebook.name }}</h3>
-
-              <!-- Note count & date -->
-              <div class="notebook-meta" (click)="selectNotebook(notebook)">
-                <div class="ntbk-note-count">
-                  {{ notebook.notes.length }} notes
-                </div>
-
-                <!-- Three-dots Button -->
-                <div>
-                  <button
-                    class="ntbk-three-dots"
-                    (click)="toggleNotebookOptions(notebook.id); $event.stopPropagation()"
-                    title="More"
-                  >
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dropdown menu -->
-            <div
-              class="dropdown-menu"
-              *ngIf="openNotebookOptionsId === notebook.id"
-              (click)="$event.stopPropagation()"
-              (clickOutside)="openNotebookOptionsId = null"
+          <div class="notebook-header">
+            <iconify-icon
+              icon="fluent:notebook-subsection-24-filled"
+              class="notebook-icon"
             >
-              <button (click)="startEditingNotebook(notebook)">Edit</button>
-              <button (click)="deleteNotebook(notebook.id)">Delete</button>
-            </div>
+            </iconify-icon>
+            <h3 class="notebook-title">{{ notebook.name }}</h3>
+          </div>
+
+          <div class="notebook-meta">
+            <span class="note-count">{{ notebook.notes.length }} notes</span>
+            <span class="created-date"
+              >{{ notebook.createdAt | date:'shortDate' }}</span
+            >
+          </div>
+
+          <div class="notebook-actions" (click)="$event.stopPropagation()">
+            <button (click)="editNotebook(notebook)" title="Edit">
+              <iconify-icon icon="fluent:edit-12-regular"></iconify-icon>
+            </button>
+            <button (click)="deleteNotebook(notebook.id)" title="Delete">
+              <iconify-icon icon="ph:trash"></iconify-icon>
+            </button>
           </div>
         </div>
-      </ng-container>
-
-      <ng-container *ngIf="selectedNotebook">
-        <div class="notebook-item">
-          <!-- Render only the selected notebook -->
-          <div class="notebook-box">
-            <div
-              class="notebook-header"
-              (click)="selectNotebook(selectedNotebook)"
-            >
-              <iconify-icon
-                class="icon-default"
-                icon="fluent:notebook-subsection-24-filled"
-              ></iconify-icon>
-              <iconify-icon
-                class="icon-hover"
-                icon="solar:notebook-minimalistic-bold-duotone"
-              ></iconify-icon>
-
-              <h3 class="notebook-title">{{ selectedNotebook.name }}</h3>
-
-              <div class="notebook-meta">
-                <div class="ntbk-note-count">
-                  {{ selectedNotebook.notes.length }} notes
-                </div>
-                <div>
-                  <button
-                    class="ntbk-three-dots"
-                    (click)="toggleNotebookOptions(selectedNotebook.id); $event.stopPropagation()"
-                    title="More"
-                  >
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="dropdown-menu"
-              *ngIf="openNotebookOptionsId === selectedNotebook.id"
-              (click)="$event.stopPropagation()"
-              (clickOutside)="openNotebookOptionsId = null"
-            >
-              <button (click)="startEditingNotebook(selectedNotebook)">
-                Edit
-              </button>
-              <button (click)="deleteNotebook(selectedNotebook.id)">
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-
-  <!-- Notes in selected notebook -->
-  <div class="section" *ngIf="selectedNotebook">
-    <h3 class="section-title">
-      NOTES IN "{{ selectedNotebook.name }} ({{ selectedNotebook.notes.length
-      }})"
-    </h3>
-
-    <div class="close-button-container-in-list">
-      <app-button-main
-        label="Close Notebook"
-        (clicked)="closeNotebook()"
-        class="close-notebook-button"
-      ></app-button-main>
+      </div>
     </div>
 
-    <ul class="note-grid">
-      <app-note
-        *ngFor="let note of selectedNotebook.notes"
-        [note]="note"
-        (open)="openNoteModal($event)"
-        (delete)="deleteNote($event)"
-        (togglePin)="togglePin($event.note, $event.event)"
-        (optionSelected)="handleNoteOptionSelected($event, note)"
-      ></app-note>
-    </ul>
-  </div>
+    <!-- PINNED NOTES Section -->
+    <div class="section" *ngIf="(hasPins$ | async) && !selectedNotebook">
+      <div class="section-header">
+        <h2 class="section-title">
+          <iconify-icon icon="bi:pin-fill"></iconify-icon>
+          PINNED
+        </h2>
+        <span class="section-count"
+          >({{ (pinnedNotes$ | async)?.length }})</span
+        >
+      </div>
 
-  <!-- MY PINS ------------------------------------------------>
-  <div class="section" *ngIf="(hasPins$ | async) && !selectedNotebook">
-    <h3 class="section-title">PINNED</h3>
+      <div class="notes-grid">
+        <app-note
+          *ngFor="let note of (pinnedNotes$ | async); trackBy: trackByNoteId"
+          [note]="note"
+          (open)="openNoteModal($event)"
+          (delete)="deleteNote($event)"
+          (togglePin)="togglePin($event.note, $event.event)"
+          (optionSelected)="handleNoteOptionSelected($event, note)"
+        >
+        </app-note>
+      </div>
+    </div>
 
-    <ul class="note-grid">
-      <app-note
-        *ngFor="let pinnedNote of pinnedNotes$ | async"
-        [note]="pinnedNote"
-        (open)="openNoteModal($event)"
-        (delete)="deleteNote($event)"
-        (togglePin)="togglePin($event.note, $event.event)"
-        (optionSelected)="handleNoteOptionSelected($event, pinnedNote)"
-      ></app-note>
-    </ul>
-  </div>
+    <!-- ALL NOTES Section -->
+    <div
+      class="section"
+      *ngIf="(hasUnpinnedNotes$ | async) && !selectedNotebook"
+    >
+      <div class="section-header">
+        <h2 class="section-title">
+          <iconify-icon icon="fluent:note-48-regular"></iconify-icon>
+          NOTES
+        </h2>
+        <span class="section-count"
+          >({{ (filteredNotes$ | async)?.length }})</span
+        >
+      </div>
 
-  <!-- RECENT NOTE(S) -------------------------------------------->
-  <div class="section" *ngIf="(hasUnpinnedNotes$ | async) && !selectedNotebook">
-    <h3 class="section-title">NOTES</h3>
-    <ul>
-      <app-note
-        *ngFor="let note of (filteredNotes$ | async)"
-        [note]="note"
-        (open)="openNoteModal($event)"
-        (delete)="deleteNote($event)"
-        (togglePin)="togglePin($event.note, $event.event)"
-        (optionSelected)="handleNoteOptionSelected($event, note)"
-      >
-      </app-note>
-    </ul>
+      <div class="notes-grid">
+        <app-note
+          *ngFor="let note of (filteredNotes$ | async); trackBy: trackByNoteId"
+          [note]="note"
+          (open)="openNoteModal($event)"
+          (delete)="deleteNote($event)"
+          (togglePin)="togglePin($event.note, $event.event)"
+          (optionSelected)="handleNoteOptionSelected($event, note)"
+        >
+        </app-note>
+      </div>
+    </div>
   </div>
 </div>

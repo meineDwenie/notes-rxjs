@@ -6,6 +6,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { EventBusService } from '../../../services/event-bus.service';
 import {
@@ -32,12 +33,7 @@ import { ButtonMainComponent } from '../../shared/button-main/button-main';
 @Component({
   selector: 'app-all-view',
   standalone: true,
-  imports: [
-    CommonModule,
-    ClickOutsideDirective,
-    NoteComponent,
-    ButtonMainComponent,
-  ],
+  imports: [CommonModule, NoteComponent],
   templateUrl: './all-view.html',
   styleUrl: './all-view.css',
 
@@ -68,7 +64,11 @@ export class AllView implements OnInit {
   openNotebookOptionsId: string | null = null;
   private searchTermSubject = new BehaviorSubject<string>('');
 
-  constructor(private store: Store, private eventBus: EventBusService) {
+  constructor(
+    private store: Store,
+    private eventBus: EventBusService,
+    private router: Router
+  ) {
     this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
     this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
@@ -237,17 +237,64 @@ export class AllView implements OnInit {
       alert('Note already in this notebook');
       return;
     }
+
+    const noteToAdd: Note = {
+      id: note.id,
+      title: note.title || 'Untitled Note',
+      content: note.content || '',
+      color: note.color,
+      pinned: note.pinned,
+      createdAt: note.createdAt,
+    };
+
     const updatedNotebook = {
       ...notebook,
-      notes: [...notebook.notes, note],
+      notes: [...notebook.notes, noteToAdd],
+      updatedAt: Date.now(),
     };
+
     this.store.dispatch(
       NotebookActions.updateNotebook({
         update: {
           id: updatedNotebook.id,
-          changes: { notes: updatedNotebook.notes },
+          changes: {
+            notes: updatedNotebook.notes,
+          },
         },
       })
     );
+  }
+
+  trackByNotebookId(index: number, notebook: Notebook): string {
+    return notebook.id;
+  }
+
+  trackByNoteId(index: number, note: Note): string {
+    return note.id;
+  }
+
+  // Create new note method
+  createNewNote(): void {
+    this.eventBus.emitCreateNote();
+  }
+
+  // Create new notebook method
+  createNewNotebook(): void {
+    this.eventBus.emitCreateNotebook();
+  }
+
+  // Clear search method
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.searchTermSubject.next('');
+  }
+
+  // Open notebook method (navigate to notebook detail)
+  openNotebook(notebook: Notebook): void {
+    this.router.navigate(['/notebooks', notebook.id]);
+  }
+
+  editNotebook(notebook: Notebook): void {
+    this.startEditingNotebook(notebook); // Use your existing method
   }
 }

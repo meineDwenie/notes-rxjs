@@ -1,0 +1,31 @@
+<div class="modal-background">
+  <div class="modal-container">
+    <div class="header-title-container">
+      <h2>Create New Notebook</h2>
+      <button (click)="close.emit()" class="close-button">
+        <iconify-icon icon="lets-icons:close-round"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="form-section">
+      <input
+        type="text"
+        [(ngModel)]="notebookTitle"
+        placeholder="Enter Notebook Title"
+        class="notebook-title-input"
+        (keyup.enter)="createNotebook()"
+        #titleInput
+      />
+    </div>
+    <div class="modal-footer">
+      <button (click)="close.emit()" class="cancel-button">Cancel</button>
+      <button
+        (click)="createNotebook()"
+        class="create-button"
+        [disabled]="!notebookTitle.trim()"
+      >
+        Create Notebook
+      </button>
+    </div>
+  </div>
+</div>

@@ -28,14 +28,14 @@ export const routes: Routes = [
       ),
     data: { title: 'Notebooks' },
   },
-  // {
-  //   path: 'notebooks/:id',
-  //   loadComponent: () =>
-  //     import('./components/views/notebook-detail/notebook-detail').then(
-  //       (c) => c.NotebookDetail
-  //     ),
-  //   data: { title: 'Notebook' },
-  // },
+  {
+    path: 'notebooks/:id',
+    loadComponent: () =>
+      import('./components/views/notebook-detail/notebook-detail').then(
+        (c) => c.NotebookDetail
+      ),
+    data: { title: 'Notebook Details' },
+  },
   {
     path: 'archive',
     loadComponent: () =>
