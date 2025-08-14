@@ -1,28 +1,27 @@
 <div class="notebook-detail" *ngIf="notebook$ | async as notebook">
   <!-- Header -->
   <div class="notebook-header">
-    <button (click)="goBack()" class="back-button">
-      <iconify-icon icon="lets-icons:arrow-left"></iconify-icon>
-      Back to Notebooks
-    </button>
-
     <div class="notebook-info">
-      <h1 class="notebook-title">{{ notebook.name }}</h1>
-      <p class="notebook-meta">
-        {{ notebook.notes.length }} notes • Created {{ notebook.createdAt |
-        date:'mediumDate' }}
-      </p>
-    </div>
+      <div class="notebook-info-items">
+        <h1 class="notebook-title">{{ notebook.name }}</h1>
+        <p class="notebook-meta">{{ notebook.notes.length }} notes</p>
+      </div>
 
-    <div class="notebook-actions">
-      <button (click)="editNotebook(notebook)" class="edit-button">
-        <iconify-icon icon="fluent:edit-12-regular"></iconify-icon>
-        Edit
-      </button>
-      <button (click)="deleteNotebook(notebook)" class="delete-button">
-        <iconify-icon icon="ph:trash"></iconify-icon>
-        Delete
-      </button>
+      <div class="notebook-actions">
+        <app-button-feature
+          customClass="notebook-action-button"
+          icon="fluent:edit-28-regular"
+          title="Edit Notebook"
+          (clicked)="editNotebook(notebook)"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="notebook-action-button"
+          icon="mage:trash"
+          title="Delete Notebook"
+          (clicked)="deleteNotebook(notebook)"
+        ></app-button-feature>
+      </div>
     </div>
   </div>
 
@@ -34,24 +33,12 @@
     ></iconify-icon>
     <h3>This notebook is empty</h3>
     <p>Add some notes to get started</p>
-    <app-button-main
-      label="Add Note"
-      (clicked)="addNoteToNotebook()"
-      class="add-note-button"
-    >
-    </app-button-main>
   </div>
 
   <!-- Notes grid -->
   <div class="notes-section" *ngIf="notebook.notes.length > 0">
     <div class="section-header">
-      <h2>Notes in this notebook</h2>
-      <app-button-main
-        label="Add Note"
-        (clicked)="addNoteToNotebook()"
-        class="add-note-button"
-      >
-      </app-button-main>
+      <h2 class="section-title">NOTES IN THIS NOTEBOOK</h2>
     </div>
 
     <div class="notes-grid">
@@ -72,5 +59,4 @@
 <div class="not-found" *ngIf="notFound">
   <h2>Notebook not found</h2>
   <p>The notebook you're looking for doesn't exist.</p>
-  <button (click)="goBack()">Go back</button>
 </div>

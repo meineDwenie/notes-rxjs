@@ -14,11 +14,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Notebook } from '../../../../notebooks/notebook.model';
 import * as NotebookActions from '../../../../notebooks/notebook.actions';
+import { ClickOutsideDirective } from '../../../../directives/click-outside-directive';
 
 @Component({
   selector: 'app-modal-create-notebook',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ClickOutsideDirective],
   templateUrl: './modal-create-notebook.html',
   styleUrl: './modal-create-notebook.css',
 
@@ -27,6 +28,7 @@ import * as NotebookActions from '../../../../notebooks/notebook.actions';
 export class ModalCreateNotebookComponent {
   @Output() close = new EventEmitter<void>();
   @Output() notebookCreated = new EventEmitter<Notebook>();
+
   @ViewChild('titleInput') titleInput!: ElementRef;
 
   notebookTitle: string = '';

@@ -4,6 +4,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  AfterViewChecked,
 } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -45,8 +46,10 @@ import { ModalCreateNotebookComponent } from './components/shared/modals/modal-c
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App implements OnInit, AfterViewChecked {
   protected title = 'angular-ngrx-notes-app';
+
+  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
 
   // Observables
   allNotes$!: Observable<Note[]>;
@@ -116,14 +119,13 @@ export class App implements OnInit {
   selectedNotebookId: string | null = null;
 
   private searchTermSubject = new BehaviorSubject<string>('');
+  private shouldFocusTextarea = false;
 
   constructor(private store: Store, private eventBus: EventBusService) {
     // this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
     // this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
   }
-
-  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
 
   ngOnInit(): void {
     this.eventBus.noteSelected$.subscribe((note) => {
@@ -154,6 +156,16 @@ export class App implements OnInit {
     this.eventBus.createNotebook$.subscribe(() => {
       this.openCreateNotebookModal();
     });
+  }
+
+  // Focus on the textarea when modal opens (after view checked and when isEditing)
+  ngAfterViewChecked(): void {
+    if (this.shouldFocusTextarea && this.noteTextarea) {
+      setTimeout(() => {
+        this.noteTextarea.nativeElement.focus();
+      });
+      this.shouldFocusTextarea = false;
+    }
   }
 
   onSearchTermChange(newSearchTerm: string) {
@@ -280,7 +292,6 @@ export class App implements OnInit {
     this.modalColor = this.selectedNote?.color || '#ffffff';
     this.modalImages = [...(this.selectedNote.images || [])];
     this.modalImageLoading = new Array(this.modalImages.length).fill(false);
-    // this.showAddNoteModal = true;
   }
 
   openNewNoteModal() {
@@ -295,6 +306,7 @@ export class App implements OnInit {
 
   enableModalEdit(): void {
     this.isModalEditing = true;
+    this.shouldFocusTextarea = true;
   }
 
   cancelModalEdit(): void {

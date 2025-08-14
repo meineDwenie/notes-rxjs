@@ -29,7 +29,9 @@
     >
       <!-- View mode -->
       <div *ngIf="!isModalEditing" class="modal-view">
-        <h3 (click)="enableModalEdit()">{{ selectedNote.title }}</h3>
+        <h3 (click)="enableModalEdit()" class="view-mode-modal-title">
+          {{ selectedNote.title }}
+        </h3>
         <div class="modal-scrollable-content" (click)="enableModalEdit()">
           <p>{{ selectedNote.content }}</p>
         </div>
@@ -51,10 +53,12 @@
       <div *ngIf="isModalEditing">
         <input type="text" [(ngModel)]="modalTitle" class="title-input" />
         <textarea
+          *ngIf="isModalEditing"
           autoResize
           [(ngModel)]="modalContent"
           class="modal-textarea"
           placeholder="Edit your note"
+          #noteTextArea
         ></textarea>
         <div class="image-preview">
           <div

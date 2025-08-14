@@ -3,9 +3,17 @@ import {
   Input,
   EventEmitter,
   CUSTOM_ELEMENTS_SCHEMA,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import * as NoteSelectors from '../../notes/note.selectors';
+import * as NotebookSelectors from '../../notebooks/notebook.selectors';
+import { Store } from '@ngrx/store';
 
 export interface MenuItem {
   id: string;
@@ -24,14 +32,33 @@ export interface MenuItem {
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class Sidebar {
+export class Sidebar implements OnInit, OnDestroy {
   @Input() appIcon = 'assets/noteboard-icon.png';
   @Input() appTitle = 'Noteboard';
 
   username = 'Jessa Mae Agan';
   userAvatar = 'assets/userAvatar.jpg';
-  totalNotes = 35;
-  totalNotebooks = 5;
+  totalNotes$: Observable<number> | undefined;
+  totalNotebooks$: Observable<number> | undefined;
+
+  private destroy$ = new Subject<void>();
+
+  constructor(private store: Store) {}
+
+  ngOnInit() {
+    this.totalNotes$ = this.store
+      .select(NoteSelectors.selectAllNotes)
+      .pipe(map((notes) => notes.length));
+
+    this.totalNotebooks$ = this.store
+      .select(NotebookSelectors.selectAllNotebooks)
+      .pipe(map((notebooks) => notebooks.length));
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   menuItems: MenuItem[] = [
     { id: 'all', label: 'All', icon: 'ic:round-dashboard', route: '/all' },

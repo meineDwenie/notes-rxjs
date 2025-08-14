@@ -91,6 +91,7 @@ export class ModalAddToNotebookComponent {
       ...this.note,
     };
 
+    // Add the note to the selected notebook
     const updatedNotebook = {
       ...notebook,
       notes: [...notebook.notes, noteToAdd],
@@ -107,6 +108,9 @@ export class ModalAddToNotebookComponent {
         },
       })
     );
+
+    // Remove note from global notes
+    this.store.dispatch(NoteActions.deleteNote({ id: this.note.id }));
 
     this.close.emit();
   }

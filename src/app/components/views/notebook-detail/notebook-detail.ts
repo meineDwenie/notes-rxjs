@@ -16,12 +16,13 @@ import * as NotebookSelectors from '../../../notebooks/notebook.selectors';
 import * as NotebookActions from '../../../notebooks/notebook.actions';
 import * as NoteActions from '../../../notes/note.actions';
 import { NoteComponent } from '../../note/note';
-import { ButtonMainComponent } from '../../shared/button-main/button-main';
+import { ButtonFeatureComponent } from '../../shared/button-feature/button-feature';
+import { EventBusService } from '../../../services/event-bus.service';
 
 @Component({
   selector: 'app-notebook-detail',
   standalone: true,
-  imports: [CommonModule, NoteComponent, ButtonMainComponent],
+  imports: [CommonModule, NoteComponent, ButtonFeatureComponent],
   templateUrl: './notebook-detail.html',
   styleUrl: './notebook-detail.css',
 
@@ -30,12 +31,15 @@ import { ButtonMainComponent } from '../../shared/button-main/button-main';
 export class NotebookDetail implements OnInit, OnDestroy {
   notebook$!: Observable<Notebook | undefined>;
   notFound = false;
+  openNotebookOptionsId: string | null = null;
+
   private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private eventBus: EventBusService
   ) {}
 
   ngOnInit() {
@@ -63,25 +67,20 @@ export class NotebookDetail implements OnInit, OnDestroy {
     return note.id;
   }
 
-  goBack() {
-    this.router.navigate(['/notebooks']);
+  editNotebook(notebook: Notebook) {
+    this.startEditingNotebook(notebook);
   }
 
-  editNotebook(notebook: Notebook) {
-    // Emit event to open edit modal
-    // You can use your EventBusService here
+  // Start editing notebook
+  startEditingNotebook(notebook: Notebook): void {
+    this.openNotebookOptionsId = null;
+    this.eventBus.emitNotebookEdit(notebook); // now valid
   }
 
   deleteNotebook(notebook: Notebook) {
     if (confirm(`Are you sure you want to delete "${notebook.name}"?`)) {
       this.store.dispatch(NotebookActions.deleteNotebook({ id: notebook.id }));
-      this.goBack();
     }
-  }
-
-  addNoteToNotebook() {
-    // Open modal to select existing note or create new one
-    // You can use your EventBusService here
   }
 
   openNote(note: Note) {

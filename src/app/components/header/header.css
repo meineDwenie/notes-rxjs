@@ -6,7 +6,7 @@ header {
   height: 86px;
   z-index: 999;
   padding: 1rem 4rem;
-  background-color: var(--main-background-color-secondary);
+  /* background-color: var(--main-background-color-secondary); */
   border-bottom: 1px solid #e5e7eb;
   backdrop-filter: blur(8px);
 }
@@ -53,7 +53,8 @@ header {
 
   h3 {
     color: var(--header-action-btn-txt-color);
-    font-weight: 300;
+    font-size: 15px;
+    font-weight: 400;
     margin: 0;
   }
 }

@@ -15,7 +15,7 @@ body {
   /* HEADER BUTTONS */
   --header-action-btn-main: #63a6a6;
   --header-action-btn-secondary: #a7cfcf;
-  --header-action-btn-txt-color: rgba(255, 255, 255, 0.7);
+  --header-action-btn-txt-color: rgb(255, 255, 255);
 
   /* HEADER SEARCH BAR TEXT */
   --header-search-bar-or-section-text-color: rgba(0, 0, 0, 0.5);

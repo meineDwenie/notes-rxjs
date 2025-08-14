@@ -11,22 +11,27 @@ import {
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { EventBusService } from '../../../../services/event-bus.service';
+import { FormsModule } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
-
+import { EventBusService } from '../../../../services/event-bus.service';
 import { ButtonFeatureComponent } from '../../button-feature/button-feature';
+import { ClickOutsideDirective } from '../../../../directives/click-outside-directive';
 
 import { Note } from '../../../../notes/note.model';
 import { Notebook } from '../../../../notebooks/notebook.model';
 import * as NoteActions from '../../../../notes/note.actions';
 import * as NotebookSelectors from '../../../../notebooks/notebook.selectors';
 import * as NotebookActions from '../../../../notebooks/notebook.actions';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-modal-add-new-note',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonFeatureComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonFeatureComponent,
+    ClickOutsideDirective,
+  ],
   templateUrl: './modal-add-new-note.html',
   styleUrls: ['./modal-add-new-note.css'],
 
@@ -34,6 +39,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class ModalAddNewNoteComponent {
   @Output() close = new EventEmitter<void>();
+
+  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
 
   // NOTE
   noteTitle: string = '';
@@ -69,10 +76,13 @@ export class ModalAddNewNoteComponent {
   // NOTEBOOK
   notebooks$: Observable<Notebook[]>;
 
-  @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
-
   constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
+  }
+
+  ngAfterViewInit() {
+    // Focus on the textarea when modal opens
+    this.noteTextarea?.nativeElement?.focus();
   }
 
   openAddNoteModal() {
@@ -130,13 +140,6 @@ export class ModalAddNewNoteComponent {
 
     this.resetForm();
     this.close.emit();
-  }
-
-  onDeleteClick() {
-    if (confirm('Are you sure you want to discard this note?')) {
-      this.resetForm();
-      this.close.emit();
-    }
   }
 
   resetForm() {

@@ -70,7 +70,7 @@
         .notebook-title {
           font-size: medium;
           margin: 0;
-          color: rgba(0, 0, 0, 0.624);
+          color: rgba(0, 0, 0, 0.767);
         }
       }
     }
@@ -115,7 +115,7 @@
 
   .notebook-header:hover .notebook-icon-hover {
     display: inline-block;
-  } */
+  } 
 
     .ntbk-three-dots {
       top: 14px;
@@ -164,7 +164,7 @@
       }
     }
 
-    /* .notebook-item:hover .ntbk-three-dots {
+    .notebook-item:hover .ntbk-three-dots {
     opacity: 1;
   } */
   }

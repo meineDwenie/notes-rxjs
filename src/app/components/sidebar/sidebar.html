@@ -15,12 +15,12 @@
     <!-- Stats Section -->
     <div class="stats-section">
       <div class="stat-item">
-        <span class="stat-number">{{ totalNotes }}</span>
+        <span class="stat-number">{{ totalNotes$ | async }}</span>
         <div class="stat-label">Notes</div>
       </div>
 
       <div class="stat-item">
-        <span class="stat-number">{{ totalNotebooks }}</span>
+        <span class="stat-number">{{ totalNotebooks$ | async }}</span>
         <div class="stat-label">Notebooks</div>
       </div>
     </div>
@@ -31,9 +31,10 @@
     <a
       *ngFor="let item of menuItems"
       [routerLink]="item.route"
-      routerLinkeActive="active"
+      routerLinkActive="active"
       class="nav-item"
       [attr.data-testid]="item.id + '-nav'"
+      [routerLinkActiveOptions]="{exact: true }"
     >
       <iconify-icon [attr.icon]="item.icon" class="nav-icon"></iconify-icon>
       <h3>{{ item.label }}</h3>
