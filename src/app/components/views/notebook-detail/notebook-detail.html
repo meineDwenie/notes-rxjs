@@ -4,7 +4,6 @@
     <div class="notebook-info">
       <div class="notebook-info-items">
         <h1 class="notebook-title">{{ notebook.name }}</h1>
-        <p class="notebook-meta">{{ notebook.notes.length }} notes</p>
       </div>
 
       <div class="notebook-actions">
@@ -27,18 +26,17 @@
 
   <!-- Empty state -->
   <div class="empty-state" *ngIf="notebook.notes.length === 0">
-    <iconify-icon
-      icon="fluent:notebook-subsection-24-regular"
-      class="empty-icon"
-    ></iconify-icon>
-    <h3>This notebook is empty</h3>
-    <p>Add some notes to get started</p>
+    <h2>This notebook is empty.</h2>
+    <p>Add some notes to get started!</p>
   </div>
 
   <!-- Notes grid -->
   <div class="notes-section" *ngIf="notebook.notes.length > 0">
     <div class="section-header">
-      <h2 class="section-title">NOTES IN THIS NOTEBOOK</h2>
+      <h2 class="section-title">
+        {{ notebook.notes.length }} {{ notebook.notes.length <= 1 ? 'NOTE' :
+        'NOTES '}} IN THIS NOTEBOOK
+      </h2>
     </div>
 
     <div class="notes-grid">

@@ -10,12 +10,8 @@
     *ngIf="!(isLoading$ | async) && !(hasNotes$ | async) && !(hasNotebooks$ | async)"
     class="empty-state"
   >
-    <iconify-icon
-      icon="fluent:notebook-add-20-regular"
-      class="empty-icon"
-    ></iconify-icon>
-    <h3>Welcome to Noteboard!</h3>
-    <p>Start by creating your first note or notebook</p>
+    <h2>Welcome to Noteboard!</h2>
+    <p>Start by creating your first note or notebook.</p>
   </div>
 
   <!-- No search results -->

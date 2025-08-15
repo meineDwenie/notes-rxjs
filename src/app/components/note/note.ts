@@ -54,6 +54,10 @@ export class NoteComponent {
     this.togglePin.emit({ note: this.note, event });
   }
 
+  openAddToNotebookModal(note: Note) {
+    this.eventBus.triggerAddToNotebookModal(note);
+  }
+
   // onOptionSelected(action: string) {
   //   switch (action) {
   //     case 'addToNotebook':
@@ -65,10 +69,6 @@ export class NoteComponent {
   //       break;
   //   }
   // }
-
-  openAddToNotebookModal(note: Note) {
-    this.eventBus.triggerAddToNotebookModal(note);
-  }
 
   // addNoteToNotebook(note: Note, notebook: Notebook) {
   //   if (notebook.notes.some((n) => n.id === note.id)) {

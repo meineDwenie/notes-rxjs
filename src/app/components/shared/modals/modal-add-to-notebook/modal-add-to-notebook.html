@@ -8,20 +8,25 @@
     </div>
 
     <div class="note-preview" *ngIf="note">
-      <h4>Adding: "{{ note.title }}"</h4>
-      <p class="note-content-preview">{{ note.content | slice:0:100 }}...</p>
+      <h4>{{ note.title }}</h4>
+      <p class="note-content-preview">{{ note.content | slice:0:100 }} ...</p>
     </div>
 
     <div class="notebooks-section">
-      <h6>Select a notebook:</h6>
+      <h6>Select a notebook</h6>
 
       <div class="search-notebooks" *ngIf="(notebooks$ | async)!.length > 5">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          placeholder="Search notebooks..."
-          class="search-input"
-        />
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              placeholder="Search notebooks"
+              class="search-input"
+            />
+          </div>
+        </div>
       </div>
 
       <ul
@@ -35,8 +40,8 @@
           [class.already-contains]="notebookContainsNote(notebook)"
         >
           <div class="notebook-info">
-            <span class="notebook-name">{{ notebook.name }}</span>
-            <span class="note-count">{{ notebook.notes.length }} notes</span>
+            <iconify-icon icon="hugeicons:notebook-01"></iconify-icon>
+            <p class="notebook-name">{{ notebook.name }}</p>
           </div>
 
           <div class="notebook-status" *ngIf="notebookContainsNote(notebook)">
@@ -60,10 +65,6 @@
           </button>
         </p>
       </div>
-    </div>
-
-    <div class="modal-footer">
-      <button (click)="close.emit()" class="cancel-button">Cancel</button>
     </div>
   </div>
 </div>

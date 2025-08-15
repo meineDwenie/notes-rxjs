@@ -100,7 +100,7 @@ export class App implements OnInit, AfterViewChecked {
     '#ffffff', // White
     '#e8a49dff', // Red
     '#ffd67eff', // Orange
-    '#fdf6adff', // Yellow
+    '#f4f1cfff', // Yellow
     '#d8f7b5ff', // Green
     '#bcede3', // Teal
     '#cbf0f8', // Light Blue
@@ -144,6 +144,10 @@ export class App implements OnInit, AfterViewChecked {
       this.openNewNoteModal();
     });
 
+    this.eventBus.createNotebook$.subscribe(() => {
+      this.openCreateNotebookModal();
+    });
+
     this.eventBus.openAddNoteModal$.subscribe(() => {
       this.showAddNoteModal = true;
     });
@@ -151,10 +155,6 @@ export class App implements OnInit, AfterViewChecked {
     this.eventBus.openAddToNotebookModal$.subscribe((note: Note) => {
       this.noteToAddToNotebook = note;
       this.showAddToNotebookModal = true;
-    });
-
-    this.eventBus.createNotebook$.subscribe(() => {
-      this.openCreateNotebookModal();
     });
   }
 
