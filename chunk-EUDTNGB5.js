@@ -1,1 +1,0 @@
-import{Cb as n,Za as s,pb as i,qb as a}from"./chunk-FWAODUN6.js";var o=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=s({type:t,selectors:[["app-trash-view"]],decls:2,vars:0,template:function(e,p){e&1&&(i(0,"p"),n(1,"trash-view works!"),a())},encapsulation:2})};export{o as TrashView};
