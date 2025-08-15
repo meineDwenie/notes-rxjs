@@ -7,11 +7,11 @@ import {
   AfterViewChecked,
 } from '@angular/core';
 
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, filter, Observable } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { EventBusService } from './services/event-bus.service';
 
@@ -118,10 +118,13 @@ export class App implements OnInit, AfterViewChecked {
 
   selectedNotebookId: string | null = null;
 
-  private searchTermSubject = new BehaviorSubject<string>('');
   private shouldFocusTextarea = false;
 
-  constructor(private store: Store, private eventBus: EventBusService) {
+  constructor(
+    private store: Store,
+    private eventBus: EventBusService,
+    private router: Router
+  ) {
     // this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
     // this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
@@ -156,6 +159,13 @@ export class App implements OnInit, AfterViewChecked {
       this.noteToAddToNotebook = note;
       this.showAddToNotebookModal = true;
     });
+
+    // clears search term on every navigation
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.eventBus.emitSearchTerm('');
+      });
   }
 
   // Focus on the textarea when modal opens (after view checked and when isEditing)
@@ -457,6 +467,7 @@ export class App implements OnInit, AfterViewChecked {
   /* HEADER METHODS */
   onSearchChange(value: string) {
     this.searchTerm = value;
+    this.eventBus.emitSearchTerm(value);
   }
 
   removeFilter(filter: { id: string; label: string }) {

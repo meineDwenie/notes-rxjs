@@ -187,34 +187,36 @@ p {
   }
 }
 
-.feature-button {
+.empty-state {
   display: flex;
   flex-direction: row;
   align-content: center;
   gap: 0.4em;
-  padding: 0.5rem 0.6rem;
-  margin: 0;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-  color: var(--feature-button-color);
 
-  box-sizing: border-box;
-}
+  p {
+    padding: 0;
+    margin: 0;
+    align-self: center;
+  }
 
-.feature-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+  .link-button {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    gap: 0.4em;
+    padding: 0.5rem 0.6rem;
+    margin: 0;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #eaeaea7c;
+    color: #30a0a0;
 
-.feature-button:hover:not(:disabled) {
-  color: var(--feature-button-color-hover);
-  background-color: var(--feature-button-hover-background-color);
-}
+    box-sizing: border-box;
 
-.feature-button:hover:not(:disabled) iconify-icon,
-.feature-button:hover:not(:disabled) p {
-  color: var(--feature-button-color-hover);
+    &:hover {
+      background-color: #e1e1e17c;
+    }
+  }
 }

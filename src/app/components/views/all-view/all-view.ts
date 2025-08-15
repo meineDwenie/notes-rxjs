@@ -113,14 +113,19 @@ export class AllView implements OnInit {
     this.hasUnpinnedNotes$ = this.filteredNotes$.pipe(
       map((notes) => notes.length > 0)
     );
+
+    this.eventBus.searchTerm$.subscribe((term: string) => {
+      this.searchTerm = term;
+      this.searchTermSubject.next(term);
+    });
   }
 
   ngOnInit() {}
 
-  onSearchTermChange(newSearchTerm: string) {
-    this.searchTerm = newSearchTerm;
-    this.searchTermSubject.next(newSearchTerm);
-  }
+  // onSearchTermChange(newSearchTerm: string) {
+  //   this.searchTerm = newSearchTerm;
+  //   this.searchTermSubject.next(newSearchTerm);
+  // }
 
   filterNotes(notes: Note[], term: string): Note[] {
     let filtered = notes;
