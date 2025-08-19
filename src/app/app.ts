@@ -3,11 +3,10 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  HostListener,
   AfterViewChecked,
 } from '@angular/core';
 
-import { BehaviorSubject, filter, Observable } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -29,6 +28,8 @@ import { HeaderComponent } from './components/header/header';
 import { ModalAddToNotebookComponent } from './components/shared/modals/modal-add-to-notebook/modal-add-to-notebook';
 import { ModalAddNewNoteComponent } from './components/shared/modals/modal-add-new-note/modal-add-new-note';
 import { ModalCreateNotebookComponent } from './components/shared/modals/modal-create-notebook/modal-create-notebook';
+import { ModalNoteComponent } from './components/shared/modals/modal-note/modal-note/modal-note.component';
+import { ModalEditNotebookComponent } from './components/shared/modals/modal-edit-notebook/modal-edit-notebook.component';
 
 @Component({
   selector: 'app-root',
@@ -36,12 +37,13 @@ import { ModalCreateNotebookComponent } from './components/shared/modals/modal-c
     FormsModule,
     CommonModule,
     RouterOutlet,
-    autoResizeDirective,
     HeaderComponent,
     Sidebar,
     ModalAddToNotebookComponent,
     ModalAddNewNoteComponent,
     ModalCreateNotebookComponent,
+    ModalNoteComponent,
+    ModalEditNotebookComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -164,7 +166,7 @@ export class App implements OnInit, AfterViewChecked {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.eventBus.emitSearchTerm('');
+        this.store.dispatch(NoteActions.setSearchTerm({ term: '' }));
       });
   }
 
@@ -180,7 +182,6 @@ export class App implements OnInit, AfterViewChecked {
 
   onSearchTermChange(newSearchTerm: string) {
     this.searchTerm = newSearchTerm;
-    // this.searchTermSubject.next(newSearchTerm);
   }
 
   onImageLoad(index: number) {
@@ -378,7 +379,7 @@ export class App implements OnInit, AfterViewChecked {
         reader.readAsDataURL(file);
       });
 
-      // Clear the input so the same file can be selected again if needed
+      // Clears the input so the same file can be selected again if needed
       input.value = '';
     }
   }
@@ -467,7 +468,7 @@ export class App implements OnInit, AfterViewChecked {
   /* HEADER METHODS */
   onSearchChange(value: string) {
     this.searchTerm = value;
-    this.eventBus.emitSearchTerm(value);
+    this.store.dispatch(NoteActions.setSearchTerm({ term: value }));
   }
 
   removeFilter(filter: { id: string; label: string }) {
@@ -475,15 +476,15 @@ export class App implements OnInit, AfterViewChecked {
   }
 
   openCreateNotebookModal(): void {
-    this.showCreateNotebookModal = true; // You'll need this property
+    this.showCreateNotebookModal = true;
   }
 
   closeCreateNotebookModal(): void {
     this.showCreateNotebookModal = false;
   }
 
-  onNotebookCreated(notebook: Notebook): void {
-    // Handle notebook creation if needed
-    console.log('New notebook created:', notebook);
+  onNotebookCreated(newNotebook: Notebook): void {
+    this.selectedNotebook = newNotebook;
+    this.showCreateNotebookModal = false;
   }
 }

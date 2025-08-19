@@ -33,3 +33,9 @@ export const togglePinNote = createAction(
   '[Note] Toggle Pin',
   props<{ id: string }>()
 );
+
+// search term
+export const setSearchTerm = createAction(
+  '[Notes] Set Search Term',
+  props<{ term: string }>()
+);

@@ -1,0 +1,33 @@
+<div class="note-modal" (click)="close.emit()">
+  <div
+    class="modal-content"
+    (click)="$event.stopPropagation()"
+    [style.backgroundColor]="modalColor"
+  >
+    <app-modal-note-view
+      *ngIf="!isEditing"
+      [note]="note"
+      [images]="note.images || []"
+      (edit)="enableEditMode()"
+      (close)="closeModal()"
+    />
+
+    <app-modal-note-edit
+      *ngIf="isEditing"
+      [title]="modalTitle"
+      [content]="modalContent"
+      [color]="modalColor"
+      [images]="modalImages"
+      [imageLoading]="modalImageLoading"
+      [availableColors]="availableColors"
+      (titleChange)="titleChange.emit($event)"
+      (contentChange)="contentChange.emit($event)"
+      (colorChange)="colorChange.emit($event)"
+      (imageSelected)="imageSelected.emit($event)"
+      (removeImage)="removeImage.emit($event)"
+      (imageLoad)="imageLoad.emit($event)"
+      (save)="save.emit()"
+      (cancel)="cancel.emit()"
+    />
+  </div>
+</div>

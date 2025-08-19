@@ -26,11 +26,12 @@ import * as NoteActions from '../../../../notes/note.actions';
 import * as NotebookActions from '../../../../notebooks/notebook.actions';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ClickOutsideDirective } from '../../../../directives/click-outside-directive';
 
 @Component({
   selector: 'app-modal-add-to-notebook',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ClickOutsideDirective],
   templateUrl: './modal-add-to-notebook.html',
   styleUrls: ['./modal-add-to-notebook.css'],
 

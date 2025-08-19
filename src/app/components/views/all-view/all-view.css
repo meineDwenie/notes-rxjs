@@ -9,15 +9,6 @@
   box-sizing: border-box;
 }
 
-/* .secondary-bacgkround {
-  position: absolute;
-  background-color: red;
-  background-color: var(--main-background-color-secondary);
-  top: 0;
-  height: 50%;
-  width: 50%;
-} */
-
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -29,9 +20,15 @@
   background-color: rgba(255, 255, 255, 0.953);
 
   h2,
+  h3,
   p {
     color: var(--header-search-bar-or-section-text-color);
     text-align: center;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 600;
   }
 }
 
@@ -59,6 +56,9 @@
       margin-bottom: 1.5rem;
 
       .notebook-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         background: white;
         border: 2px solid #e5e7eb;
         border-radius: 12px;

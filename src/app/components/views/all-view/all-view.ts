@@ -10,13 +10,11 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { EventBusService } from '../../../services/event-bus.service';
 import {
-  BehaviorSubject,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
   map,
   Observable,
-  startWith,
 } from 'rxjs';
 
 import { ClickOutsideDirective } from '../../../directives/click-outside-directive';
@@ -62,7 +60,7 @@ export class AllView implements OnInit {
   searchTerm: string = '';
   selectedNotebook: Notebook | null = null;
   openNotebookOptionsId: string | null = null;
-  private searchTermSubject = new BehaviorSubject<string>('');
+  // private searchTermSubject = new BehaviorSubject<string>('');
 
   constructor(
     private store: Store,
@@ -72,13 +70,12 @@ export class AllView implements OnInit {
     this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
     this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
+    const searchTerm$ = this.store.select(NoteSelectors.selectSearchTerm);
 
     // Filter unpinned notes
     this.filteredNotes$ = combineLatest([
       this.allNotes$,
-      this.searchTermSubject
-        .asObservable()
-        .pipe(debounceTime(300), distinctUntilChanged(), startWith('')),
+      searchTerm$.pipe(debounceTime(300), distinctUntilChanged()),
     ]).pipe(
       map(([notes, term]) =>
         this.filterNotes(
@@ -91,17 +88,13 @@ export class AllView implements OnInit {
     // Filter pinned notes
     this.pinnedNotes$ = combineLatest([
       this.allNotes$.pipe(map((notes) => notes.filter((note) => note.pinned))),
-      this.searchTermSubject
-        .asObservable()
-        .pipe(debounceTime(300), distinctUntilChanged(), startWith('')),
+      searchTerm$.pipe(debounceTime(300), distinctUntilChanged()),
     ]).pipe(map(([notes, term]) => this.filterNotes(notes, term)));
 
     // Filter notebooks
     this.filteredNotebooks$ = combineLatest([
       this.notebooks$,
-      this.searchTermSubject
-        .asObservable()
-        .pipe(debounceTime(300), distinctUntilChanged(), startWith('')),
+      searchTerm$.pipe(debounceTime(300), distinctUntilChanged()),
     ]).pipe(map(([notebooks, term]) => this.filterNotebooks(notebooks, term)));
 
     // Boolean observables
@@ -114,18 +107,12 @@ export class AllView implements OnInit {
       map((notes) => notes.length > 0)
     );
 
-    this.eventBus.searchTerm$.subscribe((term: string) => {
+    this.store.select(NoteSelectors.selectSearchTerm).subscribe((term) => {
       this.searchTerm = term;
-      this.searchTermSubject.next(term);
     });
   }
 
   ngOnInit() {}
-
-  // onSearchTermChange(newSearchTerm: string) {
-  //   this.searchTerm = newSearchTerm;
-  //   this.searchTermSubject.next(newSearchTerm);
-  // }
 
   filterNotes(notes: Note[], term: string): Note[] {
     let filtered = notes;
@@ -291,7 +278,7 @@ export class AllView implements OnInit {
   // Clear search method
   clearSearch(): void {
     this.searchTerm = '';
-    this.searchTermSubject.next('');
+    this.store.dispatch(NoteActions.setSearchTerm({ term: '' }));
   }
 
   // Open notebook method (navigate to notebook detail)

@@ -4,16 +4,17 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
-  AfterViewInit,
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Notebook } from '../../../../notebooks/notebook.model';
 import * as NotebookActions from '../../../../notebooks/notebook.actions';
+import * as NotebookSelectors from '../../../../notebooks/notebook.selectors';
 import { ClickOutsideDirective } from '../../../../directives/click-outside-directive';
 
 @Component({
@@ -42,21 +43,40 @@ export class ModalCreateNotebookComponent {
   }
 
   createNotebook(): void {
-    if (!this.notebookTitle.trim()) {
+    const trimmedTitle = this.notebookTitle.trim();
+
+    if (!trimmedTitle) {
       alert('Please enter a notebook title.');
       return;
     }
 
-    const newNotebook: Notebook = {
-      id: uuidv4(),
-      name: this.notebookTitle.trim(),
-      notes: [],
-      createdAt: Date.now(),
-    };
+    this.store
+      .select(NotebookSelectors.selectAllNotebooks)
+      .pipe(take(1)) // Automatically unsubscribes after first value
+      .subscribe((notebooks) => {
+        const duplicate = notebooks.find(
+          (notebook) =>
+            notebook.name.toLowerCase() === trimmedTitle.toLowerCase()
+        );
 
-    this.store.dispatch(NotebookActions.addNotebook({ notebook: newNotebook }));
-    this.notebookCreated.emit(newNotebook);
-    this.close.emit();
+        if (duplicate) {
+          alert('A notebook with this title already exists.');
+          return; // Exit early
+        }
+
+        const newNotebook: Notebook = {
+          id: uuidv4(),
+          name: trimmedTitle,
+          notes: [],
+          createdAt: Date.now(),
+        };
+
+        this.store.dispatch(
+          NotebookActions.addNotebook({ notebook: newNotebook })
+        );
+        this.notebookCreated.emit(newNotebook);
+        this.close.emit();
+      });
   }
 
   onCancel(): void {

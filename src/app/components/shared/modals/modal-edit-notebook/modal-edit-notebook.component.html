@@ -1,0 +1,20 @@
+<div class="notebook-edit-modal" (mousedown)="onBackgroundClick()">
+  <div class="modal-content" (mousedown)="$event.stopPropagation()">
+    <h2>Edit Notebook</h2>
+
+    <input
+      type="text"
+      [ngModel]="notebookName"
+      (ngModelChange)="onNameInput($event)"
+      placeholder="Notebook Name"
+      class="notebook-title-input"
+      (keyup.enter)="save.emit()"
+      (keyup.esc)="cancel.emit()"
+    />
+
+    <div class="edit-buttons">
+      <button (click)="save.emit()">Save</button>
+      <button (click)="cancel.emit()">Cancel</button>
+    </div>
+  </div>
+</div>

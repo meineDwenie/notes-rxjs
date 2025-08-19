@@ -28,7 +28,6 @@ export class HeaderComponent {
   @Output() viewModeChange = new EventEmitter<'grid' | 'column'>();
   @Output() searchChange = new EventEmitter<string>();
   @Output() filterRemove = new EventEmitter<{ id: string; label: string }>();
-  @Output() settingsClick = new EventEmitter<void>();
 
   onCreateNote() {
     this.createNote.emit();

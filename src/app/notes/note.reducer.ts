@@ -8,11 +8,13 @@ export interface NotesState {
   notes: Note[];
   loading: boolean;
   error: string | null;
+  searchTerm: string;
 }
 
 export const initialState: NotesState = {
   notes: [],
   loading: false,
+  searchTerm: '',
   error: null,
 };
 
@@ -51,5 +53,10 @@ export const notesReducer = createReducer(
     notes: state.notes.map((note) =>
       note.id === id ? { ...note, pinned: !note.pinned } : note
     ),
+  })),
+
+  on(NoteActions.setSearchTerm, (state, { term }) => ({
+    ...state,
+    searchTerm: term,
   }))
 );

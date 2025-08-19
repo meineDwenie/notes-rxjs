@@ -1,15 +1,18 @@
 <div class="modal-background">
-  <div class="modal-container">
-    <div class="header-title-container">
-      <h2>Add Note to Notebook</h2>
-      <button (click)="close.emit()" class="close-button">
-        <iconify-icon icon="lets-icons:close-round"></iconify-icon>
-      </button>
+  <div class="modal-container" (clickOutside)="close.emit()">
+    <div class="header-title-container" *ngIf="note">
+      <h2>Add this note to notebook</h2>
     </div>
 
-    <div class="note-preview" *ngIf="note">
-      <h4>{{ note.title }}</h4>
-      <p class="note-content-preview">{{ note.content | slice:0:100 }} ...</p>
+    <div class="note-preview-container">
+      <div
+        class="note-preview"
+        *ngIf="note"
+        [ngStyle]="{'background-color': note.color}"
+      >
+        <h4>{{ note.title }}</h4>
+        <p class="note-content-preview">{{ note.content | slice:0:100 }} ...</p>
+      </div>
     </div>
 
     <div class="notebooks-section">

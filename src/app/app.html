@@ -20,101 +20,28 @@
   </div>
 
   <!-- MODALS ------------------------------------------------------->
-  <!-- Note Modal -->
-  <div class="note-modal" *ngIf="selectedNote" (click)="closeNoteModal()">
-    <div
-      class="modal-content"
-      (click)="$event.stopPropagation()"
-      [style.backgroundColor]="isModalEditing ? modalColor : selectedNote.color || '#ffffff'"
-    >
-      <!-- View mode -->
-      <div *ngIf="!isModalEditing" class="modal-view">
-        <h3 (click)="enableModalEdit()" class="view-mode-modal-title">
-          {{ selectedNote.title }}
-        </h3>
-        <div class="modal-scrollable-content" (click)="enableModalEdit()">
-          <p>{{ selectedNote.content }}</p>
-        </div>
-        <div class="image-preview">
-          <div
-            class="image-wrapper"
-            *ngFor="let img of modalImages; let i = index"
-          >
-            <img [src]="img" class="preview-thumbnail" />
-          </div>
-        </div>
-        <div class="modal-footer-buttons">
-          <button (click)="enableModalEdit()">Edit</button>
-          <button class="close-btn" (click)="closeNoteModal()">Close</button>
-        </div>
-      </div>
-
-      <!-- Edit mode -->
-      <div *ngIf="isModalEditing">
-        <input type="text" [(ngModel)]="modalTitle" class="title-input" />
-        <textarea
-          *ngIf="isModalEditing"
-          autoResize
-          [(ngModel)]="modalContent"
-          class="modal-textarea"
-          placeholder="Edit your note"
-          #noteTextArea
-        ></textarea>
-        <div class="image-preview">
-          <div
-            class="image-wrapper"
-            *ngFor="let img of modalImages; let i = index"
-          >
-            <div class="spinner" *ngIf="modalImageLoading[i]"></div>
-            <img
-              [src]="img"
-              class="preview-thumbnail"
-              (load)="onImageLoad(i)"
-              [style.display]="modalImageLoading[i] ? 'none' : 'block'"
-            />
-            <button
-              (click)="removeModalImage(i); $event.stopPropagation()"
-              class="remove-image-button"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-        <div class="color-picker">
-          <label *ngFor="let c of availableColors">
-            <input
-              type="radio"
-              name="modalNoteColor"
-              [value]="c"
-              [(ngModel)]="modalColor"
-            />
-            <span [style.backgroundColor]="c" class="color-swatch"></span>
-          </label>
-        </div>
-        <div class="buttons-container">
-          <div class="image-upload-container">
-            <input
-              type="file"
-              id="modalImageInput"
-              accept="image/*"
-              multiple
-              (change)="onModalImageSelected($event)"
-              class="hidden-file-input"
-            />
-            <label for="modalImageInput" class="custom-file-button">
-              <i class="bi bi-image"></i> Add Image
-            </label>
-          </div>
-          <button (click)="saveModalEdit()" class="buttons-container-save">
-            Save
-          </button>
-          <button (click)="cancelModalEdit()" class="buttons-container-cancel">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Note Modal (includes view and edit modals inside it)-->
+  <app-modal-note
+    *ngIf="selectedNote"
+    [note]="selectedNote"
+    [isEditing]="isModalEditing"
+    [modalTitle]="modalTitle"
+    [modalContent]="modalContent"
+    [modalColor]="modalColor"
+    [modalImages]="modalImages"
+    [modalImageLoading]="modalImageLoading"
+    [availableColors]="availableColors"
+    (close)="closeNoteModal()"
+    (edit)="enableModalEdit()"
+    (cancel)="cancelModalEdit()"
+    (save)="saveModalEdit()"
+    (titleChange)="modalTitle = $event"
+    (contentChange)="modalContent = $event"
+    (colorChange)="modalColor = $event"
+    (imageSelected)="onModalImageSelected($event)"
+    (removeImage)="removeModalImage($event)"
+    (imageLoad)="onModalImageLoad($event)"
+  />
 
   <!-- Add New Note Modal -->
   <div>
@@ -144,18 +71,10 @@
   </div>
 
   <!-- Notebook Edit Modal -->
-  <div
-    class="notebook-edit-modal"
+  <app-modal-edit-notebook
     *ngIf="editingNotebook"
-    (click)="cancelNotebookEdit()"
-  >
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <h3>Edit Notebook</h3>
-      <input [(ngModel)]="editingNotebookName" placeholder="Notebook Name" />
-      <div class="edit-buttons">
-        <button (click)="saveNotebookEdit()">Save</button>
-        <button (click)="cancelNotebookEdit()">Cancel</button>
-      </div>
-    </div>
-  </div>
+    [(notebookName)]="editingNotebookName"
+    (save)="saveNotebookEdit()"
+    (cancel)="cancelNotebookEdit()"
+  />
 </div>

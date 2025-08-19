@@ -1,28 +1,19 @@
 <header>
-  <!-- Header Actions -->
   <div class="header-actions">
-    <!-- Create note, notebook view button Actions -->
+    <!-- Create note, notebook Actions -->
     <div class="main-action-buttons">
-      <button
-        class="header-action-btn"
-        title="Take a note"
-        (click)="onCreateNote()"
-      >
+      <button class="header-action-btn" (click)="onCreateNote()">
         <iconify-icon icon="fluent:note-add-16-regular"></iconify-icon>
         <h3>Take a note</h3>
       </button>
 
-      <button
-        class="header-action-btn"
-        title="Create a notebook"
-        (click)="onCreateNotebook()"
-      >
+      <button class="header-action-btn" (click)="onCreateNotebook()">
         <iconify-icon icon="fluent:notebook-add-20-regular"></iconify-icon>
         <h3>Create a notebook</h3>
       </button>
 
       <!-- View change contianer -->
-      <div class="view-change-btn-container">
+      <!-- <div class="view-change-btn-container">
         <button
           class="header-btn"
           title="Grid View"
@@ -40,7 +31,7 @@
         >
           <iconify-icon icon="fluent:column-triple-20-regular"></iconify-icon>
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Search Bar -->
@@ -61,16 +52,5 @@
         <i class="bi bi-search search-icon"></i>
       </div>
     </div>
-  </div>
-
-  <!-- Breadcrumb/Search/ Filter Pills -->
-  <div class="filters-section" *ngIf="activeFilters.length > 0">
-    <span class="filter-label">Filters:</span>
-    <span *ngFor="let filter of activeFilters" class="filter-pill">
-      {{ filter.label }}
-      <button (click)="removeFilter(filter)" class="remove-filter">
-        <i class="bi bi-x"></i>
-      </button>
-    </span>
   </div>
 </header>
