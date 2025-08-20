@@ -6,7 +6,7 @@ import {
   AfterViewChecked,
 } from '@angular/core';
 
-import { filter, Observable } from 'rxjs';
+import { filter, map, Observable, take } from 'rxjs';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -329,6 +329,32 @@ export class App implements OnInit, AfterViewChecked {
     }
   }
 
+  // saveModalEdit(): void {
+  //   if (this.selectedNote) {
+  //     const updatedNote = {
+  //       ...this.selectedNote,
+  //       title: this.modalTitle.trim(),
+  //       content: this.modalContent.trim(),
+  //       color: this.modalColor,
+  //       images: [...this.modalImages],
+  //     };
+
+  //     const update = {
+  //       id: updatedNote.id,
+  //       changes: {
+  //         title: updatedNote.title,
+  //         content: updatedNote.content,
+  //         color: this.modalColor,
+  //         images: updatedNote.images,
+  //       },
+  //     };
+
+  //     this.store.dispatch(NoteActions.updateNote({ update }));
+  //     this.selectedNote = updatedNote;
+  //     this.isModalEditing = false;
+  //   }
+  // }
+
   saveModalEdit(): void {
     if (this.selectedNote) {
       const updatedNote = {
@@ -337,8 +363,10 @@ export class App implements OnInit, AfterViewChecked {
         content: this.modalContent.trim(),
         color: this.modalColor,
         images: [...this.modalImages],
+        updatedAt: Date.now(), // Add update timestamp
       };
 
+      // Create the update object for NgRx
       const update = {
         id: updatedNote.id,
         changes: {
@@ -346,10 +374,45 @@ export class App implements OnInit, AfterViewChecked {
           content: updatedNote.content,
           color: this.modalColor,
           images: updatedNote.images,
+          updatedAt: updatedNote.updatedAt,
         },
       };
 
+      // Dispatch the update to the store first
       this.store.dispatch(NoteActions.updateNote({ update }));
+
+      // Update notebooks that contain this note using take(1) to avoid subscription issues
+      this.notebooks$
+        .pipe(
+          map((notebooks) =>
+            notebooks.filter((notebook) =>
+              notebook.notes.some((note) => note.id === updatedNote.id)
+            )
+          ),
+          // Use take(1) to automatically unsubscribe after one emission
+          take(1)
+        )
+        .subscribe((notebooksWithNote) => {
+          // Update each notebook that contains this note
+          notebooksWithNote.forEach((notebook) => {
+            const updatedNotebookNotes = notebook.notes.map((note) =>
+              note.id === updatedNote.id ? updatedNote : note
+            );
+
+            this.store.dispatch(
+              NotebookActions.updateNotebook({
+                update: {
+                  id: notebook.id,
+                  changes: {
+                    notes: updatedNotebookNotes,
+                  },
+                },
+              })
+            );
+          });
+        });
+
+      // Update the local selected note
       this.selectedNote = updatedNote;
       this.isModalEditing = false;
     }

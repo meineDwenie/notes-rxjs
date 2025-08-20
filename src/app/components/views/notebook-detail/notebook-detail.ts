@@ -6,13 +6,14 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, combineLatest, Subject, pipe } from 'rxjs';
-import { map, takeUntil, filter } from 'rxjs/operators';
+import { Observable, combineLatest, Subject } from 'rxjs';
+import { map, takeUntil, filter, tap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 
 import { Notebook } from '../../../notebooks/notebook.model';
 import { Note } from '../../../notes/note.model';
 import * as NotebookSelectors from '../../../notebooks/notebook.selectors';
+import * as NoteSelectors from '../../../notes/note.selectors';
 import * as NotebookActions from '../../../notebooks/notebook.actions';
 import * as NoteActions from '../../../notes/note.actions';
 import { NoteComponent } from '../../note/note';
@@ -25,11 +26,11 @@ import { EventBusService } from '../../../services/event-bus.service';
   imports: [CommonModule, NoteComponent, ButtonFeatureComponent],
   templateUrl: './notebook-detail.html',
   styleUrl: './notebook-detail.css',
-
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class NotebookDetail implements OnInit, OnDestroy {
   notebook$!: Observable<Notebook | undefined>;
+  allNotes$!: Observable<Note[]>;
   notFound = false;
   openNotebookOptionsId: string | null = null;
 
@@ -43,16 +44,46 @@ export class NotebookDetail implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
+
     this.notebook$ = combineLatest([
       this.route.params,
       this.store.select(NotebookSelectors.selectAllNotebooks),
+      this.allNotes$,
     ]).pipe(
-      map(([params, notebooks]) => {
+      map(([params, notebooks, allNotes]) => {
         const notebook = notebooks.find((nb) => nb.id === params['id']);
+
         if (!notebook && notebooks.length > 0) {
           this.notFound = true;
+          return undefined;
         }
-        return notebook;
+
+        if (!notebook) return undefined;
+
+        // The key fix: properly sync notebook notes with the latest note data
+        const updatedNotes = notebook.notes
+          .map((notebookNote) => {
+            // Find the latest version of each note from allNotes
+            const latestNote = allNotes.find((n) => n.id === notebookNote.id);
+            return latestNote || notebookNote; // Use latest version if found, otherwise use notebook version
+          })
+          .filter((note): note is Note => !!note); // Remove any null/undefined notes
+
+        console.log('Notebook found:', notebook.name);
+        console.log('Notebook notes in data:', notebook.notes.length);
+        console.log('Updated notes after sync:', updatedNotes.length);
+
+        return {
+          ...notebook,
+          notes: updatedNotes,
+        };
+      }),
+      tap((notebook) => {
+        // Debug logging
+        if (notebook) {
+          console.log('Final notebook with notes:', notebook.notes.length);
+        }
       }),
       takeUntil(this.destroy$)
     );
@@ -80,34 +111,50 @@ export class NotebookDetail implements OnInit, OnDestroy {
   deleteNotebook(notebook: Notebook) {
     if (confirm(`Are you sure you want to delete "${notebook.name}"?`)) {
       this.store.dispatch(NotebookActions.deleteNotebook({ id: notebook.id }));
+      // Navigate back to main view after deletion
+      this.router.navigate(['/']);
     }
   }
 
   openNote(note: Note) {
-    // Open note modal
+    this.eventBus.emitNoteSelected(note);
   }
 
   removeNoteFromNotebook(noteId: string) {
-    this.notebook$
-      .pipe(
-        filter((notebook) => !!notebook),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((notebook) => {
-        if (notebook) {
-          const updatedNotes = notebook.notes.filter(
-            (note) => note.id !== noteId
-          );
-          this.store.dispatch(
-            NotebookActions.updateNotebook({
-              update: {
-                id: notebook.id,
-                changes: { notes: updatedNotes },
-              },
-            })
-          );
-        }
-      });
+    if (confirm('Remove this note from the notebook?')) {
+      this.notebook$
+        .pipe(
+          filter((notebook) => !!notebook),
+          takeUntil(this.destroy$)
+        )
+        .subscribe((notebook) => {
+          if (notebook) {
+            const updatedNotes = notebook.notes.filter(
+              (note) => note.id !== noteId
+            );
+
+            this.store.dispatch(
+              NotebookActions.updateNotebook({
+                update: {
+                  id: notebook.id,
+                  changes: {
+                    notes: updatedNotes,
+                  },
+                },
+              })
+            );
+          }
+        });
+    }
+  }
+
+  deleteNote(noteId: string) {
+    if (confirm('Are you sure you want to delete this note?')) {
+      // First remove from notebook
+      this.removeNoteFromNotebook(noteId);
+      // Then delete the note entirely
+      this.store.dispatch(NoteActions.deleteNote({ id: noteId }));
+    }
   }
 
   togglePin(note: Note, event: MouseEvent) {
@@ -115,16 +162,38 @@ export class NotebookDetail implements OnInit, OnDestroy {
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
   }
 
+  // handleNoteOption(action: string, note: Note) {
+  //   switch (action) {
+  //     case 'removeFromNotebook':
+  //       this.removeNoteFromNotebook(note.id);
+  //       break;
+  //     case 'delete':
+  //       if (confirm('Are you sure you want to delete this note?')) {
+  //         this.store.dispatch(NoteActions.deleteNote({ id: note.id }));
+  //       }
+  //       break;
+  //   }
+  // }
+
   handleNoteOption(action: string, note: Note) {
+    console.log('Note option selected:', action, note.title);
+
     switch (action) {
       case 'removeFromNotebook':
         this.removeNoteFromNotebook(note.id);
         break;
       case 'delete':
-        if (confirm('Are you sure you want to delete this note?')) {
-          this.store.dispatch(NoteActions.deleteNote({ id: note.id }));
-        }
+        this.deleteNote(note.id);
         break;
+      case 'addToNotebook':
+        this.eventBus.triggerAddToNotebookModal(note);
+        break;
+      default:
+        console.log('Unknown action:', action);
     }
+  }
+
+  navigateBack() {
+    this.router.navigate(['/']);
   }
 }

@@ -125,76 +125,13 @@
           }
         }
       }
-
-      /* .notebook-icon-hover {
-    display: none; 
-  }
-
-  .notebook-header:hover .notebook-icon-default {
-    display: none;
-  }
-
-  .notebook-header:hover .notebook-icon-hover {
-    display: inline-block;
-  } 
-
-    .ntbk-three-dots {
-      top: 14px;
-      right: 14px;
-      background-color: transparent;
-      padding: 2px 6px;
-      border: none;
-      border-radius: 8px;
-      color: var(--feature-button-color);
-      opacity: 0;
-
-      &:hover {
-        color: var(--feature-button-hover-color);
-        background-color: var(--feature-button-hover-background-color);
-      }
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      bottom: -50px;
-      right: 0;
-      background: white;
-      border: 1px solid #ccc;
-      z-index: 1000;
-      padding: 0;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      min-width: 120px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-
-      button {
-        justify-content: flex-start;
-        align-items: center;
-        text-align: left;
-        background: none;
-        border: none;
-        border-radius: 0;
-        padding: 4px 12px;
-        width: 100%;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #f0f0f0;
-        }
-      }
-    }
-
-    .notebook-item:hover .ntbk-three-dots {
-    opacity: 1;
-  } */
     }
 
     /* NOTES INSIDE NOTEBOOK*/
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1rem;
+      gap: 1.5rem;
       padding: 0;
       margin: 0;
     }

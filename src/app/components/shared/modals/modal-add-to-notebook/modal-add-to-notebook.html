@@ -39,9 +39,10 @@
       >
         <li
           *ngFor="let notebook of filteredNotebooks$ | async"
-          (click)="selectNotebook(notebook)"
+          (click)="!notebookContainsNote(notebook) && selectNotebook(notebook)"
           class="notebook-item"
           [class.already-contains]="notebookContainsNote(notebook)"
+          [class.disabled]="notebookContainsNote(notebook)"
         >
           <div class="notebook-info">
             <iconify-icon icon="hugeicons:notebook-01"></iconify-icon>
@@ -53,7 +54,7 @@
               icon="lets-icons:check-fill"
               class="check-icon"
             ></iconify-icon>
-            <span>Already added</span>
+            <span>Added</span>
           </div>
         </li>
       </ul>

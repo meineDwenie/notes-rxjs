@@ -1,15 +1,21 @@
 /* Always show buttons inside modal */
 .buttons-container {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  justify-content: flex-end;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 1rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.save-cancel-buttons {
+  display: flex;
+  gap: 0.8rem;
 }
 
 .buttons-container-save {
   background-color: #38931c;
   color: white;
-  padding: 0.4rem 0.9rem;
+  padding: 0.4rem 32px;
   border: none;
   border-radius: 8px;
   cursor: pointer;

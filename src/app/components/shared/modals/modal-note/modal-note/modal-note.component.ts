@@ -37,6 +37,10 @@ export class ModalNoteComponent {
     this.close.emit();
   }
 
+  onBackgroundClick(): void {
+    this.close.emit();
+  }
+
   enableEditMode() {
     this.edit.emit();
   }

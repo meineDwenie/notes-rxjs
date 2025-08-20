@@ -1,68 +1,78 @@
-<!-- Edit mode -->
-<div>
-  <input
-    type="text"
-    [ngModel]="title"
-    (ngModelChange)="titleChange.emit($event)"
-    class="title-input"
-  />
+<!-- Edit Mode -->
+<div class="modal-overlay" (mousedown)="onBackgroundClick()">
+  <div class="modal-content" (mousedown)="$event.stopPropagation()">
+    <input
+      type="text"
+      [ngModel]="title"
+      (ngModelChange)="titleChange.emit($event)"
+      class="title-input"
+      (keyup.enter)="save.emit()"
+      (keyup.esc)="cancel.emit()"
+    />
 
-  <textarea
-    autoResize
-    [ngModel]="content"
-    (ngModelChange)="contentChange.emit($event)"
-    class="modal-textarea"
-    placeholder="Edit your note"
-  ></textarea>
+    <textarea
+      autoResize
+      [ngModel]="content"
+      (ngModelChange)="contentChange.emit($event)"
+      class="modal-textarea"
+      placeholder="Edit your note"
+      (keyup.esc)="cancel.emit()"
+    ></textarea>
 
-  <div class="image-preview">
-    <div class="image-wrapper" *ngFor="let img of images; let i = index">
-      <div class="spinner" *ngIf="imageLoading[i]"></div>
-      <img
-        [src]="img"
-        class="preview-thumbnail"
-        (load)="imageLoad.emit(i)"
-        [style.display]="imageLoading[i] ? 'none' : 'block'"
-      />
-      <button
-        (click)="removeImage.emit(i); $event.stopPropagation()"
-        class="remove-image-button"
-      >
-        &times;
-      </button>
+    <div class="image-preview">
+      <div class="image-wrapper" *ngFor="let img of images; let i = index">
+        <div class="spinner" *ngIf="imageLoading[i]"></div>
+        <img
+          [src]="img"
+          class="preview-thumbnail"
+          (load)="imageLoad.emit(i)"
+          [style.display]="imageLoading[i] ? 'none' : 'block'"
+        />
+        <button
+          (click)="removeImage.emit(i); $event.stopPropagation()"
+          class="remove-image-button"
+        >
+          &times;
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="color-picker">
-    <label *ngFor="let c of availableColors">
-      <input
-        type="radio"
-        name="modalNoteColor"
-        [value]="c"
-        [checked]="c === color"
-        (change)="colorChange.emit(c)"
-      />
-      <span [style.backgroundColor]="c" class="color-swatch"></span>
-    </label>
-  </div>
-
-  <div class="buttons-container">
-    <div class="image-upload-container">
-      <input
-        type="file"
-        id="modalImageInput"
-        accept="image/*"
-        multiple
-        (change)="imageSelected.emit($event)"
-        class="hidden-file-input"
-      />
-      <label for="modalImageInput" class="custom-file-button">
-        <i class="bi bi-image"></i> Add Image
+    <div class="color-picker">
+      <label *ngFor="let c of availableColors">
+        <input
+          type="radio"
+          name="modalNoteColor"
+          [value]="c"
+          [checked]="c === color"
+          (change)="colorChange.emit(c)"
+        />
+        <span [style.backgroundColor]="c" class="color-swatch"></span>
       </label>
     </div>
-    <button (click)="save.emit()" class="buttons-container-save">Save</button>
-    <button (click)="cancel.emit()" class="buttons-container-cancel">
-      Cancel
-    </button>
+
+    <div class="buttons-container">
+      <div class="image-upload-container">
+        <input
+          type="file"
+          id="modalImageInput"
+          accept="image/*"
+          multiple
+          (change)="imageSelected.emit($event)"
+          class="hidden-file-input"
+        />
+        <label for="modalImageInput" class="custom-file-button">
+          <i class="bi bi-image"></i> Add Image
+        </label>
+      </div>
+
+      <div class="save-cancel-buttons">
+        <button (click)="save.emit()" class="buttons-container-save">
+          Save
+        </button>
+        <button (click)="cancel.emit()" class="buttons-container-cancel">
+          Cancel
+        </button>
+      </div>
+    </div>
   </div>
 </div>

@@ -45,10 +45,6 @@ export class EventBusService {
     this.createNotebookSubject.next();
   }
 
-  // emitSearchTerm(term: string): void {
-  //   this.searchTermSubject.next(term);
-  // }
-
   triggerAddNoteModal() {
     this.openAddNoteModalSource.next();
   }

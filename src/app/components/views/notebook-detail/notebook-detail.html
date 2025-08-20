@@ -1,60 +1,73 @@
-<div class="notebook-detail" *ngIf="notebook$ | async as notebook">
-  <!-- Header -->
-  <div class="notebook-header">
-    <div class="notebook-info">
-      <div class="notebook-info-items">
-        <h1 class="notebook-title">{{ notebook.name }}</h1>
+<div class="notebook-detail-container">
+  <!-- Loading state -->
+  <div class="loading-state" *ngIf="!(notebook$ | async) && !notFound">
+    <i class="bi bi-arrow-clockwise"></i>
+    Loading notebook...
+  </div>
+
+  <!-- Main notebook content -->
+  <div class="notebook-detail" *ngIf="notebook$ | async as notebook">
+    <!-- Header -->
+    <div class="notebook-header">
+      <div class="notebook-info">
+        <div class="notebook-info-items">
+          <h1 class="notebook-title">{{ notebook.name }}</h1>
+          <h2 class="section-title">
+            {{ notebook.notes.length }} {{ notebook.notes.length <= 1 ? 'NOTE' :
+            'NOTES' }}
+          </h2>
+        </div>
+
+        <div class="notebook-actions">
+          <app-button-feature
+            customClass="notebook-action-button"
+            icon="fluent:edit-28-regular"
+            title="Edit Notebook"
+            (clicked)="editNotebook(notebook)"
+          ></app-button-feature>
+
+          <app-button-feature
+            customClass="notebook-action-button"
+            icon="mage:trash"
+            title="Delete Notebook"
+            (clicked)="deleteNotebook(notebook)"
+          ></app-button-feature>
+
+          <button
+            class="notebook-close-button"
+            title="Close Notebook"
+            (click)="navigateBack()"
+          >
+            <i class="mage:trash"></i>
+            Close
+          </button>
+        </div>
       </div>
+    </div>
 
-      <div class="notebook-actions">
-        <app-button-feature
-          customClass="notebook-action-button"
-          icon="fluent:edit-28-regular"
-          title="Edit Notebook"
-          (clicked)="editNotebook(notebook)"
-        ></app-button-feature>
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="notebook.notes.length === 0">
+      <div class="empty-icon">
+        <i class="bi bi-journal-x" style="font-size: 3rem; color: #ccc"></i>
+      </div>
+      <h2>This notebook is empty</h2>
+      <p>Add some notes to get started!</p>
+    </div>
 
-        <app-button-feature
-          customClass="notebook-action-button"
-          icon="mage:trash"
-          title="Delete Notebook"
-          (clicked)="deleteNotebook(notebook)"
-        ></app-button-feature>
+    <!-- Notes grid -->
+    <div class="notes-section" *ngIf="notebook.notes.length > 0">
+      <div class="notes-grid">
+        <app-note
+          *ngFor="let note of notebook.notes; trackBy: trackByNoteId"
+          [note]="note"
+          [showNotebook]="false"
+          (open)="openNote($event)"
+          (delete)="deleteNote($event)"
+          (togglePin)="togglePin($event.note, $event.event)"
+          (optionSelected)="handleNoteOption($event, note)"
+        >
+        </app-note>
       </div>
     </div>
   </div>
-
-  <!-- Empty state -->
-  <div class="empty-state" *ngIf="notebook.notes.length === 0">
-    <h2>This notebook is empty.</h2>
-    <p>Add some notes to get started!</p>
-  </div>
-
-  <!-- Notes grid -->
-  <div class="notes-section" *ngIf="notebook.notes.length > 0">
-    <div class="section-header">
-      <h2 class="section-title">
-        {{ notebook.notes.length }} {{ notebook.notes.length <= 1 ? 'NOTE' :
-        'NOTES '}} IN THIS NOTEBOOK
-      </h2>
-    </div>
-
-    <div class="notes-grid">
-      <app-note
-        *ngFor="let note of notebook.notes; trackBy: trackByNoteId"
-        [note]="note"
-        [showNotebook]="false"
-        (open)="openNote($event)"
-        (delete)="removeNoteFromNotebook($event)"
-        (togglePin)="togglePin($event.note, $event.event)"
-        (optionSelected)="handleNoteOption($event, note)"
-      >
-      </app-note>
-    </div>
-  </div>
-</div>
-
-<div class="not-found" *ngIf="notFound">
-  <h2>Notebook not found</h2>
-  <p>The notebook you're looking for doesn't exist.</p>
 </div>

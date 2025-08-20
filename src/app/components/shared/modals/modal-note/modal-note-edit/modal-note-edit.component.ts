@@ -25,4 +25,8 @@ export class ModalNoteEditComponent {
   @Output() imageLoad = new EventEmitter<number>();
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
+
+  onBackgroundClick(): void {
+    this.cancel.emit();
+  }
 }

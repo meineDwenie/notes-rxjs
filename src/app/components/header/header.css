@@ -48,7 +48,7 @@ header {
   padding: 0.8rem 1.2rem;
   cursor: pointer;
   font-size: 0.875rem;
-  box-shadow: 0 4px 16px rgba(10, 27, 41, 0.56);
+  box-shadow: 0 4px 8px rgba(10, 27, 41, 0.56);
   transition: all 0.2s ease;
 
   h3 {
