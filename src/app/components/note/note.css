@@ -28,7 +28,7 @@ p {
   line-height: 18pt;
   color: #343434;
   display: -webkit-box;
-  -webkit-line-clamp: 10;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

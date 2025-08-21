@@ -32,6 +32,15 @@
             title="Delete Notebook"
             (clicked)="deleteNotebook(notebook)"
           ></app-button-feature>
+
+          <button
+            class="notebook-close-button"
+            title="Close Notebook"
+            (click)="navigateBack()"
+          >
+            <i class="bi bi-x-lg"></i>
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -45,27 +54,48 @@
       <p>Add some notes to this notebook to get started!</p>
     </div>
 
-    <!-- Notes grid -->
-    <div class="notes-section" *ngIf="notebook.notes.length > 0">
-      <button
-        class="notebook-close-button"
-        title="Close Notebook"
-        (click)="navigateBack()"
-      >
-        Close
-      </button>
+    <!-- Content sections when notebook has notes -->
+    <div class="content-sections" *ngIf="notebook.notes.length > 0">
+      <!-- PINNED NOTES Section -->
+      <div class="section" *ngIf="hasPinnedNotesInNotebook$ | async">
+        <div class="section-header">
+          <h2 class="section-title">PINNED</h2>
+        </div>
 
-      <div class="notes-grid">
-        <app-note
-          *ngFor="let note of notebook.notes; trackBy: trackByNoteId"
-          [note]="note"
-          [showNotebook]="false"
-          (open)="openNote($event)"
-          (delete)="deleteNote($event)"
-          (togglePin)="togglePin($event.note, $event.event)"
-          (optionSelected)="handleNoteOption($event, note)"
-        >
-        </app-note>
+        <div class="notes-grid">
+          <app-note
+            *ngFor="let note of (pinnedNotesInNotebook$ | async); trackBy: trackByNoteId"
+            [note]="note"
+            [showNotebook]="false"
+            (open)="openNote($event)"
+            (delete)="deleteNote($event)"
+            (togglePin)="togglePin($event.note, $event.event)"
+            (optionSelected)="handleNoteOption($event, note)"
+          >
+          </app-note>
+        </div>
+      </div>
+
+      <!-- UNPINNED NOTES Section -->
+      <div class="section" *ngIf="hasUnpinnedNotesInNotebook$ | async">
+        <div class="section-header">
+          <h2 class="section-title">
+            {{ (hasPinnedNotesInNotebook$ | async) ? 'OTHER NOTES' : 'NOTES' }}
+          </h2>
+        </div>
+
+        <div class="notes-grid">
+          <app-note
+            *ngFor="let note of (unpinnedNotesInNotebook$ | async); trackBy: trackByNoteId"
+            [note]="note"
+            [showNotebook]="false"
+            (open)="openNote($event)"
+            (delete)="deleteNote($event)"
+            (togglePin)="togglePin($event.note, $event.event)"
+            (optionSelected)="handleNoteOption($event, note)"
+          >
+          </app-note>
+        </div>
       </div>
     </div>
   </div>

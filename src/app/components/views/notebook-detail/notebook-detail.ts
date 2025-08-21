@@ -31,6 +31,13 @@ import { EventBusService } from '../../../services/event-bus.service';
 export class NotebookDetail implements OnInit, OnDestroy {
   notebook$!: Observable<Notebook | undefined>;
   allNotes$!: Observable<Note[]>;
+
+  // Add observables for pinned and unpinned notes within the notebook
+  pinnedNotesInNotebook$!: Observable<Note[]>;
+  unpinnedNotesInNotebook$!: Observable<Note[]>;
+  hasPinnedNotesInNotebook$!: Observable<boolean>;
+  hasUnpinnedNotesInNotebook$!: Observable<boolean>;
+
   notFound = false;
   openNotebookOptionsId: string | null = null;
 
@@ -83,6 +90,27 @@ export class NotebookDetail implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroy$)
     );
+
+    // Create observables for pinned and unpinned notes within the notebook
+    this.pinnedNotesInNotebook$ = this.notebook$.pipe(
+      map((notebook) =>
+        notebook ? notebook.notes.filter((note) => note.pinned) : []
+      )
+    );
+
+    this.unpinnedNotesInNotebook$ = this.notebook$.pipe(
+      map((notebook) =>
+        notebook ? notebook.notes.filter((note) => !note.pinned) : []
+      )
+    );
+
+    this.hasPinnedNotesInNotebook$ = this.pinnedNotesInNotebook$.pipe(
+      map((notes) => notes.length > 0)
+    );
+
+    this.hasUnpinnedNotesInNotebook$ = this.unpinnedNotesInNotebook$.pipe(
+      map((notes) => notes.length > 0)
+    );
   }
 
   ngOnDestroy(): void {
@@ -101,7 +129,7 @@ export class NotebookDetail implements OnInit, OnDestroy {
   // Start editing notebook
   startEditingNotebook(notebook: Notebook): void {
     this.openNotebookOptionsId = null;
-    this.eventBus.emitNotebookEdit(notebook); // now valid
+    this.eventBus.emitNotebookEdit(notebook);
   }
 
   deleteNotebook(notebook: Notebook) {
@@ -121,7 +149,7 @@ export class NotebookDetail implements OnInit, OnDestroy {
       this.notebook$
         .pipe(
           filter((notebook) => !!notebook),
-          takeUntil(this.destroy$)
+          take(1)
         )
         .subscribe((notebook) => {
           if (notebook) {
@@ -156,8 +184,10 @@ export class NotebookDetail implements OnInit, OnDestroy {
   togglePin(note: Note, event: MouseEvent) {
     event.stopPropagation();
 
+    // Update the note's pin status in the main notes store
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
 
+    // Update the notebook to reflect the pinned status change
     this.notebook$
       .pipe(
         filter((notebook) => !!notebook),
