@@ -58,13 +58,13 @@ export class ModalAddNewNoteComponent {
 
   availableColors: string[] = [
     '#ffffff', // White
-    '#e8a49dff', // Red
-    '#ffd67eff', // Orange
-    '#fdf6adff', // Yellow
-    '#d8f7b5ff', // Green
-    '#bcede3', // Teal
-    '#cbf0f8', // Light Blue
-    '#dbd2e2ff', // Purple
+    '#ffc8c2ff', // Red
+    '#ffe09dff', // Orange
+    '#fffbcdff', // Yellow
+    '#e0fcc1ff', // Green
+    '#caf6edff', // Teal
+    '#cceff7ff', // Light Blue
+    '#e0d6e9ff', // Purple
   ];
 
   // Adding Images

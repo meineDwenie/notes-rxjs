@@ -1,12 +1,18 @@
 .all-view {
   position: relative;
-  padding: 2rem 4rem;
-  width: calc(100% - 280px);
-  margin-left: 280px;
-  margin-top: 86px;
+  padding: 2rem 3rem;
+  width: calc(100% - 400px);
+  height: auto;
+  min-height: calc(100vh - 130px);
+  margin-left: 340px;
+  margin-top: 96px;
+  margin-bottom: 2rem;
+  border: none;
+  border-radius: 20px;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  background-color: white;
 }
 
 .empty-state {
@@ -41,9 +47,10 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: var(--feature-button-color);
-      font-size: small;
-      font-weight: 500;
+      /* color: var(--feature-button-color); */
+      color: black;
+      font-size: 1rem;
+      font-weight: 700;
       margin-bottom: 1rem;
     }
 
@@ -91,7 +98,7 @@
           .notebook-title {
             font-size: medium;
             margin: 0;
-            color: rgba(0, 0, 0, 0.767);
+            color: rgba(0, 0, 0, 0.842);
           }
         }
       }
@@ -127,7 +134,7 @@
       }
     }
 
-    /* NOTES INSIDE NOTEBOOK*/
+    /* NOTES*/
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);

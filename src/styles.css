@@ -25,7 +25,7 @@ body {
   --header-search-bar-or-section-text-color: rgba(0, 0, 0, 0.5);
 
   /* MAIN CONTENT COLORS ----------------------------------------*/
-  --main-background-color: #ebf5f5;
+  --main-background-color: #dce8e8;
   --main-background-color-secondary: #d4ebeb;
 
   /* NOTES */
@@ -98,7 +98,7 @@ h3 {
 
 .modal-textarea {
   width: 100%;
-  /* min-height: 200px; */
+  min-height: 200px;
   max-height: 400px;
   padding: 0.5rem;
   margin-top: 0;

@@ -100,13 +100,13 @@ export class App implements OnInit, AfterViewChecked {
 
   availableColors: string[] = [
     '#ffffff', // White
-    '#e8a49dff', // Red
-    '#ffd67eff', // Orange
-    '#f4f1cfff', // Yellow
-    '#d8f7b5ff', // Green
-    '#bcede3', // Teal
-    '#cbf0f8', // Light Blue
-    '#dbd2e2ff', // Purple
+    '#ffc8c2ff', // Red
+    '#ffe09dff', // Orange
+    '#fffbcdff', // Yellow
+    '#e0fcc1ff', // Green
+    '#caf6edff', // Teal
+    '#cceff7ff', // Light Blue
+    '#e0d6e9ff', // Purple
   ];
 
   // NOTEBOOKS
@@ -143,14 +143,6 @@ export class App implements OnInit, AfterViewChecked {
 
     this.eventBus.notebookEditRequested$.subscribe((notebook) => {
       this.startEditingNotebook(notebook);
-    });
-
-    this.eventBus.createNote$.subscribe(() => {
-      this.openNewNoteModal();
-    });
-
-    this.eventBus.createNotebook$.subscribe(() => {
-      this.openCreateNotebookModal();
     });
 
     this.eventBus.openAddNoteModal$.subscribe(() => {
@@ -328,32 +320,6 @@ export class App implements OnInit, AfterViewChecked {
       this.modalColor = this.selectedNote.color || '#ffffff';
     }
   }
-
-  // saveModalEdit(): void {
-  //   if (this.selectedNote) {
-  //     const updatedNote = {
-  //       ...this.selectedNote,
-  //       title: this.modalTitle.trim(),
-  //       content: this.modalContent.trim(),
-  //       color: this.modalColor,
-  //       images: [...this.modalImages],
-  //     };
-
-  //     const update = {
-  //       id: updatedNote.id,
-  //       changes: {
-  //         title: updatedNote.title,
-  //         content: updatedNote.content,
-  //         color: this.modalColor,
-  //         images: updatedNote.images,
-  //       },
-  //     };
-
-  //     this.store.dispatch(NoteActions.updateNote({ update }));
-  //     this.selectedNote = updatedNote;
-  //     this.isModalEditing = false;
-  //   }
-  // }
 
   saveModalEdit(): void {
     if (this.selectedNote) {

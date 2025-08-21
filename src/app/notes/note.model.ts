@@ -7,3 +7,10 @@ export interface Note {
   images?: string[];
   pinned?: boolean;
 }
+
+export interface NotesState {
+  notes: Note[];
+  loading: boolean;
+  error: string | null;
+  searchTerm: string;
+}

@@ -7,7 +7,7 @@ header {
   z-index: 999;
   padding: 1rem 4rem;
   /* background-color: var(--main-background-color-secondary); */
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
   backdrop-filter: blur(8px);
 }
 

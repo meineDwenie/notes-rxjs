@@ -1,15 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
-import { Note } from './note.model';
+import { NotesState } from './note.model';
 import * as NoteActions from '../notes/note.actions';
 
 export const notesFeatureKey = 'notes';
 
-export interface NotesState {
-  notes: Note[];
-  loading: boolean;
-  error: string | null;
-  searchTerm: string;
-}
+// export interface NotesState {
+//   notes: Note[];
+//   loading: boolean;
+//   error: string | null;
+//   searchTerm: string;
+// }
 
 export const initialState: NotesState = {
   notes: [],

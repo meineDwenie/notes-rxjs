@@ -14,7 +14,6 @@ export class EventBusService {
   private openAddToNotebookModalSource = new Subject<Note>();
   private createNoteSubject = new Subject<void>();
   private createNotebookSubject = new Subject<void>();
-  // private searchTermSubject = new BehaviorSubject<string>('');
 
   noteSelected$ = this.noteSelectedSource.asObservable();
   notebookSelected$ = this.notebookSelectedSource.asObservable();
@@ -23,7 +22,6 @@ export class EventBusService {
   openAddToNotebookModal$ = this.openAddToNotebookModalSource.asObservable();
   createNote$ = this.createNoteSubject.asObservable();
   createNotebook$ = this.createNotebookSubject.asObservable();
-  // searchTerm$ = this.searchTermSubject.asObservable();
 
   emitNoteSelected(note: Note) {
     this.noteSelectedSource.next(note);

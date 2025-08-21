@@ -32,15 +32,6 @@
             title="Delete Notebook"
             (clicked)="deleteNotebook(notebook)"
           ></app-button-feature>
-
-          <button
-            class="notebook-close-button"
-            title="Close Notebook"
-            (click)="navigateBack()"
-          >
-            <i class="mage:trash"></i>
-            Close
-          </button>
         </div>
       </div>
     </div>
@@ -51,11 +42,19 @@
         <i class="bi bi-journal-x" style="font-size: 3rem; color: #ccc"></i>
       </div>
       <h2>This notebook is empty</h2>
-      <p>Add some notes to get started!</p>
+      <p>Add some notes to this notebook to get started!</p>
     </div>
 
     <!-- Notes grid -->
     <div class="notes-section" *ngIf="notebook.notes.length > 0">
+      <button
+        class="notebook-close-button"
+        title="Close Notebook"
+        (click)="navigateBack()"
+      >
+        Close
+      </button>
+
       <div class="notes-grid">
         <app-note
           *ngFor="let note of notebook.notes; trackBy: trackByNoteId"

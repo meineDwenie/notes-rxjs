@@ -7,7 +7,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, Subject } from 'rxjs';
-import { map, takeUntil, filter, tap } from 'rxjs/operators';
+import { map, takeUntil, filter, tap, take } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 
 import { Notebook } from '../../../notebooks/notebook.model';
@@ -69,10 +69,6 @@ export class NotebookDetail implements OnInit, OnDestroy {
             return latestNote || notebookNote; // Use latest version if found, otherwise use notebook version
           })
           .filter((note): note is Note => !!note); // Remove any null/undefined notes
-
-        console.log('Notebook found:', notebook.name);
-        console.log('Notebook notes in data:', notebook.notes.length);
-        console.log('Updated notes after sync:', updatedNotes.length);
 
         return {
           ...notebook,
@@ -159,21 +155,33 @@ export class NotebookDetail implements OnInit, OnDestroy {
 
   togglePin(note: Note, event: MouseEvent) {
     event.stopPropagation();
-    this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
-  }
 
-  // handleNoteOption(action: string, note: Note) {
-  //   switch (action) {
-  //     case 'removeFromNotebook':
-  //       this.removeNoteFromNotebook(note.id);
-  //       break;
-  //     case 'delete':
-  //       if (confirm('Are you sure you want to delete this note?')) {
-  //         this.store.dispatch(NoteActions.deleteNote({ id: note.id }));
-  //       }
-  //       break;
-  //   }
-  // }
+    this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
+
+    this.notebook$
+      .pipe(
+        filter((notebook) => !!notebook),
+        take(1)
+      )
+      .subscribe((notebook) => {
+        if (notebook) {
+          const updatedNotes = notebook.notes.map((n) =>
+            n.id === note.id ? { ...n, pinned: !n.pinned } : n
+          );
+
+          this.store.dispatch(
+            NotebookActions.updateNotebook({
+              update: {
+                id: notebook.id,
+                changes: {
+                  notes: updatedNotes,
+                },
+              },
+            })
+          );
+        }
+      });
+  }
 
   handleNoteOption(action: string, note: Note) {
     console.log('Note option selected:', action, note.title);
