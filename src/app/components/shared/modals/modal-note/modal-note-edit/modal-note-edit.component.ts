@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -16,6 +23,7 @@ export class ModalNoteEditComponent {
   @Input() images: string[] = [];
   @Input() imageLoading: boolean[] = [];
   @Input() availableColors: string[] = [];
+  @Input() clickedSection: 'title' | 'content' = 'content';
 
   @Output() titleChange = new EventEmitter<string>();
   @Output() contentChange = new EventEmitter<string>();
@@ -25,6 +33,20 @@ export class ModalNoteEditComponent {
   @Output() imageLoad = new EventEmitter<number>();
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
+
+  @ViewChild('titleInput') titleInput!: ElementRef;
+  @ViewChild('textAreaInput') textAreaInput!: ElementRef;
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.clickedSection == 'title') {
+        this.titleInput?.nativeElement?.focus();
+      } else {
+        this.textAreaInput?.nativeElement?.focus();
+      }
+    });
+  }
 
   onBackgroundClick(): void {
     this.cancel.emit();

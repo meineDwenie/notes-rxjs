@@ -6,6 +6,8 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   ViewChild,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 
 import { Store } from '@ngrx/store';
@@ -37,7 +39,7 @@ import * as NotebookActions from '../../../../notebooks/notebook.actions';
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ModalAddNewNoteComponent {
+export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
 
   @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
@@ -78,6 +80,16 @@ export class ModalAddNewNoteComponent {
 
   constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
+  }
+
+  ngOnInit() {
+    // Prevents scrolling outside modal
+    document.body.classList.add('modal-open');
+  }
+
+  ngOnDestroy() {
+    // Prevents scrolling outside modal
+    document.body.classList.remove('modal-open');
   }
 
   ngAfterViewInit() {

@@ -8,6 +8,7 @@
       class="title-input"
       (keyup.enter)="save.emit()"
       (keyup.esc)="cancel.emit()"
+      #titleInput
     />
 
     <textarea
@@ -17,6 +18,7 @@
       class="modal-textarea"
       placeholder="Edit your note"
       (keyup.esc)="cancel.emit()"
+      #textAreaInput
     ></textarea>
 
     <div class="image-preview">

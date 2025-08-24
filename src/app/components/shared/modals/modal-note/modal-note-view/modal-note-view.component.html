@@ -1,9 +1,9 @@
 <!-- View mode -->
 <div *ngIf="note" class="modal-view">
-  <h3 (click)="onEdit()" class="note-title">
+  <h3 (click)="onEdit('title')" class="note-title">
     {{ note.title }}
   </h3>
-  <div class="modal-scrollable-content" (click)="onEdit()">
+  <div class="modal-scrollable-content" (click)="onEdit('content')">
     <p>{{ note.content }}</p>
   </div>
   <div class="image-preview">
@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="modal-footer-buttons">
-    <button (click)="onEdit()">Edit</button>
+    <!-- <button (click)="onEdit()">Edit</button> -->
     <button class="close-btn" (click)="onClose()">Close</button>
   </div>
 </div>

@@ -4,6 +4,8 @@ import {
   EventEmitter,
   Input,
   CUSTOM_ELEMENTS_SCHEMA,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { EventBusService } from '../../../../services/event-bus.service';
 import { Store } from '@ngrx/store';
@@ -37,7 +39,7 @@ import { ClickOutsideDirective } from '../../../../directives/click-outside-dire
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ModalAddToNotebookComponent {
+export class ModalAddToNotebookComponent implements OnInit, OnDestroy {
   @Input() note: Note | null = null;
 
   @Output() edit = new EventEmitter<Notebook>();
@@ -64,6 +66,16 @@ export class ModalAddToNotebookComponent {
         startWith('')
       ),
     ]).pipe(map(([notebooks, term]) => this.filterNotebooks(notebooks, term)));
+  }
+
+  ngOnInit() {
+    // Prevents scrolling outside modal
+    document.body.classList.add('modal-open');
+  }
+
+  ngOnDestroy() {
+    // Prevents scrolling outside modal
+    document.body.classList.remove('modal-open');
   }
 
   private filterNotebooks(notebooks: Notebook[], term: string): Notebook[] {

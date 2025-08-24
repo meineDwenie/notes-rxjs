@@ -28,6 +28,8 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   color: #343434;
+  height: auto;
+  max-height: 56vh;
 }
 
 .close-btn,

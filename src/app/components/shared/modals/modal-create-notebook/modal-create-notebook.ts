@@ -5,6 +5,8 @@ import {
   ViewChild,
   ElementRef,
   CUSTOM_ELEMENTS_SCHEMA,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +28,7 @@ import { ClickOutsideDirective } from '../../../../directives/click-outside-dire
 
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ModalCreateNotebookComponent {
+export class ModalCreateNotebookComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
   @Output() notebookCreated = new EventEmitter<Notebook>();
 
@@ -36,6 +38,16 @@ export class ModalCreateNotebookComponent {
   notebookDescription: string = '';
 
   constructor(private store: Store) {}
+
+  ngOnInit() {
+    // Prevents scrolling outside modal
+    document.body.classList.add('modal-open');
+  }
+
+  ngOnDestroy() {
+    // Prevents scrolling outside modal
+    document.body.classList.remove('modal-open');
+  }
 
   ngAfterViewInit() {
     // Focus on the title input when modal opens

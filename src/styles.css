@@ -8,6 +8,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Prevents scrolling outside modal */
+body.modal-open {
+  overflow: hidden;
+}
+
 :root {
   /* SIDEBAR COLORS ----------------------------------------*/
   --sidebar-gradient-color1: #8cc5c5;
@@ -82,6 +87,7 @@ h3 {
   font-size: 18px;
   font-weight: 500;
   line-height: 1.3;
+  width: 86%;
 }
 
 .title-input {

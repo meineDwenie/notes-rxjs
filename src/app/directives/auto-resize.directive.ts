@@ -15,7 +15,7 @@ export class autoResizeDirective implements AfterViewInit {
   adjustHeight() {
     const textarea = this.el.nativeElement;
     textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px'; // Max 300px
+    textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px'; // Max 400px
   }
 
   ngAfterViewInit() {

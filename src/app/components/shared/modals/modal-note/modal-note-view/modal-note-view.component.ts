@@ -13,11 +13,11 @@ export class ModalNoteViewComponent {
   @Input() note!: Note;
   @Input() images: string[] = [];
 
-  @Output() edit = new EventEmitter<void>();
+  @Output() edit = new EventEmitter<'title' | 'content'>();
   @Output() close = new EventEmitter<void>();
 
-  onEdit(): void {
-    this.edit.emit();
+  onEdit(section: 'title' | 'content'): void {
+    this.edit.emit(section);
   }
 
   onClose(): void {

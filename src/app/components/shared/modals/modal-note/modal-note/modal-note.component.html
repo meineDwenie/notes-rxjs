@@ -1,4 +1,4 @@
-<div class="note-modal" (click)="close.emit()">
+<div class="note-modal" (click)="close.emit()" (appEscKey)="onEscKeyPressed()">
   <div
     class="modal-content"
     (click)="$event.stopPropagation()"
@@ -8,7 +8,7 @@
       *ngIf="!isEditing"
       [note]="note"
       [images]="note.images || []"
-      (edit)="enableEditMode()"
+      (edit)="enableEditMode($event)"
       (close)="closeModal()"
     />
 
@@ -20,6 +20,7 @@
       [images]="modalImages"
       [imageLoading]="modalImageLoading"
       [availableColors]="availableColors"
+      [clickedSection]="clickedSection"
       (titleChange)="titleChange.emit($event)"
       (contentChange)="contentChange.emit($event)"
       (colorChange)="colorChange.emit($event)"
