@@ -4,13 +4,6 @@ import * as NoteActions from '../notes/note.actions';
 
 export const notesFeatureKey = 'notes';
 
-// export interface NotesState {
-//   notes: Note[];
-//   loading: boolean;
-//   error: string | null;
-//   searchTerm: string;
-// }
-
 export const initialState: NotesState = {
   notes: [],
   loading: false,
@@ -58,5 +51,44 @@ export const notesReducer = createReducer(
   on(NoteActions.setSearchTerm, (state, { term }) => ({
     ...state,
     searchTerm: term,
+  })),
+
+  // Archive reducers
+  on(NoteActions.archiveNote, (state, { id }) => ({
+    ...state,
+    notes: state.notes.map((note) =>
+      note.id === id
+        ? { ...note, archived: true, archivedAt: Date.now() }
+        : note
+    ),
+  })),
+
+  on(NoteActions.unarchiveNote, (state, { id }) => ({
+    ...state,
+    notes: state.notes.map((note) =>
+      note.id === id
+        ? { ...note, archived: false, archivedAt: undefined }
+        : note
+    ),
+  })),
+
+  // Trash reducers
+  on(NoteActions.trashNote, (state, { id }) => ({
+    ...state,
+    notes: state.notes.map((note) =>
+      note.id === id ? { ...note, trashed: true, trashedAt: Date.now() } : note
+    ),
+  })),
+
+  on(NoteActions.restoreNote, (state, { id }) => ({
+    ...state,
+    notes: state.notes.map((note) =>
+      note.id === id ? { ...note, trashed: false, trashedAt: undefined } : note
+    ),
+  })),
+
+  on(NoteActions.emptyTrash, (state) => ({
+    ...state,
+    notes: state.notes.filter((note) => !note.trashed),
   }))
 );

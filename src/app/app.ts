@@ -157,8 +157,11 @@ export class App implements OnInit, AfterViewChecked {
     // clears search term on every navigation
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.store.dispatch(NoteActions.setSearchTerm({ term: '' }));
+      .subscribe((event: NavigationEnd) => {
+        if (event.url === '/') {
+          this.store.dispatch(NoteActions.setSearchTerm({ term: '' }));
+          this.searchTerm = ''; // Also clear the local searchTerm
+        }
       });
   }
 

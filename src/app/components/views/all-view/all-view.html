@@ -22,10 +22,12 @@
            (filteredNotebooks$ | async)?.length === 0"
     class="empty-state"
   >
-    <h3>
-      <iconify-icon icon="bi:search" class="empty-icon"></iconify-icon>
-      No results found
-    </h3>
+    <div class="empty-icon">
+      <i class="bi bi-search" style="font-size: 3rem; color: #ccc"></i>
+    </div>
+
+    <h3>No results found</h3>
+
     <p>No notes or notebooks match "<strong>{{ searchTerm }}</strong>"</p>
   </div>
 

@@ -39,3 +39,27 @@ export const setSearchTerm = createAction(
   '[Notes] Set Search Term',
   props<{ term: string }>()
 );
+
+// Archive actions
+export const archiveNote = createAction(
+  '[Notes] Archive Note',
+  props<{ id: string }>()
+);
+
+export const unarchiveNote = createAction(
+  '[Notes] Unarchive Note',
+  props<{ id: string }>()
+);
+
+// Trash actions
+export const trashNote = createAction(
+  '[Notes] Trash Note',
+  props<{ id: string }>()
+);
+
+export const restoreNote = createAction(
+  '[Notes] Restore Note',
+  props<{ id: string }>()
+);
+
+export const emptyTrash = createAction('[Notes] Empty Trash');

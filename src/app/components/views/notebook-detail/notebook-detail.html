@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <!-- Empty state -->
+    <!-- Empty state for notebook with no notes -->
     <div class="empty-state" *ngIf="notebook.notes.length === 0">
       <div class="empty-icon">
         <i class="bi bi-journal-x" style="font-size: 3rem; color: #ccc"></i>
@@ -54,8 +54,32 @@
       <p>Add some notes to this notebook to get started!</p>
     </div>
 
+    <!-- Empty state for search with no results -->
+    <div
+      class="empty-state"
+      *ngIf="notebook.notes.length > 0 && 
+                                     (searchTerm$ | async) && 
+                                     (searchTerm$ | async)!.trim().length > 0 &&
+                                     !(hasPinnedNotesInNotebook$ | async) && 
+                                     !(hasUnpinnedNotesInNotebook$ | async)"
+    >
+      <div class="empty-icon">
+        <i class="bi bi-search" style="font-size: 3rem; color: #ccc"></i>
+      </div>
+      <h2>No notes found</h2>
+      <p>
+        No notes in this notebook match your search for "<strong
+          >{{ searchTerm$ | async }}</strong
+        >"
+      </p>
+    </div>
+
     <!-- Content sections when notebook has notes -->
-    <div class="content-sections" *ngIf="notebook.notes.length > 0">
+    <div
+      class="content-sections"
+      *ngIf="(hasPinnedNotesInNotebook$ | async) || 
+                                          (hasUnpinnedNotesInNotebook$ | async)"
+    >
       <!-- PINNED NOTES Section -->
       <div class="section" *ngIf="hasPinnedNotesInNotebook$ | async">
         <div class="section-header">

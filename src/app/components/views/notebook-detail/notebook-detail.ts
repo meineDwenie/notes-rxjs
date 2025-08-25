@@ -31,8 +31,9 @@ import { EventBusService } from '../../../services/event-bus.service';
 export class NotebookDetail implements OnInit, OnDestroy {
   notebook$!: Observable<Notebook | undefined>;
   allNotes$!: Observable<Note[]>;
+  searchTerm$!: Observable<string>;
 
-  // Add observables for pinned and unpinned notes within the notebook
+  // Add observables for pinned and unpinned notes within the notebook (filtered by search)
   pinnedNotesInNotebook$!: Observable<Note[]>;
   unpinnedNotesInNotebook$!: Observable<Note[]>;
   hasPinnedNotesInNotebook$!: Observable<boolean>;
@@ -52,6 +53,7 @@ export class NotebookDetail implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
+    this.searchTerm$ = this.store.select(NoteSelectors.selectSearchTerm);
 
     this.notebook$ = combineLatest([
       this.route.params,
@@ -91,17 +93,35 @@ export class NotebookDetail implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     );
 
-    // Create observables for pinned and unpinned notes within the notebook
-    this.pinnedNotesInNotebook$ = this.notebook$.pipe(
-      map((notebook) =>
-        notebook ? notebook.notes.filter((note) => note.pinned) : []
-      )
+    // Create observables for filtered notes within the notebook
+    const filteredNotebookNotes$ = combineLatest([
+      this.notebook$,
+      this.searchTerm$,
+    ]).pipe(
+      map(([notebook, searchTerm]) => {
+        if (!notebook) return [];
+
+        // If no search term, return all notes
+        if (!searchTerm.trim()) {
+          return notebook.notes;
+        }
+
+        // Filter notes based on search term
+        return notebook.notes.filter(
+          (note) =>
+            note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.content.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      })
     );
 
-    this.unpinnedNotesInNotebook$ = this.notebook$.pipe(
-      map((notebook) =>
-        notebook ? notebook.notes.filter((note) => !note.pinned) : []
-      )
+    // Create observables for pinned and unpinned notes within the notebook (with search filtering)
+    this.pinnedNotesInNotebook$ = filteredNotebookNotes$.pipe(
+      map((notes) => notes.filter((note) => note.pinned))
+    );
+
+    this.unpinnedNotesInNotebook$ = filteredNotebookNotes$.pipe(
+      map((notes) => notes.filter((note) => !note.pinned))
     );
 
     this.hasPinnedNotesInNotebook$ = this.pinnedNotesInNotebook$.pipe(

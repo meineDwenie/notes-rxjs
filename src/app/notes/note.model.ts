@@ -6,6 +6,10 @@ export interface Note {
   createdAt?: number;
   images?: string[];
   pinned?: boolean;
+  archived?: boolean; // For archive view
+  trashed?: boolean; // For trash view
+  trashedAt?: number; // When it was moved to trash (useful for auto-cleanup)
+  archivedAt?: number;
 }
 
 export interface NotesState {
