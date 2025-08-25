@@ -1,0 +1,1 @@
+import{o as n}from"./chunk-PD4PNQEU.js";import{Cb as m,Za as o,pb as r,qb as i}from"./chunk-SEEG46KC.js";var s=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=o({type:t,selectors:[["app-trash-view"]],decls:2,vars:0,template:function(e,p){e&1&&(r(0,"p"),m(1,"trash-view works!"),i())},dependencies:[n],encapsulation:2})};export{s as TrashView};
