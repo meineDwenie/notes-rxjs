@@ -29,7 +29,7 @@ import * as NotebookActions from '../../../../notebooks/notebook.actions';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClickOutsideDirective } from '../../../../directives/click-outside-directive';
-import { EscKeyDirective } from "../../../../directives/esc-key.directive";
+import { EscKeyDirective } from '../../../../directives/esc-key.directive';
 
 @Component({
   selector: 'app-modal-add-to-notebook',

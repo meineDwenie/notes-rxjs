@@ -154,6 +154,10 @@ export class App implements OnInit, AfterViewChecked {
       this.showAddToNotebookModal = true;
     });
 
+    this.eventBus.createNotebook$.subscribe(() => {
+      this.showCreateNotebookModal = true;
+    });
+
     // clears search term on every navigation
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))

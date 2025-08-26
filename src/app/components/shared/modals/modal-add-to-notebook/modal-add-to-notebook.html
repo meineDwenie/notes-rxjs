@@ -64,8 +64,9 @@
         *ngIf="(filteredNotebooks$ | async)!.length === 0"
       >
         <p>No notebooks found.</p>
+        
         <button (click)="openCreateNotebook()" class="link-button">
-          Create one?
+          Create one
         </button>
       </div>
     </div>
