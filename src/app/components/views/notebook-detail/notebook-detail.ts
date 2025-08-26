@@ -164,29 +164,43 @@ export class NotebookDetail implements OnInit, OnDestroy {
     this.eventBus.emitNoteSelected(note);
   }
 
-  removeNoteFromNotebook(noteId: string) {
+  removeNoteFromNotebook(event: { noteId: string; notebookId: string }) {
+    const { noteId, notebookId } = event;
+
     if (confirm('Remove this note from the notebook?')) {
-      this.notebook$
+      // Optionally add note back to global list if needed
+
+      this.store
+        .select(NotebookSelectors.selectAllNotebooks)
         .pipe(
-          filter((notebook) => !!notebook),
+          map((notebooks) =>
+            notebooks.find((notebook) => notebook.id === notebookId)
+          ),
           take(1)
         )
         .subscribe((notebook) => {
           if (notebook) {
-            const updatedNotes = notebook.notes.filter(
-              (note) => note.id !== noteId
-            );
+            const noteToRemove = notebook.notes.find((n) => n.id === noteId);
 
-            this.store.dispatch(
-              NotebookActions.updateNotebook({
-                update: {
-                  id: notebook.id,
-                  changes: {
-                    notes: updatedNotes,
+            if (noteToRemove) {
+              // Ensure it still exists in the global notes
+              this.store.dispatch(NoteActions.addNote({ note: noteToRemove }));
+
+              const updatedNotes = notebook.notes.filter(
+                (note) => note.id !== noteId
+              );
+
+              this.store.dispatch(
+                NotebookActions.updateNotebook({
+                  update: {
+                    id: notebook.id,
+                    changes: {
+                      notes: updatedNotes,
+                    },
                   },
-                },
-              })
-            );
+                })
+              );
+            }
           }
         });
     }
@@ -195,7 +209,7 @@ export class NotebookDetail implements OnInit, OnDestroy {
   deleteNote(noteId: string) {
     if (confirm('Are you sure you want to delete this note?')) {
       // First remove from notebook
-      this.removeNoteFromNotebook(noteId);
+      // this.removeNoteFromNotebook(noteId);
       // Then delete the note entirely
       this.store.dispatch(NoteActions.deleteNote({ id: noteId }));
     }
@@ -231,24 +245,6 @@ export class NotebookDetail implements OnInit, OnDestroy {
           );
         }
       });
-  }
-
-  handleNoteOption(action: string, note: Note) {
-    console.log('Note option selected:', action, note.title);
-
-    switch (action) {
-      case 'removeFromNotebook':
-        this.removeNoteFromNotebook(note.id);
-        break;
-      case 'delete':
-        this.deleteNote(note.id);
-        break;
-      case 'addToNotebook':
-        this.eventBus.triggerAddToNotebookModal(note);
-        break;
-      default:
-        console.log('Unknown action:', action);
-    }
   }
 
   navigateBack() {

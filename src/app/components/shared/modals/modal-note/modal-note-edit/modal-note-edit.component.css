@@ -41,6 +41,17 @@
   background-color: rgba(189, 232, 179, 0.4);
 }
 
+.note-tools {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  justify-content: flex-start;
+}
+
+.note-tools app-button-feature {
+  flex-shrink: 0;
+}
+
 /* Images */
 .note-form input[type="file"] {
   margin-bottom: 0;

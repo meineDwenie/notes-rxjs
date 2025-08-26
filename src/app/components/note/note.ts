@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { EventBusService } from '../../services/event-bus.service';
 
@@ -32,6 +32,10 @@ export class NoteComponent {
 
   @Output() open = new EventEmitter<Note>();
   @Output() delete = new EventEmitter<string>();
+  @Output() removeFromNotebook = new EventEmitter<{
+    noteId: string;
+    notebookId: string;
+  }>();
   @Output() togglePin = new EventEmitter<{ note: Note; event: MouseEvent }>();
   @Output() optionSelected = new EventEmitter<string>();
   @Output() addToNotebook = new EventEmitter<Note>();
@@ -39,6 +43,8 @@ export class NoteComponent {
   @Output() addCheckboxes = new EventEmitter<Note>();
 
   notebooks$: Observable<Notebook[]>;
+  isInNotebook$!: Observable<boolean>;
+  containingNotebook$!: Observable<Notebook | undefined>;
 
   dropdownVisible: boolean = false;
 
@@ -46,9 +52,24 @@ export class NoteComponent {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    this.dropdownVisible = false;
+  ngOnInit() {
+    // Check if this note is in any notebook
+    this.isInNotebook$ = this.notebooks$.pipe(
+      map((notebooks) =>
+        notebooks.some((notebook) =>
+          notebook.notes.some((note) => note.id === this.note.id)
+        )
+      )
+    );
+
+    // Get the notebook that contains this note
+    this.containingNotebook$ = this.notebooks$.pipe(
+      map((notebooks) =>
+        notebooks.find((notebook) =>
+          notebook.notes.some((note) => note.id === this.note.id)
+        )
+      )
+    );
   }
 
   onOpen() {
@@ -60,19 +81,25 @@ export class NoteComponent {
     this.delete.emit(this.note.id);
   }
 
+  onRemoveFromNotebook(event: MouseEvent) {
+    event.stopPropagation();
+    // Get the notebook ID from the observable using take(1) to avoid memory leaks
+    this.containingNotebook$.pipe(take(1)).subscribe((notebook) => {
+      if (notebook) {
+        this.removeFromNotebook.emit({
+          noteId: this.note.id,
+          notebookId: notebook.id,
+        });
+      }
+    });
+  }
+
   onTogglePin(event: MouseEvent) {
     this.togglePin.emit({ note: this.note, event });
   }
 
   openAddToNotebookModal(note: Note) {
     this.eventBus.triggerAddToNotebookModal(note);
-  }
-
-  toggleDropdown(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    console.log('Dropdown toggled');
-    this.dropdownVisible = !this.dropdownVisible;
   }
 
   onOptionSelected(action: string) {
@@ -93,9 +120,7 @@ export class NoteComponent {
     }
   }
 
-  // Function to add checkboxes to note content
   addCheckboxesToContent(content: string): string {
-    // Split content by lines and add checkboxes to each line
     const lines = content.split('\n');
     const checkboxLines = lines.map((line) => {
       if (line.trim()) {
@@ -106,7 +131,6 @@ export class NoteComponent {
     return checkboxLines.join('\n');
   }
 
-  // Function to toggle checkbox state
   toggleCheckbox(content: string, lineIndex: number): string {
     const lines = content.split('\n');
     if (lines[lineIndex]) {

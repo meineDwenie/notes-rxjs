@@ -93,8 +93,8 @@
             [showNotebook]="false"
             (open)="openNote($event)"
             (delete)="deleteNote($event)"
+            (removeFromNotebook)="removeNoteFromNotebook($event)"
             (togglePin)="togglePin($event.note, $event.event)"
-            (optionSelected)="handleNoteOption($event, note)"
           >
           </app-note>
         </div>
@@ -104,7 +104,8 @@
       <div class="section" *ngIf="hasUnpinnedNotesInNotebook$ | async">
         <div class="section-header">
           <h2 class="section-title">
-            {{ (hasPinnedNotesInNotebook$ | async) ? 'OTHER NOTES' : 'NOTES' }}
+            {{ (hasPinnedNotesInNotebook$ | async) ? 'OTHER NOTES' : 'YOUR
+            NOTES' }}
           </h2>
         </div>
 
@@ -115,8 +116,8 @@
             [showNotebook]="false"
             (open)="openNote($event)"
             (delete)="deleteNote($event)"
+            (removeFromNotebook)="removeNoteFromNotebook($event)"
             (togglePin)="togglePin($event.note, $event.event)"
-            (optionSelected)="handleNoteOption($event, note)"
           >
           </app-note>
         </div>

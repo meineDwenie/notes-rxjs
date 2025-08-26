@@ -13,7 +13,7 @@
     />
 
     <app-modal-note-edit
-      *ngIf="isEditing"
+      *ngIf="isEditing && note?.id"
       [title]="modalTitle"
       [content]="modalContent"
       [color]="modalColor"

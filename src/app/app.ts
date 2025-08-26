@@ -501,6 +501,39 @@ export class App implements OnInit, AfterViewChecked {
     );
   }
 
+  removeNoteFromNotebook(event: { noteId: string; notebookId: string }) {
+    if (
+      confirm('Are you sure you want to remove this note from the notebook?')
+    ) {
+      // Get the notebook
+      this.notebooks$
+        .pipe(
+          map((notebooks) =>
+            notebooks.find((nb) => nb.id === event.notebookId)
+          ),
+          take(1)
+        )
+        .subscribe((notebook) => {
+          if (notebook) {
+            // Remove the note from the notebook's notes array
+            const updatedNotes = notebook.notes.filter(
+              (note) => note.id !== event.noteId
+            );
+
+            // Update the notebook in the store
+            this.store.dispatch(
+              NotebookActions.updateNotebook({
+                update: {
+                  id: notebook.id,
+                  changes: { notes: updatedNotes },
+                },
+              })
+            );
+          }
+        });
+    }
+  }
+
   /* HEADER METHODS */
   onSearchChange(value: string) {
     this.searchTerm = value;

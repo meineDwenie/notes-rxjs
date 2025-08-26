@@ -53,18 +53,26 @@
     </div>
 
     <div class="buttons-container">
-      <div class="image-upload-container">
-        <input
-          type="file"
-          id="modalImageInput"
-          accept="image/*"
-          multiple
-          (change)="imageSelected.emit($event)"
-          class="hidden-file-input"
-        />
-        <label for="modalImageInput" class="custom-file-button">
-          <i class="bi bi-image"></i> Add Image
-        </label>
+      <div class="note-tools">
+        <app-button-feature
+          customClass="image-button"
+          icon="mage:image"
+          title="Upload image"
+          (clicked)="triggerImageUpload()"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="reminder-button"
+          icon="carbon:reminder"
+          title="Add reminder"
+        ></app-button-feature>
+
+        <app-button-feature
+          customClass="add-checkboxes-button"
+          icon="tabler:checkbox"
+          title="Add checkboxes"
+          (clicked)="addCheckboxes.emit()"
+        ></app-button-feature>
       </div>
 
       <div class="save-cancel-buttons">

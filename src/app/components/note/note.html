@@ -57,12 +57,31 @@
         title="Archive note"
       ></app-button-feature>
 
-      <app-button-feature
+      <!-- <app-button-feature
         customClass="delete-note-button"
         icon="mage:trash"
         title="Delete note"
         (clicked)="onDelete($event)"
-      ></app-button-feature>
+      ></app-button-feature> -->
+
+      <!-- Conditional Delete/Remove Button -->
+      <ng-container *ngIf="(isInNotebook$ | async); else deleteButton">
+        <app-button-feature
+          customClass="remove-from-notebook-button"
+          icon="mdi:note-remove"
+          title="Remove from notebook"
+          (clicked)="onRemoveFromNotebook($event)"
+        ></app-button-feature>
+      </ng-container>
+
+      <ng-template #deleteButton>
+        <app-button-feature
+          customClass="delete-note-button"
+          icon="mage:trash"
+          title="Delete note"
+          (clicked)="onDelete($event)"
+        ></app-button-feature>
+      </ng-template>
     </div>
   </div>
 </li>
