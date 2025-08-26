@@ -1,4 +1,4 @@
-<div class="modal-background">
+<div class="modal-background" (appEscKey)="close.emit()">
   <div class="modal-container" (clickOutside)="close.emit()">
     <div class="header-title-container" *ngIf="note">
       <h2>Add this note to notebook</h2>

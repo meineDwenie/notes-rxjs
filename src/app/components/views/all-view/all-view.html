@@ -10,6 +10,10 @@
     *ngIf="!(isLoading$ | async) && !(hasNotes$ | async) && !(hasNotebooks$ | async)"
     class="empty-state"
   >
+    <div class="empty-icon">
+      <i class="bi bi-chat-quote" style="font-size: 3rem; color: #ccc"></i>
+    </div>
+
     <h2>Welcome to Noteboard!</h2>
     <p>Start by creating your first note or notebook.</p>
   </div>

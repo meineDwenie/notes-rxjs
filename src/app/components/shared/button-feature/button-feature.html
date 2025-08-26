@@ -1,17 +1,21 @@
-<button
-  [class]="customClass"
-  [disabled]="disabled"
-  (click)="onClick($event)"
-  type="button"
->
-  <!-- Optional icon -->
-  <iconify-icon
-    *ngIf="icon"
-    [icon]="icon"
-    [class]="icon"
-    aria-hidden="true"
-  ></iconify-icon>
+<div class="button-container">
+  <button
+    type="button"
+    [title]="title"
+    class="feature-button"
+    (click)="onButtonClick($event)"
+  >
+    <!-- Optional icon -->
+    <iconify-icon
+      *ngIf="icon"
+      [icon]="icon"
+      [class]="icon"
+      aria-hidden="true"
+    ></iconify-icon>
 
-  <!-- Optional label with spacing -->
-  <p *ngIf="label">{{ label }}</p>
-</button>
+    <!-- Optional label with spacing -->
+    @if (label) {
+    <p>{{ label }}</p>
+    }
+  </button>
+</div>

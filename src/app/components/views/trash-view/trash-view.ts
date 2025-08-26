@@ -12,7 +12,7 @@ import { NoteComponent } from '../../note/note';
 @Component({
   selector: 'app-trash-view',
   standalone: true,
-  imports: [CommonModule, NoteComponent],
+  imports: [CommonModule],
   templateUrl: './trash-view.html',
   styleUrl: './trash-view.css',
 })

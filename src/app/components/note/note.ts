@@ -4,6 +4,7 @@ import {
   Output,
   EventEmitter,
   CUSTOM_ELEMENTS_SCHEMA,
+  HostListener,
 } from '@angular/core';
 
 import { Store } from '@ngrx/store';
@@ -34,11 +35,20 @@ export class NoteComponent {
   @Output() togglePin = new EventEmitter<{ note: Note; event: MouseEvent }>();
   @Output() optionSelected = new EventEmitter<string>();
   @Output() addToNotebook = new EventEmitter<Note>();
+  @Output() showCheckboxes = new EventEmitter<Note>();
+  @Output() addCheckboxes = new EventEmitter<Note>();
 
   notebooks$: Observable<Notebook[]>;
 
+  dropdownVisible: boolean = false;
+
   constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    this.dropdownVisible = false;
   }
 
   onOpen() {
@@ -58,34 +68,54 @@ export class NoteComponent {
     this.eventBus.triggerAddToNotebookModal(note);
   }
 
-  // onOptionSelected(action: string) {
-  //   switch (action) {
-  //     case 'addToNotebook':
-  //       this.optionSelected.emit('addToNotebook');
-  //       this.addToNotebook.emit(this.note);
-  //       break;
-  //     case 'delete':
-  //       this.onDelete({ stopPropagation: () => {} } as MouseEvent);
-  //       break;
-  //   }
-  // }
+  toggleDropdown(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('Dropdown toggled');
+    this.dropdownVisible = !this.dropdownVisible;
+  }
 
-  // addNoteToNotebook(note: Note, notebook: Notebook) {
-  //   if (notebook.notes.some((n) => n.id === note.id)) {
-  //     alert('Note already in this notebook');
-  //     return;
-  //   }
-  //   const updatedNotebook = {
-  //     ...notebook,
-  //     notes: [...notebook.notes, note],
-  //   };
-  //   this.store.dispatch(
-  //     NotebookActions.updateNotebook({
-  //       update: {
-  //         id: updatedNotebook.id,
-  //         changes: { notes: updatedNotebook.notes },
-  //       },
-  //     })
-  //   );
-  // }
+  onOptionSelected(action: string) {
+    switch (action) {
+      case 'addToNotebook':
+        this.optionSelected.emit('addToNotebook');
+        this.addToNotebook.emit(this.note);
+        break;
+      case 'delete':
+        this.onDelete({ stopPropagation: () => {} } as MouseEvent);
+        break;
+      case 'showCheckboxes':
+        this.showCheckboxes.emit(this.note);
+        break;
+      case 'addCheckboxes':
+        this.addCheckboxes.emit(this.note);
+        break;
+    }
+  }
+
+  // Function to add checkboxes to note content
+  addCheckboxesToContent(content: string): string {
+    // Split content by lines and add checkboxes to each line
+    const lines = content.split('\n');
+    const checkboxLines = lines.map((line) => {
+      if (line.trim()) {
+        return `☐ ${line}`;
+      }
+      return line;
+    });
+    return checkboxLines.join('\n');
+  }
+
+  // Function to toggle checkbox state
+  toggleCheckbox(content: string, lineIndex: number): string {
+    const lines = content.split('\n');
+    if (lines[lineIndex]) {
+      if (lines[lineIndex].startsWith('☐')) {
+        lines[lineIndex] = lines[lineIndex].replace('☐', '☑');
+      } else if (lines[lineIndex].startsWith('☑')) {
+        lines[lineIndex] = lines[lineIndex].replace('☑', '☐');
+      }
+    }
+    return lines.join('\n');
+  }
 }

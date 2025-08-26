@@ -12,7 +12,7 @@ li {
   justify-content: space-between;
   align-items: flex-start;
   cursor: default;
-  overflow: hidden;
+  overflow: visible; /* from hidden */
   transition: all 0.2s ease;
   outline: 0.5px solid rgba(150, 150, 150, 0.3);
 
@@ -40,23 +40,27 @@ p {
   display: flex;
   gap: 6px;
   margin-top: 0.5rem;
-}
 
-.preview-thumbnail {
-  height: 60px;
-  width: auto;
-  object-fit: cover;
-  border-radius: 4px;
+  .image-wrapper {
+    .preview-thumbnail {
+      height: 60px;
+      width: auto;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+  }
 }
 
 .buttons-container {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
   opacity: 0;
-  pointer-events: none;
+  pointer-events: auto;
   transition: opacity 0.2s ease-in-out;
+  width: 100%;
 }
 
 li:hover .buttons-container {
@@ -68,11 +72,6 @@ li:hover .buttons-container {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
-}
-
-.three-dot-button-container {
-  display: flex;
-  align-items: center;
 }
 
 .pin-icon {
@@ -91,4 +90,3 @@ li:hover .buttons-container {
   background-color: var(--feature-button-hover-background-color);
   border-radius: 8px;
 }
-

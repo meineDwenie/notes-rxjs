@@ -4,12 +4,15 @@ import {
   Input,
   Output,
   EventEmitter,
-  ViewContainerRef,
-  Injector,
-  ComponentRef,
   CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  HostListener,
 } from '@angular/core';
-import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu';
+
+interface DropdownOption {
+  label: string;
+  action: string;
+}
 
 @Component({
   selector: 'app-button-feature',
@@ -21,63 +24,20 @@ import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ButtonFeatureComponent {
-  @Input() label?: string;
-  @Input() icon?: string;
-  @Input() disabled = false;
-  @Input() customClass = '';
-  @Input() options: { label: string; action: string }[] = [];
+  @Input() icon: string = '';
+  @Input() label: string = '';
+  @Input() title: string = '';
+  @Input() customClass: string = '';
+  @Input() options: DropdownOption[] = [];
+  @Input() hasDropdown: boolean = false;
 
   @Output() clicked = new EventEmitter<MouseEvent>();
   @Output() optionSelected = new EventEmitter<string>();
 
-  isOpen = false;
+  constructor(private elementRef: ElementRef) {}
 
-  private dropdownRef?: ComponentRef<DropdownMenuComponent>;
-
-  constructor(private vcr: ViewContainerRef, private injector: Injector) {}
-
-  onClick(event: MouseEvent) {
-    if (!this.disabled) {
-      this.clicked.emit(event);
-    }
-  }
-
-  toggleMenu(event: MouseEvent) {
+  onButtonClick(event: MouseEvent) {
     event.stopPropagation();
-
-    if (this.dropdownRef) {
-      this.dropdownRef.destroy();
-      this.dropdownRef = undefined;
-      return;
-    }
-
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-
-    const position = {
-      x: rect.left,
-      y: rect.bottom + 4,
-    };
-
-    this.dropdownRef = this.vcr.createComponent(DropdownMenuComponent, {
-      injector: this.injector,
-    });
-
-    this.dropdownRef.instance.options = this.options;
-    this.dropdownRef.instance.position = position;
-    this.dropdownRef.instance.optionSelected.subscribe((action: string) => {
-      this.optionSelected.emit(action);
-      this.dropdownRef?.destroy();
-      this.dropdownRef = undefined;
-    });
-  }
-
-  onSelect(action: string, event: MouseEvent) {
-    event.stopPropagation();
-    this.optionSelected.emit(action);
-    this.isOpen = false;
-  }
-
-  closeMenu() {
-    this.isOpen = false;
+    this.clicked.emit(event);
   }
 }

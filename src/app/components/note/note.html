@@ -14,24 +14,21 @@
 
   <!-- Buttons -->
   <div class="buttons-container" (click)="$event.stopPropagation()">
+    <div class="pin-icon">
+      <i
+        class="bi"
+        [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
+        title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
+        (click)="onTogglePin($event)"
+      ></i>
+    </div>
+
     <!-- Left Buttons -->
     <div class="left-buttons">
       <app-button-feature
         customClass="image-button"
         icon="mage:image"
         title="Upload image"
-      ></app-button-feature>
-
-      <app-button-feature
-        customClass="archive-button"
-        icon="mage:archive"
-        title="Archive note"
-      ></app-button-feature>
-
-      <app-button-feature
-        customClass="reminder-button"
-        icon="carbon:reminder"
-        title="Add reminder"
       ></app-button-feature>
 
       <app-button-feature
@@ -42,36 +39,30 @@
       ></app-button-feature>
 
       <app-button-feature
-        customClass="add-to-notebook-button"
+        customClass="reminder-button"
+        icon="carbon:reminder"
+        title="Add reminder"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="add-checkboxes-button"
+        icon="tabler:checkbox"
+        title="Add checkboxes"
+        (clicked)="onDelete($event)"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="archive-button"
+        icon="mage:archive"
+        title="Archive note"
+      ></app-button-feature>
+
+      <app-button-feature
+        customClass="delete-note-button"
         icon="mage:trash"
         title="Delete note"
-        (click)="onDelete($event)"
+        (clicked)="onDelete($event)"
       ></app-button-feature>
-    </div>
-
-    <!-- Right Button
-    <div class="three-dot-button-container">
-      <app-button-feature
-        [options]="[
-        { label: 'Add to notebook', action: 'addToNotebook' },
-        { label: 'Delete note', action: 'delete' },
-        { label: 'Add checkboxes', action: 'addToNotebook' }
-      ]"
-        (optionSelected)="onOptionSelected($event)"
-        customClass="three-dot-container"
-        icon="bi:three-dots-vertical"
-        title="More"
-      ></app-button-feature>
-    </div>
-    -->
-
-    <div class="pin-icon">
-      <i
-        class="bi"
-        [ngClass]="note.pinned ? 'bi-pin-fill' : 'bi-pin'"
-        title="{{ note.pinned ? 'Unpin' : 'Pin' }}"
-        (click)="onTogglePin($event)"
-      ></i>
     </div>
   </div>
 </li>
