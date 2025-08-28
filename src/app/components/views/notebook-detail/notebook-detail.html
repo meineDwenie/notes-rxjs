@@ -12,7 +12,7 @@
       <div class="notebook-info">
         <div class="notebook-info-items">
           <h1 class="notebook-title">{{ notebook.name }}</h1>
-          <h2 class="section-title">
+          <h2 class="note-count">
             {{ notebook.notes.length }} {{ notebook.notes.length <= 1 ? 'NOTE' :
             'NOTES' }}
           </h2>
@@ -37,6 +37,7 @@
             class="notebook-close-button"
             title="Close Notebook"
             (click)="navigateBack()"
+            icon="fluent:notebook-section-arrow-right-20-regular"
           >
             <i class="bi bi-x-lg"></i>
             Close

@@ -24,6 +24,13 @@
   z-index: 1;
 }
 
+.note-title {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  width: 86%;
+}
+
 .modal-view p {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -54,4 +61,74 @@ li button:hover {
 .buttons-container {
   display: flex;
   gap: 0.5rem;
+}
+
+/* Image preview styles */
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.preview-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.remove-image-btn:hover {
+  background-color: #cc3333;
+}
+
+/* Hide file input */
+input[type="file"] {
+  display: none;
 }

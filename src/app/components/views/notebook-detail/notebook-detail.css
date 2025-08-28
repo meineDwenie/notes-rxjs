@@ -36,14 +36,24 @@
       justify-content: flex-start;
       opacity: 1;
     }
+
+    .note-count {
+      color: var(--feature-button-color);
+      font-size: small;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
   }
 
   .section-title {
+    display: flex;
     align-items: center;
-    color: var(--feature-button-color);
-    font-size: small;
-    font-weight: 500;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    /* color: var(--feature-button-color); */
+    color: black;
+    font-size: 1rem;
+    font-weight: 700;
     margin-bottom: 1rem;
   }
 
@@ -80,7 +90,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 30px;
+    padding: 0.5rem 26px 0.5rem 24px;
     gap: 0.4rem;
     cursor: pointer;
     font-size: 1rem;

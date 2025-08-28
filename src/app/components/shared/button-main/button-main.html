@@ -1,9 +1,4 @@
-<button
-  [class]="customClass"
-  (click)="options.length ? toggleMenu($event) : onClick($event)"
-  [disabled]="disabled"
-  type="button"
->
+<button [class]="customClass" [disabled]="disabled" type="button">
   <!-- Optional icon -->
   <iconify-icon
     *ngIf="icon"

@@ -93,6 +93,8 @@
             color: #43868670;
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            transition: opacity 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
           }
 
           .notebook-title {
@@ -138,6 +140,25 @@
             margin: 0 !important;
           }
         }
+      }
+    }
+
+    .default-icon {
+      display: block;
+    }
+
+    .hover-icon {
+      display: none;
+    }
+
+    .notebook-card:hover {
+      .default-icon {
+        display: none;
+      }
+
+      .hover-icon {
+        display: block;
+        color: #438686;
       }
     }
 
