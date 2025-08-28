@@ -40,12 +40,12 @@ header {
 .header-action-btn {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
   background: var(--header-action-btn-main);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.8rem 1.4rem 0.8rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   cursor: pointer;
   font-size: 0.875rem;
   box-shadow: 0 2px 12px rgba(10, 27, 41, 0.3);

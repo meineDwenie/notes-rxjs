@@ -48,6 +48,8 @@ export class ModalAddToNotebookComponent implements OnInit, OnDestroy {
   @Output() notebookSelected = new EventEmitter<Notebook>();
 
   notebookTitle: string = '';
+  noteTitle: string = '';
+  noteContent: string = '';
 
   searchTerm: string = '';
   private searchSubject = new BehaviorSubject<string>('');
@@ -97,6 +99,7 @@ export class ModalAddToNotebookComponent implements OnInit, OnDestroy {
 
     if (this.notebookContainsNote(notebook)) {
       alert('This note is already in the selected notebook.');
+      this.close.emit();
       return;
     }
 

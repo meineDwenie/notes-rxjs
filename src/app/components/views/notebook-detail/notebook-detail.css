@@ -1,7 +1,7 @@
 .notebook-detail-container {
   padding: 2rem 3rem;
   width: calc(100% - 400px);
-  height: calc(100vh - 130px);
+  height: auto;
   margin-left: 340px;
   margin-top: 96px;
   margin-bottom: 2rem;
@@ -49,11 +49,11 @@
   .section-title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     /* color: var(--feature-button-color); */
     color: black;
     font-size: 1rem;
     font-weight: 700;
+    margin-top: 1rem;
     margin-bottom: 1rem;
   }
 
@@ -63,7 +63,7 @@
     gap: 1rem;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 240px);
+    height: calc(100vh - 300px);
     margin-top: 1rem;
     border-radius: 8px;
     /* background-color: rgba(255, 255, 255, 0.953); */
