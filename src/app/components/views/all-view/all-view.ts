@@ -15,6 +15,7 @@ import {
   distinctUntilChanged,
   map,
   Observable,
+  take,
 } from 'rxjs';
 
 import { ClickOutsideDirective } from '../../../directives/click-outside-directive';
@@ -151,6 +152,60 @@ export class AllView implements OnInit {
   togglePin(note: Note, event: MouseEvent): void {
     event.stopPropagation();
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
+  }
+
+  handleImageUpload(event: { noteId: string; images: string[] }) {
+    // Get all notes to find the current note
+    this.filteredNotes$.pipe(take(1)).subscribe((notes) => {
+      const note = notes.find((n) => n.id === event.noteId);
+
+      if (note) {
+        const updatedImages = [...(note.images || []), ...event.images];
+
+        // Update the note with new images
+        const update = {
+          id: note.id,
+          changes: {
+            images: updatedImages,
+            updatedAt: Date.now(),
+          },
+        };
+
+        // Dispatch the update to the store
+        this.store.dispatch(NoteActions.updateNote({ update }));
+
+        // Update notebooks that contain this note
+        this.notebooks$
+          .pipe(
+            map((notebooks) =>
+              notebooks.filter((notebook) =>
+                notebook.notes.some((n) => n.id === note.id)
+              )
+            ),
+            take(1)
+          )
+          .subscribe((notebooksWithNote) => {
+            notebooksWithNote.forEach((notebook) => {
+              const updatedNotebookNotes = notebook.notes.map((n) =>
+                n.id === note.id
+                  ? { ...note, images: updatedImages, updatedAt: Date.now() }
+                  : n
+              );
+
+              this.store.dispatch(
+                NotebookActions.updateNotebook({
+                  update: {
+                    id: notebook.id,
+                    changes: {
+                      notes: updatedNotebookNotes,
+                    },
+                  },
+                })
+              );
+            });
+          });
+      }
+    });
   }
 
   // NOTEBOOK methods

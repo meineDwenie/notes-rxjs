@@ -142,11 +142,14 @@ export class NotebookDetail implements OnInit, OnDestroy {
     return note.id;
   }
 
+  openNote(note: Note) {
+    this.eventBus.emitNoteSelected(note);
+  }
+
   editNotebook(notebook: Notebook) {
     this.startEditingNotebook(notebook);
   }
 
-  // Start editing notebook
   startEditingNotebook(notebook: Notebook): void {
     this.openNotebookOptionsId = null;
     this.eventBus.emitNotebookEdit(notebook);
@@ -160,16 +163,10 @@ export class NotebookDetail implements OnInit, OnDestroy {
     }
   }
 
-  openNote(note: Note) {
-    this.eventBus.emitNoteSelected(note);
-  }
-
   removeNoteFromNotebook(event: { noteId: string; notebookId: string }) {
     const { noteId, notebookId } = event;
 
     if (confirm('Remove this note from the notebook?')) {
-      // Optionally add note back to global list if needed
-
       this.store
         .select(NotebookSelectors.selectAllNotebooks)
         .pipe(
@@ -208,9 +205,6 @@ export class NotebookDetail implements OnInit, OnDestroy {
 
   deleteNote(noteId: string) {
     if (confirm('Are you sure you want to delete this note?')) {
-      // First remove from notebook
-      // this.removeNoteFromNotebook(noteId);
-      // Then delete the note entirely
       this.store.dispatch(NoteActions.deleteNote({ id: noteId }));
     }
   }

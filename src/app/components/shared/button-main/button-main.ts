@@ -9,7 +9,6 @@ import {
   ComponentRef,
   CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
-import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu';
 
 @Component({
   selector: 'app-button-main',
@@ -32,43 +31,12 @@ export class ButtonMainComponent {
 
   isOpen = false;
 
-  private dropdownRef?: ComponentRef<DropdownMenuComponent>;
-
   constructor(private vcr: ViewContainerRef, private injector: Injector) {}
 
   onClick(event: MouseEvent) {
     if (!this.disabled) {
       this.clicked.emit(event);
     }
-  }
-
-  toggleMenu(event: MouseEvent) {
-    event.stopPropagation();
-
-    if (this.dropdownRef) {
-      this.dropdownRef.destroy();
-      this.dropdownRef = undefined;
-      return;
-    }
-
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-
-    const position = {
-      x: rect.left,
-      y: rect.bottom + 4,
-    };
-
-    this.dropdownRef = this.vcr.createComponent(DropdownMenuComponent, {
-      injector: this.injector,
-    });
-
-    this.dropdownRef.instance.options = this.options;
-    this.dropdownRef.instance.position = position;
-    this.dropdownRef.instance.optionSelected.subscribe((action: string) => {
-      this.optionSelected.emit(action);
-      this.dropdownRef?.destroy();
-      this.dropdownRef = undefined;
-    });
   }
 
   onSelect(action: string, event: MouseEvent) {

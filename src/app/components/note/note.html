@@ -1,4 +1,14 @@
 <li [style.backgroundColor]="note.color || '#ffffff'" (click)="onOpen()">
+  <!-- Hidden file input -->
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    multiple
+    style="display: none"
+    (change)="onImageSelected($event)"
+  />
+
   <div>
     <h3 class="note-title">{{ note.title }}</h3>
 
@@ -23,12 +33,13 @@
       ></i>
     </div>
 
-    <!-- Left Buttons -->
+    <!--  Feature Buttons -->
     <div class="left-buttons">
       <app-button-feature
         customClass="image-button"
         icon="mage:image"
         title="Upload image"
+        (clicked)="triggerImageUpload($event)"
       ></app-button-feature>
 
       <app-button-feature

@@ -43,6 +43,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
 
   @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   // NOTE
   noteTitle: string = '';
@@ -172,6 +173,10 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     }
   }
 
+  triggerImageUpload() {
+    this.fileInput.nativeElement.click();
+  }
+
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files) {
@@ -194,7 +199,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
 
   removeSelectedImage(index: number) {
     this.selectedImages.splice(index, 1);
-    this.modalImageLoading.splice(index, 1);
+    this.imageLoading.splice(index, 1);
   }
 
   togglePin() {

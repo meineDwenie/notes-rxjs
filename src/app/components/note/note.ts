@@ -4,7 +4,8 @@ import {
   Output,
   EventEmitter,
   CUSTOM_ELEMENTS_SCHEMA,
-  HostListener,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 
 import { Store } from '@ngrx/store';
@@ -32,21 +33,24 @@ export class NoteComponent {
 
   @Output() open = new EventEmitter<Note>();
   @Output() delete = new EventEmitter<string>();
+  @Output() togglePin = new EventEmitter<{ note: Note; event: MouseEvent }>();
+  @Output() addToNotebook = new EventEmitter<Note>();
   @Output() removeFromNotebook = new EventEmitter<{
     noteId: string;
     notebookId: string;
   }>();
-  @Output() togglePin = new EventEmitter<{ note: Note; event: MouseEvent }>();
-  @Output() optionSelected = new EventEmitter<string>();
-  @Output() addToNotebook = new EventEmitter<Note>();
+  @Output() imageUpload = new EventEmitter<{
+    noteId: string;
+    images: string[];
+  }>();
   @Output() showCheckboxes = new EventEmitter<Note>();
   @Output() addCheckboxes = new EventEmitter<Note>();
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   notebooks$: Observable<Notebook[]>;
   isInNotebook$!: Observable<boolean>;
   containingNotebook$!: Observable<Notebook | undefined>;
-
-  dropdownVisible: boolean = false;
 
   constructor(private store: Store, private eventBus: EventBusService) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
@@ -81,6 +85,14 @@ export class NoteComponent {
     this.delete.emit(this.note.id);
   }
 
+  onTogglePin(event: MouseEvent) {
+    this.togglePin.emit({ note: this.note, event });
+  }
+
+  openAddToNotebookModal(note: Note) {
+    this.eventBus.triggerAddToNotebookModal(note);
+  }
+
   onRemoveFromNotebook(event: MouseEvent) {
     event.stopPropagation();
     // Get the notebook ID from the observable using take(1) to avoid memory leaks
@@ -94,29 +106,40 @@ export class NoteComponent {
     });
   }
 
-  onTogglePin(event: MouseEvent) {
-    this.togglePin.emit({ note: this.note, event });
+  triggerImageUpload(event: MouseEvent) {
+    event.stopPropagation();
+    this.fileInput.nativeElement.click();
   }
 
-  openAddToNotebookModal(note: Note) {
-    this.eventBus.triggerAddToNotebookModal(note);
-  }
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newImages: string[] = [];
+      let filesProcessed = 0;
+      const totalFiles = input.files.length;
 
-  onOptionSelected(action: string) {
-    switch (action) {
-      case 'addToNotebook':
-        this.optionSelected.emit('addToNotebook');
-        this.addToNotebook.emit(this.note);
-        break;
-      case 'delete':
-        this.onDelete({ stopPropagation: () => {} } as MouseEvent);
-        break;
-      case 'showCheckboxes':
-        this.showCheckboxes.emit(this.note);
-        break;
-      case 'addCheckboxes':
-        this.addCheckboxes.emit(this.note);
-        break;
+      Array.from(input.files).forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            newImages.push(reader.result);
+          }
+
+          filesProcessed++;
+          if (filesProcessed === totalFiles) {
+            // All files processed, emit the upload event
+            this.imageUpload.emit({
+              noteId: this.note.id,
+              images: newImages,
+            });
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      input.value = '';
     }
   }
 

@@ -6,6 +6,16 @@
     (click)="$event.stopPropagation()"
     [style.backgroundColor]="noteColor"
   >
+    <!-- Hidden file input -->
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      multiple
+      style="display: none"
+      (change)="onImageSelected($event)"
+    />
+
     <!-- Note Title and Content -->
     <div class="header">
       <input
@@ -26,10 +36,35 @@
       ></textarea>
     </div>
 
-    <!-- Thumbnails -->
+    <!-- Image Preview with Loading States -->
     <div class="image-preview" *ngIf="selectedImages.length">
-      <div class="image-wrapper" *ngFor="let img of selectedImages">
-        <img [src]="img" class="preview-thumbnail" />
+      <div
+        class="image-wrapper"
+        *ngFor="let img of selectedImages; let i = index"
+      >
+        <div class="image-container">
+          <!-- Loading indicator -->
+          <div *ngIf="imageLoading[i]" class="loading-indicator">
+            Loading...
+          </div>
+
+          <!-- Image -->
+          <img
+            [src]="img"
+            class="preview-thumbnail"
+            *ngIf="!imageLoading[i]"
+            (load)="imageLoading[i] = false"
+          />
+
+          <!-- Remove button -->
+          <button
+            class="remove-image-btn"
+            (click)="removeSelectedImage(i)"
+            *ngIf="!imageLoading[i]"
+          >
+            ×
+          </button>
+        </div>
       </div>
     </div>
 
@@ -62,6 +97,7 @@
           customClass="image-button"
           icon="cuida:image-outline"
           title="Upload image"
+          (clicked)="triggerImageUpload()"
         ></app-button-feature>
 
         <app-button-feature

@@ -127,8 +127,6 @@ export class App implements OnInit, AfterViewChecked {
     private eventBus: EventBusService,
     private router: Router
   ) {
-    // this.isLoading$ = this.store.select(NoteSelectors.selectNotesLoading);
-    // this.allNotes$ = this.store.select(NoteSelectors.selectAllNotes);
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
   }
 
@@ -154,9 +152,9 @@ export class App implements OnInit, AfterViewChecked {
       this.showAddToNotebookModal = true;
     });
 
-    this.eventBus.createNotebook$.subscribe(() => {
-      this.showCreateNotebookModal = true;
-    });
+    // this.eventBus.createNotebook$.subscribe(() => {
+    //   this.showCreateNotebookModal = true;
+    // });
 
     // clears search term on every navigation
     this.router.events
