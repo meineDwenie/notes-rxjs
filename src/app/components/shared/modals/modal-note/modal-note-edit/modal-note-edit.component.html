@@ -24,12 +24,14 @@
     <div class="image-preview">
       <div class="image-wrapper" *ngFor="let img of images; let i = index">
         <div class="spinner" *ngIf="imageLoading[i]"></div>
+
         <img
           [src]="img"
           class="preview-thumbnail"
           (load)="imageLoad.emit(i)"
           [style.display]="imageLoading[i] ? 'none' : 'block'"
         />
+
         <button
           (click)="removeImage.emit(i); $event.stopPropagation()"
           class="remove-image-button"

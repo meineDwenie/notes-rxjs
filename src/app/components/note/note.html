@@ -15,11 +15,31 @@
     <p>{{ note.content }}</p>
 
     <!-- Thumbnails -->
-    <div class="image-preview" *ngIf="note.images?.length">
+    <!-- <div class="image-preview" *ngIf="note.images?.length">
       <div class="image-wrapper" *ngFor="let img of note.images">
         <img [src]="img" class="preview-thumbnail" />
       </div>
-    </div>
+    </div> -->
+    <!-- Thumbnails -->
+    <ng-container *ngIf="note.images as images">
+      <div class="image-preview" *ngIf="images.length">
+        <ng-container *ngFor="let img of images.slice(0, 3); let i = index">
+          <!-- First two images -->
+          <div class="image-wrapper" *ngIf="i < 2 || images.length <= 3">
+            <img [src]="img" class="preview-thumbnail" />
+          </div>
+
+          <!-- Third image with overlay if more exist -->
+          <div
+            class="image-wrapper more-images-overlay"
+            *ngIf="i === 2 && images.length > 3"
+          >
+            <img [src]="img" class="preview-thumbnail" />
+            <div class="overlay">+{{ images.length - 3 }}</div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
   </div>
 
   <!-- Buttons -->

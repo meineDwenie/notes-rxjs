@@ -3,16 +3,36 @@
   <h3 (click)="onEdit('title')" class="note-title">
     {{ note.title }}
   </h3>
-  <div class="modal-scrollable-content" (click)="onEdit('content')">
+
+  <div (click)="onEdit('content')" class="modal-scrollable-content">
     <p>{{ note.content }}</p>
   </div>
+
   <div class="image-preview">
     <div class="image-wrapper" *ngFor="let img of images; let i = index">
-      <img [src]="img" class="preview-thumbnail" />
+      <!-- <a [href]="img" rel="noopener noreferrer"> -->
+      <img
+        [src]="img"
+        class="preview-thumbnail"
+        (click)="openImage(img)"
+        style="cursor: zoom-in"
+      />
+      <!-- </a> -->
+    </div>
+
+    <!-- Fullscreen Image Preview Overlay -->
+    <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+      <img
+        [src]="selectedImage"
+        class="full-image"
+        (click)="$event.stopPropagation()"
+      />
+      />
+      <button class="close-overlay" (click)="closeImage()">&times;</button>
     </div>
   </div>
   <div class="modal-footer-buttons">
-    <!-- <button (click)="onEdit()">Edit</button> -->
+    <button (click)="onEdit('content')">Edit</button>
     <button class="close-btn" (click)="onClose()">Close</button>
   </div>
 </div>
