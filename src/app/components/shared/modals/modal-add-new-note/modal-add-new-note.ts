@@ -8,6 +8,7 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 
 import { Store } from '@ngrx/store';
@@ -55,7 +56,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   notePinned: boolean = false;
   selectedNotebookId: string | null = null;
 
-  // Color changes
+  // COLOR CHANGES
   noteColor: string = '#ffffff'; // Default cpolor for new notes
   modalColor: string = '#ffffff'; // For modal editing
 
@@ -70,33 +71,32 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     '#e0d6e9ff', // Purple
   ];
 
-  // Adding Images
+  // ADDING IMAGES
   selectedImage: string | null = null;
-
-  selectedImages: string[] = [];
-  modalImages: string[] = [];
-  imageLoading: boolean[] = [];
-  modalImageLoading: boolean[] = [];
+  selectedImages: { data: string; loading: boolean; id: string }[] = [];
 
   // NOTEBOOK
   notebooks$: Observable<Notebook[]>;
 
-  constructor(private store: Store, private eventBus: EventBusService) {
+  constructor(
+    private store: Store,
+    private eventBus: EventBusService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.notebooks$ = this.store.select(NotebookSelectors.selectAllNotebooks);
   }
 
+  // Prevents scrolling outside modal
   ngOnInit() {
-    // Prevents scrolling outside modal
     document.body.classList.add('modal-open');
   }
 
   ngOnDestroy() {
-    // Prevents scrolling outside modal
     document.body.classList.remove('modal-open');
   }
 
+  // Focuses on the textarea when modal opens
   ngAfterViewInit() {
-    // Focus on the textarea when modal opens
     this.noteTextarea?.nativeElement?.focus();
   }
 
@@ -115,6 +115,11 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Only include loaded images
+    const loadedImages = this.selectedImages
+      .filter((img) => !img.loading)
+      .map((img) => img.data);
+
     const newNote: Note = {
       id: uuidv4(),
       title: this.noteTitle,
@@ -122,7 +127,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
       color: this.noteColor,
       pinned: this.notePinned,
       createdAt: Date.now(),
-      images: [...this.selectedImages],
+      images: loadedImages,
     };
 
     this.store.dispatch(NoteActions.addNote({ note: newNote }));
@@ -165,9 +170,6 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     this.notePinned = false;
     this.selectedNotebookId = null;
     this.selectedImages = [];
-    this.modalImages = []; // Also reset modal images
-    this.imageLoading = [];
-    this.modalImageLoading = []; // Also reset modal loading states
 
     if (this.noteTextarea) {
       const el = this.noteTextarea.nativeElement;
@@ -175,34 +177,70 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     }
   }
 
-  /* IMAGES functions */
+  /* IMAGES methods */
   triggerImageUpload() {
     this.fileInput.nativeElement.click();
   }
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files) {
+    if (input.files && input.files.length > 0) {
+      // Process each selected file
       Array.from(input.files).forEach((file) => {
-        const reader = new FileReader();
-        const currentIndex = this.selectedImages.length;
-        this.imageLoading.push(true);
+        // Create a unique ID for this image
+        const imageId = uuidv4();
 
-        reader.onload = () => {
-          if (typeof reader.result === 'string') {
-            this.selectedImages.push(reader.result);
-            this.imageLoading[currentIndex] = false;
+        // Add placeholder with loading state immediately
+        this.selectedImages.push({
+          data: '',
+          loading: true,
+          id: imageId,
+        });
+
+        // Force change detection to show loading state immediately
+        this.cdr.detectChanges();
+
+        // Process the file
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          // Find the image by ID and update it
+          const imageIndex = this.selectedImages.findIndex(
+            (img) => img.id === imageId
+          );
+          if (imageIndex !== -1 && typeof reader.result === 'string') {
+            this.selectedImages[imageIndex] = {
+              data: reader.result,
+              loading: false,
+              id: imageId,
+            };
+
+            // Trigger change detection
+            this.cdr.detectChanges();
           }
         };
+
+        reader.onerror = () => {
+          // Remove failed image
+          this.selectedImages = this.selectedImages.filter(
+            (img) => img.id !== imageId
+          );
+          this.cdr.detectChanges();
+          console.error('Error reading file:', file.name);
+        };
+
+        // Start reading the file
         reader.readAsDataURL(file);
       });
+
+      // Clear the input
       input.value = '';
     }
   }
 
   removeSelectedImage(index: number) {
     this.selectedImages.splice(index, 1);
-    this.imageLoading.splice(index, 1);
+    this.cdr.detectChanges();
   }
 
   openImage(img: string): void {
@@ -213,12 +251,26 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     this.selectedImage = null;
   }
 
+  // Helper method to check if all images are loaded
+  get allImagesLoaded(): boolean {
+    return this.selectedImages.every((img) => !img.loading);
+  }
+
+  // Helper method to get loading count
+  get loadingImagesCount(): number {
+    return this.selectedImages.filter((img) => img.loading).length;
+  }
+
   /* PIN function */
   togglePin() {
     this.notePinned = !this.notePinned;
   }
 
   getNoteForEmit(): Note {
+    const loadedImages = this.selectedImages
+      .filter((img) => !img.loading)
+      .map((img) => img.data);
+
     return {
       id: '',
       title: this.noteTitle,
@@ -226,7 +278,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
       color: this.noteColor,
       pinned: this.notePinned,
       createdAt: Date.now(),
-      images: [...this.selectedImages],
+      images: loadedImages,
     };
   }
 }

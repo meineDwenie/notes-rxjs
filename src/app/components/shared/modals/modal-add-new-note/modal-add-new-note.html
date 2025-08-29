@@ -37,37 +37,44 @@
     </div>
 
     <!-- Image Preview with Loading States -->
-    <div class="image-preview" *ngIf="selectedImages.length">
+    <div class="image-preview" *ngIf="selectedImages.length > 0">
       <div
         class="image-wrapper"
-        *ngFor="let img of selectedImages; let i = index"
+        *ngFor="let imgObj of selectedImages; let i = index"
       >
         <div class="image-container">
           <!-- Loading indicator -->
-          <div *ngIf="imageLoading[i]" class="loading-indicator">
-            Loading...
-          </div>
+          <div *ngIf="imgObj.loading" class="loading-indicator">Loading...</div>
 
-          <!-- Image -->
+          <!-- Image (only visible when lodaded) -->
           <img
-            [src]="img"
+            *ngIf="!imgObj.loading && imgObj.data"
+            [src]="imgObj.data"
             class="preview-thumbnail"
-            *ngIf="!imageLoading[i]"
-            (load)="imageLoading[i] = false"
-            (click)="openImage(img)"
+            (click)="openImage(imgObj.data)"
             style="cursor: zoom-in"
+            alt="Preview image"
           />
-
-          <!-- Remove button -->
-          <button
-            class="remove-image-button"
-            (click)="removeSelectedImage(i)"
-            *ngIf="!imageLoading[i]"
-          >
-            ×
-          </button>
         </div>
+        
+        <!-- Remove button -->
+        <button
+          class="remove-image-button"
+          (click)="removeSelectedImage(i)"
+          *ngIf="!imgObj.loading"
+          title="Remove image"
+        >
+          ×
+        </button>
       </div>
+    </div>
+
+    <!-- Loading status indicator -->
+    <div *ngIf="loadingImagesCount > 0" class="loading-status">
+      <small
+        >Loading {{ loadingImagesCount }} image{{ loadingImagesCount > 1 ? 's' :
+        '' }}...</small
+      >
     </div>
 
     <!-- Fullscreen Image Preview Overlay -->
@@ -134,6 +141,22 @@
       </div>
     </div>
 
-    <button (click)="addNote()" class="add-note-button">Add Note</button>
+    <!-- <button (click)="addNote()" class="add-note-button">Add Note</button> -->
+
+    <!-- Add Note Button - Show loading state when images are still loading -->
+    <button
+      (click)="addNote()"
+      class="add-note-button"
+      [disabled]="!allImagesLoaded && selectedImages.length > 0"
+      [title]="!allImagesLoaded && selectedImages.length > 0 ? 'Please wait for images to finish loading' : 'Add Note'"
+    >
+      <span *ngIf="allImagesLoaded || selectedImages.length === 0"
+        >Add Note</span
+      >
+      <span *ngIf="!allImagesLoaded && selectedImages.length > 0">
+        <span class="button-spinner"></span>
+        Processing Images...
+      </span>
+    </button>
   </div>
 </div>
