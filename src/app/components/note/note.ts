@@ -113,6 +113,7 @@ export class NoteComponent {
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
+    
     if (input.files) {
       const newImages: string[] = [];
       let filesProcessed = 0;

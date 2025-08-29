@@ -54,11 +54,13 @@
             class="preview-thumbnail"
             *ngIf="!imageLoading[i]"
             (load)="imageLoading[i] = false"
+            (click)="openImage(img)"
+            style="cursor: zoom-in"
           />
 
           <!-- Remove button -->
           <button
-            class="remove-image-btn"
+            class="remove-image-button"
             (click)="removeSelectedImage(i)"
             *ngIf="!imageLoading[i]"
           >
@@ -66,6 +68,17 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Fullscreen Image Preview Overlay -->
+    <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+      <img
+        [src]="selectedImage"
+        class="full-image"
+        (click)="$event.stopPropagation()"
+      />
+
+      <button class="close-overlay" (click)="closeImage()">&times;</button>
     </div>
 
     <div class="pin-icon">

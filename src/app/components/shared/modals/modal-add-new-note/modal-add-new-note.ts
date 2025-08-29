@@ -71,6 +71,8 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   ];
 
   // Adding Images
+  selectedImage: string | null = null;
+
   selectedImages: string[] = [];
   modalImages: string[] = [];
   imageLoading: boolean[] = [];
@@ -173,6 +175,7 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     }
   }
 
+  /* IMAGES functions */
   triggerImageUpload() {
     this.fileInput.nativeElement.click();
   }
@@ -202,6 +205,15 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     this.imageLoading.splice(index, 1);
   }
 
+  openImage(img: string): void {
+    this.selectedImage = img;
+  }
+
+  closeImage(): void {
+    this.selectedImage = null;
+  }
+
+  /* PIN function */
   togglePin() {
     this.notePinned = !this.notePinned;
   }

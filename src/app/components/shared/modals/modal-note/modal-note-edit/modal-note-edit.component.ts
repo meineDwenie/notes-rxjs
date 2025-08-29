@@ -39,6 +39,9 @@ export class ModalNoteEditComponent {
 
   @ViewChild('titleInput') titleInput!: ElementRef;
   @ViewChild('textAreaInput') textAreaInput!: ElementRef;
+  @ViewChild('modalImageInput') modalImageInput!: ElementRef<HTMLInputElement>;
+
+  selectedImage: string | null = null;
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -54,10 +57,16 @@ export class ModalNoteEditComponent {
     this.cancel.emit();
   }
 
-  triggerImageUpload(): void {
-    const imageInput = document.getElementById(
-      'modalImageInput'
-    ) as HTMLInputElement;
-    imageInput?.click();
+  triggerImageUpload(event: MouseEvent) {
+    event.stopPropagation();
+    this.modalImageInput.nativeElement.click();
+  }
+
+  openImage(img: string): void {
+    this.selectedImage = img;
+  }
+
+  closeImage(): void {
+    this.selectedImage = null;
   }
 }

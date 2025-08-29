@@ -30,7 +30,21 @@
           class="preview-thumbnail"
           (load)="imageLoad.emit(i)"
           [style.display]="imageLoading[i] ? 'none' : 'block'"
+          (click)="openImage(img)"
+          style="cursor: zoom-in"
         />
+
+        <!-- Fullscreen Image Preview Overlay -->
+        <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+          <img
+            [src]="selectedImage"
+            class="full-image"
+            (click)="$event.stopPropagation()"
+          />
+
+          />
+          <button class="close-overlay" (click)="closeImage()">&times;</button>
+        </div>
 
         <button
           (click)="removeImage.emit(i); $event.stopPropagation()"
@@ -54,13 +68,24 @@
       </label>
     </div>
 
+    <!-- Hidden file input for uploading images -->
+    <input
+      #modalImageInput
+      type="file"
+      accept="image/*"
+      multiple
+      style="display: none"
+      (change)="imageSelected.emit($event)"
+    />
+
+    <!-- Feature Buttons -->
     <div class="buttons-container">
       <div class="note-tools">
         <app-button-feature
           customClass="image-button"
           icon="mage:image"
           title="Upload image"
-          (clicked)="triggerImageUpload()"
+          (clicked)="triggerImageUpload($event)"
         ></app-button-feature>
 
         <app-button-feature

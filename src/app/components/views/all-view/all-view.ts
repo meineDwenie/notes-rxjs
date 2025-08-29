@@ -233,50 +233,10 @@ export class AllView implements OnInit {
     this.selectedNotebook = null;
   }
 
-  // Toggle dropdown menu
-  toggleNotebookOptions(notebookId: string): void {
-    this.openNotebookOptionsId =
-      this.openNotebookOptionsId === notebookId ? null : notebookId;
-  }
-
   // Start editing notebook
   startEditingNotebook(notebook: Notebook): void {
     this.openNotebookOptionsId = null;
     this.eventBus.emitNotebookEdit(notebook); // now valid
-  }
-
-  handleNoteOptionSelected(action: string, note: Note) {
-    switch (action) {
-      case 'addToNotebook':
-        // Open modal or whatever logic you want here
-        this.openAddToNotebookModal(note);
-        break;
-      case 'delete':
-        this.deleteNote(note.id);
-        break;
-    }
-  }
-
-  openAddToNotebookModal(note: Note) {
-    // For simplicity, just pick notebook by name with prompt
-    this.notebooks$
-      .subscribe((notebooks) => {
-        const notebookNames = notebooks.map((nb) => nb.name).join(', ');
-        const selectedNotebookName = prompt(
-          `Enter notebook name to add note to (available: ${notebookNames}):`
-        );
-        if (!selectedNotebookName) return;
-
-        const notebook = notebooks.find(
-          (nb) => nb.name.toLowerCase() === selectedNotebookName.toLowerCase()
-        );
-        if (!notebook) {
-          alert('Notebook not found!');
-          return;
-        }
-        this.addNoteToNotebook(note, notebook);
-      })
-      .unsubscribe();
   }
 
   addNoteToNotebook(note: Note, notebook: Notebook) {
@@ -342,6 +302,6 @@ export class AllView implements OnInit {
   }
 
   editNotebook(notebook: Notebook): void {
-    this.startEditingNotebook(notebook); // Use your existing method
+    this.startEditingNotebook(notebook);
   }
 }
