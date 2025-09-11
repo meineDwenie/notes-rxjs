@@ -44,6 +44,7 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   @Output() contentChange = new EventEmitter<string>();
   @Output() colorChange = new EventEmitter<string>();
   @Output() imageSelected = new EventEmitter<Event>();
+  @Output() imagesUpdated = new EventEmitter<string[]>();
   @Output() removeImage = new EventEmitter<number>();
   @Output() imageLoad = new EventEmitter<number>();
 
@@ -78,5 +79,9 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
     } else {
       this.closeModal();
     }
+  }
+
+  onModalImagesUpdated(images: string[]) {
+    this.imagesUpdated.emit(images);
   }
 }

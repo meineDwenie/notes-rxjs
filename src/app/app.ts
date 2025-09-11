@@ -323,6 +323,9 @@ export class App implements OnInit, AfterViewChecked {
       this.modalTitle = this.selectedNote.title;
       this.modalContent = this.selectedNote.content;
       this.modalColor = this.selectedNote.color || '#ffffff';
+      // Reset images to original state
+      this.modalImages = [...(this.selectedNote.images || [])];
+      this.modalImageLoading = new Array(this.modalImages.length).fill(false);
     }
   }
 
@@ -333,8 +336,8 @@ export class App implements OnInit, AfterViewChecked {
         title: this.modalTitle.trim(),
         content: this.modalContent.trim(),
         color: this.modalColor,
-        images: [...this.modalImages],
-        updatedAt: Date.now(), // Add update timestamp
+        images: [...this.modalImages], // Use the current modal images
+        updatedAt: Date.now(),
       };
 
       // Create the update object for NgRx
@@ -390,37 +393,51 @@ export class App implements OnInit, AfterViewChecked {
   }
 
   onModalImageLoad(index: number): void {
-    this.modalImageLoading[index] = false;
-  }
-
-  onModalImageSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files) {
-      Array.from(input.files).forEach((file) => {
-        const reader = new FileReader();
-
-        // Add loading state for the new image
-        const currentIndex = this.modalImages.length;
-        this.modalImageLoading.push(true);
-
-        reader.onload = () => {
-          if (typeof reader.result === 'string') {
-            this.modalImages.push(reader.result);
-            this.modalImageLoading[currentIndex] = false; // Mark loading as complete
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-
-      // Clears the input so the same file can be selected again if needed
-      input.value = '';
+    if (index < this.modalImageLoading.length) {
+      this.modalImageLoading[index] = false;
     }
   }
 
+  onModalImagesUpdated(images: string[]) {
+    this.modalImages = [...images]; // Update the parent's image array
+    // Update loading states to match the new images array
+    this.modalImageLoading = new Array(images.length).fill(false);
+  }
+
+  onModalImageSelected(event: Event) {
+    // This method can be simplified since the edit modal handles the file processing
+    // Just pass through for any additional handling if needed
+    console.log('Image selection event received in parent:', event);
+
+    // const input = event.target as HTMLInputElement;
+
+    // if (input.files) {
+    //   Array.from(input.files).forEach((file) => {
+    //     const reader = new FileReader();
+
+    //     // Add loading state for the new image
+    //     const currentIndex = this.modalImages.length;
+    //     this.modalImageLoading.push(true);
+
+    //     reader.onload = () => {
+    //       if (typeof reader.result === 'string') {
+    //         this.modalImages.push(reader.result);
+    //         this.modalImageLoading[currentIndex] = false; // Mark loading as complete
+    //       }
+    //     };
+    //     reader.readAsDataURL(file);
+    //   });
+
+    //   // Clears the input so the same file can be selected again if needed
+    //   input.value = '';
+    // }
+  }
+
   removeModalImage(index: number): void {
-    this.modalImages.splice(index, 1);
-    this.modalImageLoading.splice(index, 1);
+    if (index >= 0 && index < this.modalImages.length) {
+      this.modalImages.splice(index, 1);
+      this.modalImageLoading.splice(index, 1);
+    }
   }
 
   togglePin(note: Note, event: MouseEvent) {

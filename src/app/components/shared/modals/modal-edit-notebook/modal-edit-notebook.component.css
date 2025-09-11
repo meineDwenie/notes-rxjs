@@ -50,21 +50,21 @@ h2 {
 }
 
 .edit-buttons button:first-child {
-  background-color: var(--header-action-btn-main);
-  color: white;
-  background-color: var(--header-action-btn-main);
+  background-color: #cccccc10;
+  color: #333;
   box-sizing: border-box;
 
   &:hover {
-    background-color: #5d9c9c;
+    background-color: #cccccc30;
   }
 }
 
 .edit-buttons button:last-child {
-  background-color: #cccccc2d;
-  color: #333;
+  background-color: var(--header-action-btn-main);
+  color: white;
+  padding: 0.5rem 4rem;
 
   &:hover {
-    background-color: #cccccc7f;
+    background-color: #5d9c9c;
   }
 }
