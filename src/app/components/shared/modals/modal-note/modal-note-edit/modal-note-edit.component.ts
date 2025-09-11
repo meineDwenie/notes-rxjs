@@ -32,6 +32,7 @@ export class ModalNoteEditComponent {
   @Output() imageSelected = new EventEmitter<Event>();
   @Output() removeImage = new EventEmitter<number>();
   @Output() imageLoad = new EventEmitter<number>();
+  @Output() imagesUpdated = new EventEmitter<string[]>();
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
