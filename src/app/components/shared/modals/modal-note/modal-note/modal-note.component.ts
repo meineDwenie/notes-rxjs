@@ -81,7 +81,7 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
     }
   }
 
-  onModalImagesUpdated(images: string[]) {
-    this.imagesUpdated.emit(images);
+  onModalImagesUpdated(updated: string[]) {
+    this.modalImages = updated;
   }
 }
