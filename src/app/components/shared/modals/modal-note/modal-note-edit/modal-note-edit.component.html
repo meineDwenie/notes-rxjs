@@ -22,8 +22,11 @@
     ></textarea>
 
     <div class="image-preview">
-      <div class="image-wrapper" *ngFor="let img of images; let i = index">
-        <div class="spinner" *ngIf="imageLoading[i]"></div>
+      @for (img of images; track $index; let i = $index) {
+      <div class="image-wrapper">
+        @if (imageLoading[i]) {
+        <div class="spinner"></div>
+        }
 
         <img
           [src]="img"
@@ -35,16 +38,17 @@
         />
 
         <!-- Fullscreen Image Preview Overlay -->
-        <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+        @if (selectedImage) {
+        <div class="image-overlay" (click)="closeImage()">
           <img
             [src]="selectedImage"
             class="full-image"
             (click)="$event.stopPropagation()"
           />
 
-          />
           <button class="close-overlay" (click)="closeImage()">&times;</button>
         </div>
+        }
 
         <button
           (click)="removeImage.emit(i); $event.stopPropagation()"
@@ -53,10 +57,12 @@
           &times;
         </button>
       </div>
+      }
     </div>
 
     <div class="color-picker">
-      <label *ngFor="let c of availableColors">
+      @for (c of availableColors; track c) {
+      <label>
         <input
           type="radio"
           name="modalNoteColor"
@@ -66,6 +72,7 @@
         />
         <span [style.backgroundColor]="c" class="color-swatch"></span>
       </label>
+      }
     </div>
 
     <!-- Hidden file input for uploading images -->

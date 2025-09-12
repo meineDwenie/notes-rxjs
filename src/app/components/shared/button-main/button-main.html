@@ -1,12 +1,11 @@
 <button [class]="customClass" [disabled]="disabled" type="button">
   <!-- Optional icon -->
-  <iconify-icon
-    *ngIf="icon"
-    [icon]="icon"
-    [class]="icon"
-    aria-hidden="true"
-  ></iconify-icon>
+  @if (icon) {
+  <iconify-icon [icon]="icon" [class]="icon" aria-hidden="true"></iconify-icon>
+  }
 
   <!-- Optional label with spacing -->
-  <p *ngIf="label">{{ label }}</p>
+  @if (label) {
+  <p>{{ label }}</p>
+  }
 </button>

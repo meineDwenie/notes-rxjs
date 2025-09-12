@@ -5,25 +5,25 @@
     <p>{{ note.content }}</p>
 
     <!-- Thumbnails -->
-    <ng-container *ngIf="note.images as images">
-      <div class="image-preview" *ngIf="images.length">
-        <ng-container *ngFor="let img of images.slice(0, 3); let i = index">
-          <!-- First two images -->
-          <div class="image-wrapper" *ngIf="i < 2 || images.length <= 3">
-            <img [src]="img" class="preview-thumbnail" />
-          </div>
-
-          <!-- Third image with overlay if more exist -->
-          <div
-            class="image-wrapper more-images-overlay"
-            *ngIf="i === 2 && images.length > 3"
-          >
-            <img [src]="img" class="preview-thumbnail" />
-            <div class="overlay">+{{ images.length - 3 }}</div>
-          </div>
-        </ng-container>
+    @if (note.images; as images) { @if (images.length) {
+    <div class="image-preview">
+      @for (img of images.slice(0, 3); track $index; let i = $index) {
+      <!-- First two images -->
+      @if (i < 2 || images.length <= 3) {
+      <div class="image-wrapper">
+        <img [src]="img" class="preview-thumbnail" />
       </div>
-    </ng-container>
+      }
+
+      <!-- Third image with overlay if more exist -->
+      @if (i === 2 && images.length > 3) {
+      <div class="image-wrapper more-images-overlay">
+        <img [src]="img" class="preview-thumbnail" />
+        <div class="overlay">+{{ images.length - 3 }}</div>
+      </div>
+      } }
+    </div>
+    } }
   </div>
 
   <!-- Buttons -->
@@ -82,31 +82,22 @@
         title="Archive note"
       ></app-button-feature>
 
-      <!-- <app-button-feature
+      <!-- Conditional Delete/Remove Button -->
+      @if (isInNotebook$ | async) {
+      <app-button-feature
+        customClass="remove-from-notebook-button"
+        icon="mdi:note-remove"
+        title="Remove from notebook"
+        (clicked)="onRemoveFromNotebook($event)"
+      ></app-button-feature>
+      } @else {
+      <app-button-feature
         customClass="delete-note-button"
         icon="mage:trash"
         title="Delete note"
         (clicked)="onDelete($event)"
-      ></app-button-feature> -->
-
-      <!-- Conditional Delete/Remove Button -->
-      <ng-container *ngIf="(isInNotebook$ | async); else deleteButton">
-        <app-button-feature
-          customClass="remove-from-notebook-button"
-          icon="mdi:note-remove"
-          title="Remove from notebook"
-          (clicked)="onRemoveFromNotebook($event)"
-        ></app-button-feature>
-      </ng-container>
-
-      <ng-template #deleteButton>
-        <app-button-feature
-          customClass="delete-note-button"
-          icon="mage:trash"
-          title="Delete note"
-          (clicked)="onDelete($event)"
-        ></app-button-feature>
-      </ng-template>
+      ></app-button-feature>
+      }
     </div>
   </div>
 </li>

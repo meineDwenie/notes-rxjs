@@ -6,12 +6,13 @@
     (click)="onButtonClick($event)"
   >
     <!-- Optional icon -->
+    @if (icon) {
     <iconify-icon
-      *ngIf="icon"
       [icon]="icon"
       [class]="icon"
       aria-hidden="true"
     ></iconify-icon>
+    }
 
     <!-- Optional label with spacing -->
     @if (label) {

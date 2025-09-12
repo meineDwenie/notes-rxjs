@@ -1,5 +1,6 @@
 <!-- View mode -->
-<div *ngIf="note" class="modal-view">
+@if (note) {
+<div class="modal-view">
   <h3 (click)="onEdit('title')" class="note-title">
     {{ note.title }}
   </h3>
@@ -9,7 +10,8 @@
   </div>
 
   <div class="image-preview">
-    <div class="image-wrapper" *ngFor="let img of images; let i = index">
+    @for (img of images; track $index; let i = $index) {
+    <div class="image-wrapper">
       <img
         [src]="img"
         class="preview-thumbnail"
@@ -17,9 +19,11 @@
         style="cursor: zoom-in"
       />
     </div>
+    }
 
     <!-- Fullscreen Image Preview Overlay -->
-    <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+    @if (selectedImage) {
+    <div class="image-overlay" (click)="closeImage()">
       <img
         [src]="selectedImage"
         class="full-image"
@@ -29,6 +33,7 @@
       />
       <button class="close-overlay" (click)="closeImage()">&times;</button>
     </div>
+    }
   </div>
 
   <div class="modal-footer-buttons">
@@ -36,3 +41,4 @@
     <button class="close-btn" (click)="onClose()">Close</button>
   </div>
 </div>
+}

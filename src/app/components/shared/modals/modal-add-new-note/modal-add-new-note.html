@@ -37,48 +37,56 @@
     </div>
 
     <!-- Image Preview with Loading States -->
-    <div class="image-preview" *ngIf="selectedImages.length > 0">
-      <div
-        class="image-wrapper"
-        *ngFor="let imgObj of selectedImages; let i = index"
-      >
+    @if (selectedImages.length > 0) {
+    <div class="image-preview">
+      @for (imgObj of selectedImages; track $index; let i = $index) {
+      <div class="image-wrapper">
         <div class="image-container">
           <!-- Loading indicator -->
-          <div *ngIf="imgObj.loading" class="loading-indicator">Loading...</div>
+          @if (imgObj.loading) {
+          <div class="loading-indicator">Loading...</div>
+          }
 
-          <!-- Image (only visible when lodaded) -->
+          <!-- Image (only visible when loaded) -->
+          @if (!imgObj.loading && imgObj.data) {
           <img
-            *ngIf="!imgObj.loading && imgObj.data"
             [src]="imgObj.data"
             class="preview-thumbnail"
             (click)="openImage(imgObj.data)"
             style="cursor: zoom-in"
             alt="Preview image"
           />
+          }
         </div>
-        
+
         <!-- Remove button -->
+        @if (!imgObj.loading) {
         <button
           class="remove-image-button"
           (click)="removeSelectedImage(i)"
-          *ngIf="!imgObj.loading"
           title="Remove image"
         >
           ×
         </button>
+        }
       </div>
+      }
     </div>
+    }
 
     <!-- Loading status indicator -->
-    <div *ngIf="loadingImagesCount > 0" class="loading-status">
-      <small
-        >Loading {{ loadingImagesCount }} image{{ loadingImagesCount > 1 ? 's' :
-        '' }}...</small
-      >
+    @if (loadingImagesCount > 0) {
+    <div class="loading-status">
+      <small>
+        Loading {{ loadingImagesCount }} image{{ loadingImagesCount > 1 ? 's' :
+        '' }}...
+      </small>
     </div>
+    }
 
     <!-- Fullscreen Image Preview Overlay -->
-    <div class="image-overlay" *ngIf="selectedImage" (click)="closeImage()">
+    @if (selectedImage) {
+    <div class="image-overlay" (click)="closeImage()">
       <img
         [src]="selectedImage"
         class="full-image"
@@ -87,6 +95,7 @@
 
       <button class="close-overlay" (click)="closeImage()">&times;</button>
     </div>
+    }
 
     <div class="pin-icon">
       <i
@@ -99,7 +108,8 @@
 
     <!-- Color Picker -->
     <div class="color-picker">
-      <label *ngFor="let c of availableColors">
+      @for (c of availableColors; track c) {
+      <label>
         <input
           type="radio"
           name="noteColor"
@@ -108,6 +118,7 @@
         />
         <span [style.backgroundColor]="c" class="color-swatch"></span>
       </label>
+      }
     </div>
 
     <!-- Buttons -->
@@ -131,17 +142,8 @@
           icon="carbon:reminder"
           title="Add reminder"
         ></app-button-feature>
-
-        <!-- <app-button-feature
-          customClass="add-to-notebook-button"
-          icon="fluent:notebook-arrow-curve-down-20-regular"
-          title="Add to notebook"
-          (clicked)="openAddToNotebookModal(getNoteForEmit())"
-        ></app-button-feature> -->
       </div>
     </div>
-
-    <!-- <button (click)="addNote()" class="add-note-button">Add Note</button> -->
 
     <!-- Add Note Button - Show loading state when images are still loading -->
     <button
@@ -150,13 +152,14 @@
       [disabled]="!allImagesLoaded && selectedImages.length > 0"
       [title]="!allImagesLoaded && selectedImages.length > 0 ? 'Please wait for images to finish loading' : 'Add Note'"
     >
-      <span *ngIf="allImagesLoaded || selectedImages.length === 0"
-        >Add Note</span
-      >
-      <span *ngIf="!allImagesLoaded && selectedImages.length > 0">
+      @if (allImagesLoaded || selectedImages.length === 0) {
+      <span>Add Note</span>
+      } @else {
+      <span>
         <span class="button-spinner"></span>
         Processing Images...
       </span>
+      }
     </button>
   </div>
 </div>

@@ -28,8 +28,8 @@
 
   <!-- Navigation Menu -->
   <div class="nav-menu">
+    @for (item of menuItems; track item.id) {
     <a
-      *ngFor="let item of menuItems"
       [routerLink]="item.route"
       routerLinkActive="active"
       class="nav-item"
@@ -39,5 +39,6 @@
       <iconify-icon [attr.icon]="item.icon" class="nav-icon"></iconify-icon>
       <h3>{{ item.label }}</h3>
     </a>
+    }
   </div>
 </aside>

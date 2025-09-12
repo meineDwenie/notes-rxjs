@@ -4,16 +4,15 @@
     (click)="$event.stopPropagation()"
     [style.backgroundColor]="modalColor"
   >
+    @if (!isEditing) {
     <app-modal-note-view
-      *ngIf="!isEditing"
       [note]="note"
       [images]="note.images || []"
       (edit)="enableEditMode($event)"
       (close)="closeModal()"
     />
-
+    } @if (isEditing && note.id) {
     <app-modal-note-edit
-      *ngIf="isEditing && note?.id"
       [title]="modalTitle"
       [content]="modalContent"
       [color]="modalColor"
@@ -31,5 +30,6 @@
       (save)="save.emit()"
       (cancel)="cancel.emit()"
     />
+    }
   </div>
 </div>

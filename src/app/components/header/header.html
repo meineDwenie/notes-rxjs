@@ -17,27 +17,6 @@
 
         <!-- <h3>Add a notebook</h3> -->
       </button>
-
-      <!-- View change contianer -->
-      <!-- <div class="view-change-btn-container">
-        <button
-          class="header-btn"
-          title="Grid View"
-          [class.active]="viewMode === 'grid'"
-          (click)="setViewMode('grid')"
-        >
-          <iconify-icon icon="si:grid-line"></iconify-icon>
-        </button>
-
-        <button
-          class="header-btn"
-          title="Column View"
-          [class.active]="viewMode === 'column'"
-          (click)="setViewMode('column')"
-        >
-          <iconify-icon icon="fluent:column-triple-20-regular"></iconify-icon>
-        </button>
-      </div> -->
     </div>
 
     <!-- Search Bar -->
@@ -51,9 +30,11 @@
           (ngModelChange)="onSearchChange($event)"
         />
 
-        <button *ngIf="searchTerm" class="clear-search" (click)="clearSearch()">
+        @if (searchTerm) {
+        <button class="clear-search" (click)="clearSearch()">
           <i class="bi bi-x"></i>
         </button>
+        }
 
         <i class="bi bi-search search-icon"></i>
       </div>

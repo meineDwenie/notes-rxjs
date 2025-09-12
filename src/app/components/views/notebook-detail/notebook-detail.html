@@ -1,12 +1,15 @@
 <div class="notebook-detail-container">
   <!-- Loading state -->
-  <div class="loading-state" *ngIf="!(notebook$ | async) && !notFound">
+  @if (!(notebook$ | async) && !notFound) {
+  <div class="loading-state">
     <i class="bi bi-arrow-clockwise"></i>
     Loading notebook...
   </div>
+  }
 
   <!-- Main notebook content -->
-  <div class="notebook-detail" *ngIf="notebook$ | async as notebook">
+  @if (notebook$ | async; as notebook) {
+  <div class="notebook-detail">
     <!-- Header -->
     <div class="notebook-header">
       <div class="notebook-info">
@@ -47,23 +50,21 @@
     </div>
 
     <!-- Empty state for notebook with no notes -->
-    <div class="empty-state" *ngIf="notebook.notes.length === 0">
+    @if (notebook.notes.length === 0) {
+    <div class="empty-state">
       <div class="empty-icon">
         <i class="bi bi-journal-x" style="font-size: 3rem; color: #ccc"></i>
       </div>
       <h2>This notebook is empty</h2>
       <p>Add some notes to this notebook to get started!</p>
     </div>
+    }
 
     <!-- Empty state for search with no results -->
-    <div
-      class="empty-state"
-      *ngIf="notebook.notes.length > 0 && 
-                                     (searchTerm$ | async) && 
-                                     (searchTerm$ | async)!.trim().length > 0 &&
-                                     !(hasPinnedNotesInNotebook$ | async) && 
-                                     !(hasUnpinnedNotesInNotebook$ | async)"
-    >
+    @if (notebook.notes.length > 0 && (searchTerm$ | async) && (searchTerm$ |
+    async)!.trim().length > 0 && !(hasPinnedNotesInNotebook$ | async) &&
+    !(hasUnpinnedNotesInNotebook$ | async)) {
+    <div class="empty-state">
       <div class="empty-icon">
         <i class="bi bi-search" style="font-size: 3rem; color: #ccc"></i>
       </div>
@@ -74,22 +75,23 @@
         >"
       </p>
     </div>
+    }
 
     <!-- Content sections when notebook has notes -->
-    <div
-      class="content-sections"
-      *ngIf="(hasPinnedNotesInNotebook$ | async) || 
-                                          (hasUnpinnedNotesInNotebook$ | async)"
-    >
+    @if ((hasPinnedNotesInNotebook$ | async) || (hasUnpinnedNotesInNotebook$ |
+    async)) {
+    <div class="content-sections">
       <!-- PINNED NOTES Section -->
-      <div class="section" *ngIf="hasPinnedNotesInNotebook$ | async">
+      @if (hasPinnedNotesInNotebook$ | async) {
+      <div class="section">
         <div class="section-header">
           <h2 class="section-title">PINNED</h2>
         </div>
 
         <div class="notes-grid">
+          @for (note of (pinnedNotesInNotebook$ | async); track trackByNoteId(i,
+          note); let i = $index) {
           <app-note
-            *ngFor="let note of (pinnedNotesInNotebook$ | async); trackBy: trackByNoteId"
             [note]="note"
             [showNotebook]="false"
             (open)="openNote($event)"
@@ -98,11 +100,14 @@
             (togglePin)="togglePin($event.note, $event.event)"
           >
           </app-note>
+          }
         </div>
       </div>
+      }
 
       <!-- UNPINNED NOTES Section -->
-      <div class="section" *ngIf="hasUnpinnedNotesInNotebook$ | async">
+      @if (hasUnpinnedNotesInNotebook$ | async) {
+      <div class="section">
         <div class="section-header">
           <h2 class="section-title">
             {{ (hasPinnedNotesInNotebook$ | async) ? 'OTHER NOTES' : 'YOUR
@@ -111,8 +116,9 @@
         </div>
 
         <div class="notes-grid">
+          @for (note of (unpinnedNotesInNotebook$ | async); track
+          trackByNoteId(i, note); let i = $index) {
           <app-note
-            *ngFor="let note of (unpinnedNotesInNotebook$ | async); trackBy: trackByNoteId"
             [note]="note"
             [showNotebook]="false"
             (open)="openNote($event)"
@@ -121,8 +127,12 @@
             (togglePin)="togglePin($event.note, $event.event)"
           >
           </app-note>
+          }
         </div>
       </div>
+      }
     </div>
+    }
   </div>
+  }
 </div>

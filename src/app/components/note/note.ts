@@ -8,11 +8,11 @@ import {
   ViewChild,
 } from '@angular/core';
 
+import { CommonModule } from '@angular/common';
+
 import { Store } from '@ngrx/store';
 import { map, Observable, take } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { EventBusService } from '../../services/event-bus.service';
-
 import { ButtonFeatureComponent } from '../shared/button-feature/button-feature';
 
 import { Note } from '../../notes/note.model';
@@ -113,7 +113,7 @@ export class NoteComponent {
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    
+
     if (input.files) {
       const newImages: string[] = [];
       let filesProcessed = 0;

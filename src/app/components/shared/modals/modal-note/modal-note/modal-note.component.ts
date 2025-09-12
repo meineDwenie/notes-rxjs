@@ -9,7 +9,6 @@ import {
 import { Note } from '../../../../../notes/note.model';
 import { ModalNoteViewComponent } from '../modal-note-view/modal-note-view.component';
 import { ModalNoteEditComponent } from '../modal-note-edit/modal-note-edit.component';
-import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EscKeyDirective } from '../../../../../directives/esc-key.directive';
 
@@ -17,7 +16,6 @@ import { EscKeyDirective } from '../../../../../directives/esc-key.directive';
   selector: 'app-modal-note',
   standalone: true,
   imports: [
-    NgIf,
     FormsModule,
     ModalNoteViewComponent,
     ModalNoteEditComponent,

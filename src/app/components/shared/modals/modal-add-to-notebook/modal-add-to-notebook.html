@@ -1,24 +1,25 @@
 <div class="modal-background" (appEscKey)="close.emit()">
   <div class="modal-container" (clickOutside)="close.emit()">
-    <div class="header-title-container" *ngIf="note">
+    @if (note) {
+    <div class="header-title-container">
       <h2>Add this note to notebook</h2>
     </div>
+    }
 
     <div class="note-preview-container">
-      <div
-        class="note-preview"
-        *ngIf="note"
-        [ngStyle]="{'background-color': note.color}"
-      >
+      @if (note) {
+      <div class="note-preview" [ngStyle]="{'background-color': note.color}">
         <h4>{{ note.title }}</h4>
         <p class="note-content-preview">{{ note.content | slice:0:100 }} ...</p>
       </div>
+      }
     </div>
 
     <div class="notebooks-section">
       <h6>Select a notebook</h6>
 
-      <div class="search-notebooks" *ngIf="(notebooks$ | async)!.length > 5">
+      @if ((notebooks$ | async)!.length > 5) {
+      <div class="search-notebooks">
         <div class="search-container">
           <div class="search-input-wrapper">
             <i class="bi bi-search search-icon"></i>
@@ -32,13 +33,10 @@
           </div>
         </div>
       </div>
-
-      <ul
-        class="notebook-list"
-        *ngIf="(filteredNotebooks$ | async)!.length > 0"
-      >
+      } @if ((filteredNotebooks$ | async)!.length > 0) {
+      <ul class="notebook-list">
+        @for (notebook of filteredNotebooks$ | async; track notebook.id) {
         <li
-          *ngFor="let notebook of filteredNotebooks$ | async"
           (click)="!notebookContainsNote(notebook) && selectNotebook(notebook)"
           class="notebook-item"
           [class.already-contains]="notebookContainsNote(notebook)"
@@ -49,26 +47,27 @@
             <p class="notebook-name">{{ notebook.name }}</p>
           </div>
 
-          <div class="notebook-status" *ngIf="notebookContainsNote(notebook)">
+          @if (notebookContainsNote(notebook)) {
+          <div class="notebook-status">
             <iconify-icon
               icon="lets-icons:check-fill"
               class="check-icon"
             ></iconify-icon>
             <span>Added</span>
           </div>
+          }
         </li>
+        }
       </ul>
-
-      <div
-        class="empty-state"
-        *ngIf="(filteredNotebooks$ | async)!.length === 0"
-      >
+      } @else {
+      <div class="empty-state">
         <p>No notebooks found.</p>
-        
+
         <button (click)="openCreateNotebook()" class="link-button">
           Create one
         </button>
       </div>
+      }
     </div>
   </div>
 </div>
