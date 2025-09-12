@@ -79,7 +79,13 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
     }
   }
 
-  onModalImagesUpdated(images: string[]) {
-    this.imagesUpdated.emit(images);
+  onModalImagesUpdated(event: { images: string[]; imageLoading: boolean[] }) {
+    this.modalImages = event.images;
+    this.modalImageLoading = event.imageLoading;
+  }
+
+  onSaveClicked() {
+    // This method should be called when user clicks Save button inside modal
+    this.save.emit();
   }
 }

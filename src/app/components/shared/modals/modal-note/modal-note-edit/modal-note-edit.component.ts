@@ -32,7 +32,10 @@ export class ModalNoteEditComponent {
   @Output() imageSelected = new EventEmitter<Event>();
   @Output() removeImage = new EventEmitter<number>();
   @Output() imageLoad = new EventEmitter<number>();
-  @Output() imagesUpdated = new EventEmitter<string[]>();
+  @Output() imagesUpdated = new EventEmitter<{
+    images: string[];
+    imageLoading: boolean[];
+  }>();
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
@@ -69,5 +72,37 @@ export class ModalNoteEditComponent {
 
   closeImage(): void {
     this.selectedImage = null;
+  }
+
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      // Append placeholders for loading state
+      const newImagesLoading = files.map(() => true);
+      this.imageLoading = [...this.imageLoading, ...newImagesLoading];
+      this.images = [...this.images, ...Array(files.length).fill('')];
+
+      // Read files as base64
+      files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            // Replace the placeholder with actual base64 string
+            const imgIndex = this.images.length - files.length + index;
+            this.images[imgIndex] = reader.result;
+            this.imageLoading[imgIndex] = false;
+            // Emit updated arrays
+            this.imagesUpdated.emit({
+              images: this.images,
+              imageLoading: this.imageLoading,
+            });
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      input.value = ''; // reset input so same file can be selected again
+    }
   }
 }
