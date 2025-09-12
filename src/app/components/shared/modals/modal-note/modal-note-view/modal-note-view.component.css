@@ -10,7 +10,10 @@
   flex: 1;
   overflow-y: auto;
   margin-bottom: 1rem;
-  padding-right: 0.25rem; /* space for scrollbar */
+  padding-right: 1rem; /* space for scrollbar */
+
+  scrollbar-width: thin;
+  scrollbar-color: #00000042 transparent;
 }
 
 .modal-footer-buttons {

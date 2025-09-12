@@ -8,6 +8,11 @@
   font-size: 18px;
   font-weight: 600;
   font-family: "Reddit Sans", sans-serif;
+
+  &:focus {
+    outline: none;
+    border: none;
+  }
 }
 
 .modal-textarea {
@@ -15,6 +20,7 @@
   min-height: 200px;
   max-height: 400px;
   padding: 0.5rem;
+  padding-right: 1rem;
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1rem;
@@ -24,6 +30,15 @@
   border-radius: 4px;
   overflow-y: auto;
   resize: none;
+
+  scrollbar-width: thin;
+  scrollbar-color: #00000042 transparent;
+  scroll-margin: 20px;
+
+  &:focus {
+    outline: none;
+    border: none;
+  }
 }
 
 /* Always show buttons inside modal */
