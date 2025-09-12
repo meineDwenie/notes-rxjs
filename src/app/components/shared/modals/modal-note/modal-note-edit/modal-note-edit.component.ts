@@ -6,14 +6,21 @@ import {
   EventEmitter,
   ElementRef,
   ViewChild,
+  Directive,
 } from '@angular/core';
+import { AutoResizeDirective } from '../../../../../directives/auto-resize.directive';
 import { FormsModule } from '@angular/forms';
 import { ButtonFeatureComponent } from '../../../button-feature/button-feature';
 
 @Component({
   selector: 'app-modal-note-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonFeatureComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonFeatureComponent,
+    AutoResizeDirective,
+  ],
   templateUrl: './modal-note-edit.component.html',
   styleUrl: './modal-note-edit.component.css',
 })

@@ -11,6 +11,7 @@
   overflow-y: auto;
   margin-bottom: 1rem;
   padding-right: 1rem; /* space for scrollbar */
+  cursor: default;
 
   scrollbar-width: thin;
   scrollbar-color: #00000042 transparent;

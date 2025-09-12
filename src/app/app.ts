@@ -15,7 +15,6 @@ import { Store } from '@ngrx/store';
 import { EventBusService } from './services/event-bus.service';
 
 import { v4 as uuidv4 } from 'uuid';
-import { autoResizeDirective } from './directives/auto-resize.directive';
 
 import { Note } from './notes/note.model';
 import { Notebook } from './notebooks/notebook.model';

@@ -12,14 +12,15 @@
     />
 
     <textarea
-      autoResize
-      [ngModel]="content"
-      (ngModelChange)="contentChange.emit($event)"
-      class="modal-textarea"
-      placeholder="Edit your note"
-      (keyup.esc)="cancel.emit()"
-      #textAreaInput
-    ></textarea>
+  autoResize
+  [ngModel]="content"
+  (ngModelChange)="contentChange.emit($event)"
+  [ngModel]="content"
+  class="modal-textarea"
+  placeholder="Edit your note"
+  (keyup.esc)="cancel.emit()"
+  #textAreaInput
+></textarea>
 
     <div class="image-preview">
       @for (img of images; track $index; let i = $index) {

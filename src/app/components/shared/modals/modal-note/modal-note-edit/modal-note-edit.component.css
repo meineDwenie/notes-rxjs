@@ -17,23 +17,24 @@
 
 .modal-textarea {
   width: 100%;
-  min-height: 200px;
-  max-height: 400px;
+  min-height: 100px;
+  max-height: 500px; /* for fallback */
   padding: 0.5rem;
   padding-right: 1rem;
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1rem;
   font-family: "Reddit Sans", sans-serif;
+  color: #343434;
   background-color: transparent;
   border: none;
   border-radius: 4px;
   overflow-y: auto;
   resize: none;
+  transition: height 0.2s ease-in-out;
 
   scrollbar-width: thin;
   scrollbar-color: #00000042 transparent;
-  scroll-margin: 20px;
 
   &:focus {
     outline: none;
