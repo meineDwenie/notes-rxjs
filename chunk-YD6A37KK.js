@@ -1,0 +1,1 @@
+import{Kb as i,Za as n,xb as o,yb as s}from"./chunk-5VIB32CO.js";var a=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-notes-view"]],decls:2,vars:0,template:function(e,c){e&1&&(o(0,"p"),i(1,"notes-view works!"),s())},encapsulation:2})};export{a as NotesView};
