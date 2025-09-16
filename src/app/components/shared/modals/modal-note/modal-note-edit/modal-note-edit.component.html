@@ -12,15 +12,15 @@
     />
 
     <textarea
-  autoResize
-  [ngModel]="content"
-  (ngModelChange)="contentChange.emit($event)"
-  [ngModel]="content"
-  class="modal-textarea"
-  placeholder="Edit your note"
-  (keyup.esc)="cancel.emit()"
-  #textAreaInput
-></textarea>
+      autoResize
+      [ngModel]="content"
+      (ngModelChange)="contentChange.emit($event)"
+      [ngModel]="content"
+      class="modal-textarea"
+      placeholder="Edit your note"
+      (keyup.esc)="cancel.emit()"
+      #textAreaInput
+    ></textarea>
 
     <div class="image-preview">
       @for (img of images; track $index; let i = $index) {
@@ -111,11 +111,11 @@
       </div>
 
       <div class="save-cancel-buttons">
-        <button (click)="save.emit()" class="buttons-container-save">
-          Save
-        </button>
         <button (click)="cancel.emit()" class="buttons-container-cancel">
           Cancel
+        </button>
+        <button (click)="save.emit()" class="buttons-container-save">
+          Save
         </button>
       </div>
     </div>

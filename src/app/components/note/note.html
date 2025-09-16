@@ -1,6 +1,6 @@
 <li [style.backgroundColor]="note.color || '#ffffff'" (click)="onOpen()">
   <div>
-    <h3 class="note-title">{{ note.title }}</h3>
+    <h3 class="note-title" title="{{ note.title }}">{{ note.title }}</h3>
 
     <p>{{ note.content }}</p>
 

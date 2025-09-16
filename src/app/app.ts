@@ -74,7 +74,7 @@ export class App implements OnInit, AfterViewChecked {
   selectedNote: Note | null = null;
   notePinned: boolean = false;
 
-  // Modal edit state
+  // Modal Edit State
   isModalEditing: boolean = false;
   modalTitle: string = '';
   modalContent: string = '';
@@ -150,10 +150,6 @@ export class App implements OnInit, AfterViewChecked {
       this.noteToAddToNotebook = note;
       this.showAddToNotebookModal = true;
     });
-
-    // this.eventBus.createNotebook$.subscribe(() => {
-    //   this.showCreateNotebookModal = true;
-    // });
 
     // clears search term on every navigation
     this.router.events
@@ -404,32 +400,7 @@ export class App implements OnInit, AfterViewChecked {
   }
 
   onModalImageSelected(event: Event) {
-    // This method can be simplified since the edit modal handles the file processing
-    // Just pass through for any additional handling if needed
     console.log('Image selection event received in parent:', event);
-
-    // const input = event.target as HTMLInputElement;
-
-    // if (input.files) {
-    //   Array.from(input.files).forEach((file) => {
-    //     const reader = new FileReader();
-
-    //     // Add loading state for the new image
-    //     const currentIndex = this.modalImages.length;
-    //     this.modalImageLoading.push(true);
-
-    //     reader.onload = () => {
-    //       if (typeof reader.result === 'string') {
-    //         this.modalImages.push(reader.result);
-    //         this.modalImageLoading[currentIndex] = false; // Mark loading as complete
-    //       }
-    //     };
-    //     reader.readAsDataURL(file);
-    //   });
-
-    //   // Clears the input so the same file can be selected again if needed
-    //   input.value = '';
-    // }
   }
 
   removeModalImage(index: number): void {

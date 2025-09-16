@@ -17,7 +17,6 @@
 
 .modal-textarea {
   width: 100%;
-  min-height: 100px;
   max-height: 500px; /* for fallback */
   padding: 0.5rem;
   padding-right: 1rem;
@@ -72,17 +71,17 @@
 }
 
 .buttons-container-cancel {
+  padding: 0.5rem 1rem;
+  color: rgb(79, 79, 79);
   background-color: transparent;
-  color: #2f8016;
-  padding: 0.4rem 0.8rem;
-  border: 1px solid #439c28;
-  border-radius: 8px;
+  border: none;
   cursor: pointer;
+  border-radius: 8px;
   font-size: 0.9rem;
 }
 
 .buttons-container-cancel:hover {
-  background-color: rgba(189, 232, 179, 0.4);
+  background-color: rgba(0, 0, 0, 0.067);
 }
 
 .note-tools {

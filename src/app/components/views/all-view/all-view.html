@@ -48,42 +48,68 @@
       <div class="notebooks-grid">
         @for (notebook of (filteredNotebooks$ | async); track
         trackByNotebookId(i, notebook); let i = $index) {
-
         <div class="notebook-card" (click)="openNotebook(notebook)">
-          <div class="notebook-header">
-            <iconify-icon
-              icon="fluent:notebook-subsection-24-filled"
-              class="notebook-icon default-icon"
-            ></iconify-icon>
+          <!-- Back layer - darker folder -->
+          <div class="notebook-back"></div>
 
-            <iconify-icon
-              icon="solar:notebook-minimalistic-bold"
-              class="notebook-icon hover-icon"
-            ></iconify-icon>
+          <!-- Front layer - lighter notebook cover -->
+          <div
+            class="notebook-front"
+            [class.has-notes]="notebook.notes.length > 0"
+            [class.empty]="notebook.notes.length === 0"
+          >
+            <!-- Notes tab (for added notes to notebook visualization)-->
+            <div class="note-tabs">
+              <div
+                *ngFor="let note of notebook.notes.slice(0, 8); let i = index"
+                class="note-tab"
+                [ngStyle]="{
+      'background-color': note.color || '#ccc',
+      'right.px': i * 20
+    }"
+              ></div>
+            </div>
 
-            <h3 class="notebook-title">{{ notebook.name }}</h3>
-          </div>
+            <div class="notebook-content">
+              <div class="notebook-header">
+                <iconify-icon
+                  icon="fluent:notebook-subsection-24-filled"
+                  class="notebook-icon default-icon"
+                ></iconify-icon>
 
-          <div class="notebook-meta">
-            <span class="note-count"
-              >{{ notebook.notes.length }} {{ notebook.notes.length <= 1 ?
-              'note' : 'notes '}}</span
-            >
+                <iconify-icon
+                  icon="solar:notebook-minimalistic-bold"
+                  class="notebook-icon hover-icon"
+                ></iconify-icon>
 
-            <div class="notebook-actions" (click)="$event.stopPropagation()">
-              <app-button-feature
-                customClass="notebook-action-button"
-                icon="fluent:edit-28-regular"
-                title="Edit Notebook"
-                (clicked)="editNotebook(notebook)"
-              ></app-button-feature>
+                <h3 class="notebook-title">{{ notebook.name }}</h3>
+              </div>
 
-              <app-button-feature
-                customClass="notebook-action-button"
-                icon="mage:trash"
-                title="Delete Notebook"
-                (clicked)="deleteNotebook(notebook.id)"
-              ></app-button-feature>
+              <div class="notebook-meta">
+                <span class="note-count">
+                  {{ notebook.notes.length }} {{ notebook.notes.length <= 1 ?
+                  'note' : 'notes' }}
+                </span>
+
+                <div
+                  class="notebook-actions"
+                  (click)="$event.stopPropagation()"
+                >
+                  <app-button-feature
+                    customClass="notebook-action-button"
+                    icon="fluent:edit-28-regular"
+                    title="Edit Notebook Title"
+                    (clicked)="editNotebook(notebook)"
+                  ></app-button-feature>
+
+                  <app-button-feature
+                    customClass="notebook-action-button"
+                    icon="mage:trash"
+                    title="Delete Notebook"
+                    (clicked)="deleteNotebook(notebook.id)"
+                  ></app-button-feature>
+                </div>
+              </div>
             </div>
           </div>
         </div>
