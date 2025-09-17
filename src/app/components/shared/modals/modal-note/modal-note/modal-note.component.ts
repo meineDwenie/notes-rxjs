@@ -49,6 +49,10 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   @Output() removeImage = new EventEmitter<number>();
   @Output() imageLoad = new EventEmitter<number>();
   @Output() checkboxesChange = new EventEmitter<CheckboxItem[]>();
+  @Output() checkboxToggle = new EventEmitter<{
+    checkboxId: string;
+    checked: boolean;
+  }>();
 
   clickedSection: 'title' | 'content' = 'content';
 
@@ -87,5 +91,9 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
     this.modalImages = event.images;
     this.modalImageLoading = event.imageLoading;
     this.imagesUpdated.emit(event.images);
+  }
+
+  onCheckboxToggle(event: { checkboxId: string; checked: boolean }) {
+    this.checkboxToggle.emit(event);
   }
 }

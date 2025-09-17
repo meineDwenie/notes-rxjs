@@ -430,13 +430,74 @@ export class App implements OnInit, AfterViewChecked {
     }
   }
 
+  // Pin Method
   togglePin(note: Note, event: MouseEvent) {
     event.stopPropagation();
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
   }
 
+  // Checkbox Methods
   onModalCheckboxesUpdated(checkboxes: CheckboxItem[]) {
     this.modalCheckboxes = [...checkboxes];
+  }
+
+  onModalCheckboxToggle(event: { checkboxId: string; checked: boolean }): void {
+    if (this.selectedNote) {
+      // Update the checkbox in modalCheckboxes
+      this.modalCheckboxes = this.modalCheckboxes.map((cb) =>
+        cb.id === event.checkboxId ? { ...cb, checked: event.checked } : cb
+      );
+
+      // Create updated note with new checkbox state
+      const updatedNote = {
+        ...this.selectedNote,
+        checkboxes: this.modalCheckboxes,
+        updatedAt: Date.now(),
+      };
+
+      // Update the note in the store
+      const update = {
+        id: updatedNote.id,
+        changes: {
+          checkboxes: updatedNote.checkboxes,
+          updatedAt: updatedNote.updatedAt,
+        },
+      };
+
+      this.store.dispatch(NoteActions.updateNote({ update }));
+
+      // Update notebooks that contain this note
+      this.notebooks$
+        .pipe(
+          map((notebooks) =>
+            notebooks.filter((notebook) =>
+              notebook.notes.some((note) => note.id === updatedNote.id)
+            )
+          ),
+          take(1)
+        )
+        .subscribe((notebooksWithNote) => {
+          notebooksWithNote.forEach((notebook) => {
+            const updatedNotebookNotes = notebook.notes.map((note) =>
+              note.id === updatedNote.id ? updatedNote : note
+            );
+
+            this.store.dispatch(
+              NotebookActions.updateNotebook({
+                update: {
+                  id: notebook.id,
+                  changes: {
+                    notes: updatedNotebookNotes,
+                  },
+                },
+              })
+            );
+          });
+        });
+
+      // Update the local selected note and modal state
+      this.selectedNote = updatedNote;
+    }
   }
 
   // NOTEBOOKS methods ----------------------------------------------

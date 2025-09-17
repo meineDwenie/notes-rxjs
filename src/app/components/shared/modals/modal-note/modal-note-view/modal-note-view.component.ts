@@ -16,6 +16,10 @@ export class ModalNoteViewComponent {
 
   @Output() edit = new EventEmitter<'title' | 'content'>();
   @Output() close = new EventEmitter<void>();
+  @Output() checkboxToggle = new EventEmitter<{
+    checkboxId: string;
+    checked: boolean;
+  }>();
 
   selectedImage: string | null = null;
 
@@ -33,5 +37,11 @@ export class ModalNoteViewComponent {
 
   closeImage(): void {
     this.selectedImage = null;
+  }
+
+  toggleCheckbox(checkbox: CheckboxItem, event: Event): void {
+    event.stopPropagation();
+    const newChecked = !checkbox.checked;
+    this.checkboxToggle.emit({ checkboxId: checkbox.id, checked: newChecked });
   }
 }

@@ -10,14 +10,22 @@
   <div (click)="onEdit('content')" class="modal-scrollable-content">
     <!-- Show checkboxes if exist -->
     @if (checkboxes.length > 0) {
-    <ul class="checkbox-list">
+    <div class="checkbox-list">
       @for (cb of checkboxes; track cb.id) {
-      <li class="checkbox-item">
-        <input type="checkbox" [checked]="cb.checked" disabled />
-        <span>{{ cb.text }}</span>
-      </li>
+      <div class="checkbox-item" [class.completed]="cb.checked">
+        <span
+          class="checkbox-icon"
+          (click)="toggleCheckbox(cb, $event)"
+          title="Click to toggle"
+        >
+          {{ cb.checked ? "☑" : "☐" }}
+        </span>
+        <span class="checkbox-text" [class.checked]="cb.checked">{{
+          cb.text
+        }}</span>
+      </div>
       }
-    </ul>
+    </div>
     } @else if (note.content.trim()) {
     <p>{{ note.content }}</p>
     } @else {

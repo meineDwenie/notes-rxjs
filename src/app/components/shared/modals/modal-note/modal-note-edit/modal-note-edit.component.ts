@@ -8,6 +8,7 @@ import {
   ElementRef,
   ViewChild,
   OnInit,
+  SimpleChanges,
 } from '@angular/core';
 
 import { AutoResizeDirective } from '../../../../../directives/auto-resize.directive';
@@ -66,12 +67,25 @@ export class ModalNoteEditComponent implements OnInit {
   localCheckboxes: CheckboxItem[] = [];
 
   ngOnInit() {
+    this.initializeCheckboxState();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Update local state when input changes
+    if (changes['checkboxes'] || changes['shouldAddCheckboxes']) {
+      this.initializeCheckboxState();
+    }
+  }
+
+  private initializeCheckboxState() {
     this.localCheckboxes = [...this.checkboxes];
+
+    // Show checkboxes if we have any, or if we should add checkboxes
     this.showCheckboxes =
       this.checkboxes.length > 0 || this.shouldAddCheckboxes;
 
+    // If we should add checkboxes but don't have any yet
     if (this.shouldAddCheckboxes && this.checkboxes.length === 0) {
-      // Convert content to checkboxes if adding checkboxes to existing content
       this.convertContentToCheckboxes();
     }
   }
@@ -147,6 +161,7 @@ export class ModalNoteEditComponent implements OnInit {
         checked: false,
         order: this.localCheckboxes.length,
       });
+      this.checkboxesChange.emit(this.localCheckboxes);
     }
   }
 

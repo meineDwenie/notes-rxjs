@@ -24,7 +24,6 @@ import * as NotebookSelectors from '../../notebooks/notebook.selectors';
   imports: [CommonModule, ButtonFeatureComponent],
   templateUrl: './note.html',
   styleUrls: ['./note.css'],
-
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class NoteComponent {

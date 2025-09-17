@@ -40,11 +40,12 @@
     (titleChange)="modalTitle = $event"
     (contentChange)="modalContent = $event"
     (colorChange)="modalColor = $event"
-    (checkboxesChange)="onModalCheckboxesUpdated($event)"
     (imageSelected)="onModalImageSelected($event)"
     (imagesUpdated)="onModalImagesUpdated($event)"
     (removeImage)="removeModalImage($event)"
     (imageLoad)="onModalImageLoad($event)"
+    (checkboxesChange)="onModalCheckboxesUpdated($event)"
+    (checkboxToggle)="onModalCheckboxToggle($event)"
   />
 
   <!-- Add New Note Modal -->

@@ -11,6 +11,7 @@
       [checkboxes]="modalCheckboxes"
       (edit)="enableEditMode($event)"
       (close)="closeModal()"
+      (checkboxToggle)="onCheckboxToggle($event)"
     />
     } @if (isEditing && note.id) {
     <app-modal-note-edit

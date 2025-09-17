@@ -9,7 +9,7 @@
       @for (checkbox of note.checkboxes.slice(0, 4); track checkbox.id) {
       <div class="checkbox-item" [class.completed]="checkbox.checked">
         <span class="checkbox-icon">{{ checkbox.checked ? '☑' : '☐' }}</span>
-        <span class="checkbox-text">{{ checkbox.text }}</span>
+        <span class="checkbox-text" [class.checked]="checkbox.checked">{{ checkbox.text }}</span>
       </div>
       } @if (note.checkboxes.length > 4) {
       <div class="more-checkboxes">+{{ note.checkboxes.length - 4 }} more</div>
