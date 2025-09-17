@@ -1,0 +1,50 @@
+<div class="checkboxes-container">
+  @for (checkbox of sortedCheckboxes; track checkbox.id; let i = $index) {
+  <div
+    class="checkbox-item"
+    [class.completed]="checkbox.checked"
+    [class.dragging]="draggingIndex === i"
+    draggable="true"
+    (dragstart)="onDragStart($event, i)"
+    (dragover)="onDragOver($event)"
+    (drop)="onDrop($event, i)"
+    (dragend)="onDragEnd()"
+  >
+    <div class="drag-handle">
+      <i class="drag-icon">≡</i>
+    </div>
+
+    <div class="checkbox-input-container">
+      <input
+        type="checkbox"
+        [checked]="checkbox.checked"
+        (change)="toggleCheckbox(checkbox.id)"
+        class="checkbox-input"
+      />
+      <span class="custom-checkbox">{{ checkbox.checked ? "☑" : "☐" }}</span>
+    </div>
+
+    <input
+      type="text"
+      [(ngModel)]="checkbox.text"
+      (blur)="updateCheckboxText(checkbox.id, checkbox.text)"
+      (keyup.enter)="onEnterKey($event)"
+      (keyup)="onKeyup($event, checkbox)"
+      class="checkbox-text-input"
+      placeholder="Add item..."
+    />
+
+    <button
+      (click)="removeCheckbox(checkbox.id)"
+      class="remove-checkbox-btn"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+  }
+
+  <button (click)="addNewCheckbox()" class="add-checkbox-btn" type="button">
+    + Add item
+  </button>
+</div>

@@ -29,6 +29,7 @@ import { ModalAddNewNoteComponent } from './components/shared/modals/modal-add-n
 import { ModalCreateNotebookComponent } from './components/shared/modals/modal-create-notebook/modal-create-notebook';
 import { ModalNoteComponent } from './components/shared/modals/modal-note/modal-note/modal-note.component';
 import { ModalEditNotebookComponent } from './components/shared/modals/modal-edit-notebook/modal-edit-notebook.component';
+import { CheckboxItem } from './components/shared/draggable-checkboxes/draggable-checkboxes.component';
 
 @Component({
   selector: 'app-root',
@@ -108,6 +109,10 @@ export class App implements OnInit, AfterViewChecked {
     '#e0d6e9ff', // Purple
   ];
 
+  // Checboxes
+  modalCheckboxes: CheckboxItem[] = [];
+  shouldAddCheckboxesOnOpen: boolean = false;
+
   // NOTEBOOKS
   notebooks$!: Observable<Notebook[]>;
   notebookTitle: string = '';
@@ -116,7 +121,6 @@ export class App implements OnInit, AfterViewChecked {
   editingNotebookName: string = '';
   openNotebookOptionsId: string | null = null;
   selectedNotebook: Notebook | null = null;
-
   selectedNotebookId: string | null = null;
 
   private shouldFocusTextarea = false;
@@ -149,6 +153,12 @@ export class App implements OnInit, AfterViewChecked {
     this.eventBus.openAddToNotebookModal$.subscribe((note: Note) => {
       this.noteToAddToNotebook = note;
       this.showAddToNotebookModal = true;
+    });
+
+    this.eventBus.openNoteInEditMode$.subscribe(({ note, addCheckboxes }) => {
+      this.openNoteModal(note);
+      this.shouldAddCheckboxesOnOpen = addCheckboxes || false;
+      this.enableModalEdit();
     });
 
     // clears search term on every navigation
@@ -195,6 +205,7 @@ export class App implements OnInit, AfterViewChecked {
       pinned: this.notePinned,
       createdAt: Date.now(),
       images: [...this.selectedImages],
+      checkboxes: [],
     };
 
     this.store.dispatch(NoteActions.addNote({ note: newNote }));
@@ -288,6 +299,7 @@ export class App implements OnInit, AfterViewChecked {
       pinned: false,
       createdAt: Date.now(),
       images: [],
+      checkboxes: [],
     };
     this.isModalEditing = !note; // if new note, open in edit mode
     this.modalTitle = this.selectedNote.title;
@@ -295,6 +307,7 @@ export class App implements OnInit, AfterViewChecked {
     this.modalColor = this.selectedNote?.color || '#ffffff';
     this.modalImages = [...(this.selectedNote.images || [])];
     this.modalImageLoading = new Array(this.modalImages.length).fill(false);
+    this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
   }
 
   openNewNoteModal() {
@@ -314,6 +327,8 @@ export class App implements OnInit, AfterViewChecked {
 
   cancelModalEdit(): void {
     this.isModalEditing = false;
+    this.shouldAddCheckboxesOnOpen = false;
+
     if (this.selectedNote) {
       this.modalTitle = this.selectedNote.title;
       this.modalContent = this.selectedNote.content;
@@ -321,6 +336,7 @@ export class App implements OnInit, AfterViewChecked {
       // Reset images to original state
       this.modalImages = [...(this.selectedNote.images || [])];
       this.modalImageLoading = new Array(this.modalImages.length).fill(false);
+      this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
     }
   }
 
@@ -332,6 +348,7 @@ export class App implements OnInit, AfterViewChecked {
         content: this.modalContent.trim(),
         color: this.modalColor,
         images: [...this.modalImages], // Use the current modal images
+        checkboxes: [...this.modalCheckboxes],
         updatedAt: Date.now(),
       };
 
@@ -343,14 +360,15 @@ export class App implements OnInit, AfterViewChecked {
           content: updatedNote.content,
           color: this.modalColor,
           images: updatedNote.images,
+          checkboxes: updatedNote.checkboxes,
           updatedAt: updatedNote.updatedAt,
         },
       };
 
-      // Dispatch the update to the store first
+      // Dispatches the update to the store first
       this.store.dispatch(NoteActions.updateNote({ update }));
 
-      // Update notebooks that contain this note using take(1) to avoid subscription issues
+      // Updates notebooks that contain this note using take(1) to avoid subscription issues
       this.notebooks$
         .pipe(
           map((notebooks) =>
@@ -358,7 +376,7 @@ export class App implements OnInit, AfterViewChecked {
               notebook.notes.some((note) => note.id === updatedNote.id)
             )
           ),
-          // Use take(1) to automatically unsubscribe after one emission
+          // Take(1) to automatically unsubscribe after one emission
           take(1)
         )
         .subscribe((notebooksWithNote) => {
@@ -384,9 +402,11 @@ export class App implements OnInit, AfterViewChecked {
       // Update the local selected note
       this.selectedNote = updatedNote;
       this.isModalEditing = false;
+      this.shouldAddCheckboxesOnOpen = false;
     }
   }
 
+  // Images Methods
   onModalImageLoad(index: number): void {
     if (index < this.modalImageLoading.length) {
       this.modalImageLoading[index] = false;
@@ -413,6 +433,10 @@ export class App implements OnInit, AfterViewChecked {
   togglePin(note: Note, event: MouseEvent) {
     event.stopPropagation();
     this.store.dispatch(NoteActions.togglePinNote({ id: note.id }));
+  }
+
+  onModalCheckboxesUpdated(checkboxes: CheckboxItem[]) {
+    this.modalCheckboxes = [...checkboxes];
   }
 
   // NOTEBOOKS methods ----------------------------------------------

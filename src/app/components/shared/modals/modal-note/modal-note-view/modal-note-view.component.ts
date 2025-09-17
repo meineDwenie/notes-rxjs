@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Note } from '../../../../../notes/note.model';
+import { CheckboxItem, Note } from '../../../../../notes/note.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 export class ModalNoteViewComponent {
   @Input() note!: Note;
   @Input() images: string[] = [];
+  @Input() checkboxes: CheckboxItem[] = [];
 
   @Output() edit = new EventEmitter<'title' | 'content'>();
   @Output() close = new EventEmitter<void>();

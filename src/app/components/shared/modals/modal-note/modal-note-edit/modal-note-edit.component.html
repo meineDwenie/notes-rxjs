@@ -11,17 +11,41 @@
       #titleInput
     />
 
+    <!-- Toggle between checkboxes and regular content -->
+    <div class="content-mode-toggle">
+      <button
+        type="button"
+        (click)="toggleCheckboxMode()"
+        class="mode-toggle-btn"
+        [class.active]="showCheckboxes"
+      >
+        <i class="mode-icon">{{ showCheckboxes ? "📝" : "☑️" }}</i>
+        {{ showCheckboxes ? "Switch to Text" : "Switch to Checkboxes" }}
+      </button>
+    </div>
+
+    <!-- Checkboxes Mode -->
+    @if (showCheckboxes) {
+    <app-draggable-checkboxes
+      [checkboxes]="localCheckboxes"
+      (checkboxesChange)="onCheckboxesChanged($event)"
+    ></app-draggable-checkboxes>
+    }
+
+    <!-- Regular Text Mode -->
+    @if (!showCheckboxes) {
     <textarea
       autoResize
       [ngModel]="content"
       (ngModelChange)="contentChange.emit($event)"
-      [ngModel]="content"
       class="modal-textarea"
       placeholder="Edit your note"
       (keyup.esc)="cancel.emit()"
       #textAreaInput
     ></textarea>
+    }
 
+    <!-- Image Previews -->
     <div class="image-preview">
       @for (img of images; track $index; let i = $index) {
       <div class="image-wrapper">
@@ -61,6 +85,7 @@
       }
     </div>
 
+    <!-- Color Picker -->
     <div class="color-picker">
       @for (c of availableColors; track c) {
       <label>
@@ -86,7 +111,7 @@
       (change)="onFilesSelected($event)"
     />
 
-    <!-- Feature Buttons -->
+    <!-- Action Buttons -->
     <div class="buttons-container">
       <div class="note-tools">
         <app-button-feature
@@ -106,7 +131,7 @@
           customClass="add-checkboxes-button"
           icon="tabler:checkbox"
           title="Add checkboxes"
-          (clicked)="addCheckboxes.emit()"
+          (clicked)="onAddCheckboxes()"
         ></app-button-feature>
       </div>
 

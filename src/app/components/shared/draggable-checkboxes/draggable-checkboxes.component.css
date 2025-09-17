@@ -1,0 +1,121 @@
+.checkboxes-container {
+  margin: 1rem 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background: white;
+  transition: all 0.2s ease;
+  cursor: move;
+}
+
+.checkbox-item:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox-item.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+.checkbox-item.completed {
+  opacity: 0.7;
+}
+
+.checkbox-item.completed .checkbox-text-input {
+  text-decoration: line-through;
+  color: #718096;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  color: #a0aec0;
+  font-size: 18px;
+  padding: 0.25rem;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-icon {
+  font-style: normal;
+}
+
+.checkbox-input-container {
+  position: relative;
+}
+
+.checkbox-input {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.custom-checkbox {
+  font-size: 18px;
+  cursor: pointer;
+  user-select: none;
+  color: #4a5568;
+}
+
+.checkbox-text-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.25rem;
+  font-size: 14px;
+  background: transparent;
+}
+
+.checkbox-text-input:focus {
+  background: #f7fafc;
+  border-radius: 2px;
+}
+
+.remove-checkbox-btn {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.checkbox-item:hover .remove-checkbox-btn {
+  opacity: 1;
+}
+
+.remove-checkbox-btn:hover {
+  background: #fed7d7;
+}
+
+.add-checkbox-btn {
+  background: none;
+  border: 1px dashed #cbd5e0;
+  color: #718096;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.add-checkbox-btn:hover {
+  border-color: #a0aec0;
+  color: #4a5568;
+  background: #f7fafc;
+}

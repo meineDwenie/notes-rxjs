@@ -1,10 +1,25 @@
 <li [style.backgroundColor]="note.color || '#ffffff'" (click)="onOpen()">
   <div>
+    <!-- Note Title -->
     <h3 class="note-title" title="{{ note.title }}">{{ note.title }}</h3>
 
+    <!-- Note Content with Checkboxes if exists -->
+    @if (note.checkboxes && note.checkboxes.length > 0) {
+    <div class="checkboxes-preview">
+      @for (checkbox of note.checkboxes.slice(0, 4); track checkbox.id) {
+      <div class="checkbox-item" [class.completed]="checkbox.checked">
+        <span class="checkbox-icon">{{ checkbox.checked ? '☑' : '☐' }}</span>
+        <span class="checkbox-text">{{ checkbox.text }}</span>
+      </div>
+      } @if (note.checkboxes.length > 4) {
+      <div class="more-checkboxes">+{{ note.checkboxes.length - 4 }} more</div>
+      }
+    </div>
+    } @else {
     <p>{{ note.content }}</p>
+    }
 
-    <!-- Thumbnails -->
+    <!-- Images Thumbnails -->
     @if (note.images; as images) { @if (images.length) {
     <div class="image-preview">
       @for (img of images.slice(0, 3); track $index; let i = $index) {
@@ -47,7 +62,7 @@
       (change)="onImageSelected($event)"
     />
 
-    <!--  Feature Buttons -->
+    <!--  Action Buttons -->
     <div class="left-buttons">
       <app-button-feature
         customClass="image-button"
@@ -73,7 +88,7 @@
         customClass="add-checkboxes-button"
         icon="tabler:checkbox"
         title="Add checkboxes"
-        (clicked)="onDelete($event)"
+        (clicked)="onAddCheckboxes($event)"
       ></app-button-feature>
 
       <app-button-feature

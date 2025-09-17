@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-
 import { Store } from '@ngrx/store';
 import { map, Observable, take } from 'rxjs';
 import { EventBusService } from '../../services/event-bus.service';
@@ -89,6 +88,7 @@ export class NoteComponent {
     this.togglePin.emit({ note: this.note, event });
   }
 
+  /* NOTEBOOK Methods */
   openAddToNotebookModal(note: Note) {
     this.eventBus.triggerAddToNotebookModal(note);
   }
@@ -106,6 +106,7 @@ export class NoteComponent {
     });
   }
 
+  /* IMAGE Methods */
   triggerImageUpload(event: MouseEvent) {
     event.stopPropagation();
     this.fileInput.nativeElement.click();
@@ -142,6 +143,13 @@ export class NoteComponent {
 
       input.value = '';
     }
+  }
+
+  /* CHECKBOX Methods */
+  onAddCheckboxes(event: MouseEvent) {
+    event?.stopPropagation();
+
+    this.eventBus.openNoteInEditMode(this.note, true); // true indicates to add checkboxes
   }
 
   addCheckboxesToContent(content: string): string {

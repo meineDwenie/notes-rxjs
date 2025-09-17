@@ -1,14 +1,32 @@
 <!-- View mode -->
 @if (note) {
 <div class="modal-view">
+  <!-- Notes Title -->
   <h3 (click)="onEdit('title')" class="note-title">
     {{ note.title }}
   </h3>
 
+  <!-- Notes content -->
   <div (click)="onEdit('content')" class="modal-scrollable-content">
+    <!-- Show checkboxes if exist -->
+    @if (checkboxes.length > 0) {
+    <ul class="checkbox-list">
+      @for (cb of checkboxes; track cb.id) {
+      <li class="checkbox-item">
+        <input type="checkbox" [checked]="cb.checked" disabled />
+        <span>{{ cb.text }}</span>
+      </li>
+      }
+    </ul>
+    } @else if (note.content.trim()) {
     <p>{{ note.content }}</p>
+    } @else {
+    <!-- Fallback for no content and no checkboxes -->
+    <p class="empty-note-message">This note has no content.</p>
+    }
   </div>
 
+  <!-- Images Preview -->
   <div class="image-preview">
     @for (img of images; track $index; let i = $index) {
     <div class="image-wrapper">

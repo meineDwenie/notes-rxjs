@@ -8,6 +8,7 @@
     <app-modal-note-view
       [note]="note"
       [images]="note.images || []"
+      [checkboxes]="modalCheckboxes"
       (edit)="enableEditMode($event)"
       (close)="closeModal()"
     />
@@ -29,6 +30,7 @@
       (imageLoad)="imageLoad.emit($event)"
       (save)="save.emit()"
       (cancel)="cancel.emit()"
+      (checkboxesChange)="checkboxesChange.emit($event)"
     />
     }
   </div>

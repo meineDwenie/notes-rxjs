@@ -231,3 +231,48 @@
 .color-picker input[type="radio"]:checked + .color-swatch {
   border-color: #000;
 }
+
+/* CHECBOXES STYLES */
+/* Content Mode Toggle Buttons */
+.content-mode-toggle {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.mode-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: white;
+  color: #4a5568;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn:hover {
+  border-color: #cbd5e0;
+  background: #f7fafc;
+}
+
+.mode-toggle-btn.active {
+  border-color: #3182ce;
+  background: #ebf8ff;
+  color: #3182ce;
+}
+
+.mode-icon {
+  font-style: normal;
+  font-size: 16px;
+}
+
+/* Active state for checkbox button */
+.add-checkboxes-button.active {
+  background-color: #ebf8ff !important;
+  color: #3182ce !important;
+  border-color: #3182ce !important;
+}

@@ -11,6 +11,7 @@ import { ModalNoteViewComponent } from '../modal-note-view/modal-note-view.compo
 import { ModalNoteEditComponent } from '../modal-note-edit/modal-note-edit.component';
 import { FormsModule } from '@angular/forms';
 import { EscKeyDirective } from '../../../../../directives/esc-key.directive';
+import { CheckboxItem } from '../../../draggable-checkboxes/draggable-checkboxes.component';
 
 @Component({
   selector: 'app-modal-note',
@@ -33,6 +34,8 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   @Input() modalImages: string[] = [];
   @Input() modalImageLoading: boolean[] = [];
   @Input() availableColors: string[] = [];
+  @Input() modalCheckboxes: CheckboxItem[] = [];
+  @Input() shouldAddCheckboxes: boolean = false;
 
   @Output() close = new EventEmitter<void>();
   @Output() edit = new EventEmitter<void>();
@@ -45,6 +48,7 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   @Output() imagesUpdated = new EventEmitter<string[]>();
   @Output() removeImage = new EventEmitter<number>();
   @Output() imageLoad = new EventEmitter<number>();
+  @Output() checkboxesChange = new EventEmitter<CheckboxItem[]>();
 
   clickedSection: 'title' | 'content' = 'content';
 

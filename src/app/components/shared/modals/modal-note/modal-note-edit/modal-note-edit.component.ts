@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   Component,
   Input,
@@ -6,11 +7,15 @@ import {
   EventEmitter,
   ElementRef,
   ViewChild,
-  Directive,
+  OnInit,
 } from '@angular/core';
+
 import { AutoResizeDirective } from '../../../../../directives/auto-resize.directive';
-import { FormsModule } from '@angular/forms';
 import { ButtonFeatureComponent } from '../../../button-feature/button-feature';
+import {
+  CheckboxItem,
+  DraggableCheckboxesComponent,
+} from '../../../draggable-checkboxes/draggable-checkboxes.component';
 
 @Component({
   selector: 'app-modal-note-edit',
@@ -20,11 +25,12 @@ import { ButtonFeatureComponent } from '../../../button-feature/button-feature';
     FormsModule,
     ButtonFeatureComponent,
     AutoResizeDirective,
+    DraggableCheckboxesComponent,
   ],
   templateUrl: './modal-note-edit.component.html',
   styleUrl: './modal-note-edit.component.css',
 })
-export class ModalNoteEditComponent {
+export class ModalNoteEditComponent implements OnInit {
   @Input() title: string = '';
   @Input() content: string = '';
   @Input() color: string = '#ffffff';
@@ -32,6 +38,8 @@ export class ModalNoteEditComponent {
   @Input() imageLoading: boolean[] = [];
   @Input() availableColors: string[] = [];
   @Input() clickedSection: 'title' | 'content' = 'content';
+  @Input() checkboxes: CheckboxItem[] = [];
+  @Input() shouldAddCheckboxes: boolean = false;
 
   @Output() titleChange = new EventEmitter<string>();
   @Output() contentChange = new EventEmitter<string>();
@@ -47,12 +55,26 @@ export class ModalNoteEditComponent {
   @Output() cancel = new EventEmitter<void>();
   @Output() close = new EventEmitter<void>();
   @Output() addCheckboxes = new EventEmitter<void>();
+  @Output() checkboxesChange = new EventEmitter<CheckboxItem[]>();
 
   @ViewChild('titleInput') titleInput!: ElementRef;
   @ViewChild('textAreaInput') textAreaInput!: ElementRef;
   @ViewChild('modalImageInput') modalImageInput!: ElementRef<HTMLInputElement>;
 
   selectedImage: string | null = null;
+  showCheckboxes: boolean = false;
+  localCheckboxes: CheckboxItem[] = [];
+
+  ngOnInit() {
+    this.localCheckboxes = [...this.checkboxes];
+    this.showCheckboxes =
+      this.checkboxes.length > 0 || this.shouldAddCheckboxes;
+
+    if (this.shouldAddCheckboxes && this.checkboxes.length === 0) {
+      // Convert content to checkboxes if adding checkboxes to existing content
+      this.convertContentToCheckboxes();
+    }
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -110,6 +132,73 @@ export class ModalNoteEditComponent {
       });
 
       input.value = ''; // reset input so same file can be selected again
+    }
+  }
+
+  onAddCheckboxes() {
+    if (!this.showCheckboxes) {
+      this.showCheckboxes = true;
+      this.convertContentToCheckboxes();
+    } else {
+      // If already showing checkboxes, add a new empty one
+      this.localCheckboxes.push({
+        id: Date.now().toString(),
+        text: '',
+        checked: false,
+        order: this.localCheckboxes.length,
+      });
+    }
+  }
+
+  onCheckboxesChanged(checkboxes: CheckboxItem[]) {
+    this.localCheckboxes = checkboxes;
+    this.checkboxesChange.emit(checkboxes);
+  }
+
+  convertContentToCheckboxes() {
+    if (this.content.trim()) {
+      const lines = this.content.split('\n').filter((line) => line.trim());
+      this.localCheckboxes = lines.map((line, index) => ({
+        id: `${Date.now()}-${index}`,
+        text: line.trim(),
+        checked: false,
+        order: index,
+      }));
+
+      // Clear the content since it's now in checkboxes
+      this.content = '';
+      this.contentChange.emit('');
+    } else if (this.localCheckboxes.length === 0) {
+      // Add an empty checkbox to start with
+      this.localCheckboxes = [
+        {
+          id: Date.now().toString(),
+          text: '',
+          checked: false,
+          order: 0,
+        },
+      ];
+    }
+    this.checkboxesChange.emit(this.localCheckboxes);
+  }
+
+  toggleCheckboxMode() {
+    this.showCheckboxes = !this.showCheckboxes;
+
+    if (!this.showCheckboxes) {
+      // Convert checkboxes back to content
+      const contentFromCheckboxes = this.localCheckboxes
+        .sort((a, b) => a.order - b.order)
+        .map((cb) => cb.text)
+        .filter((text) => text.trim())
+        .join('\n');
+
+      this.content = contentFromCheckboxes;
+      this.contentChange.emit(this.content);
+      this.localCheckboxes = [];
+      this.checkboxesChange.emit([]);
+    } else {
+      this.convertContentToCheckboxes();
     }
   }
 }
