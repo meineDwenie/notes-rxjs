@@ -7,7 +7,6 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Note } from '../../../../../notes/note.model';
-import { ModalNoteViewComponent } from '../modal-note-view/modal-note-view.component';
 import { ModalNoteEditComponent } from '../modal-note-edit/modal-note-edit.component';
 import { FormsModule } from '@angular/forms';
 import { EscKeyDirective } from '../../../../../directives/esc-key.directive';
@@ -18,7 +17,6 @@ import { CheckboxItem } from '../../../draggable-checkboxes/draggable-checkboxes
   standalone: true,
   imports: [
     FormsModule,
-    ModalNoteViewComponent,
     ModalNoteEditComponent,
     EscKeyDirective,
   ],
@@ -27,7 +25,6 @@ import { CheckboxItem } from '../../../draggable-checkboxes/draggable-checkboxes
 })
 export class ModalNoteComponent implements OnInit, OnDestroy {
   @Input() note!: Note;
-  @Input() isEditing = false;
   @Input() modalTitle = '';
   @Input() modalContent = '';
   @Input() modalColor = '#ffffff';
@@ -80,11 +77,7 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   }
 
   onEscKeyPressed(): void {
-    if (this.isEditing) {
-      this.cancel.emit();
-    } else {
       this.closeModal();
-    }
   }
 
   onModalImagesUpdated(event: { images: string[]; imageLoading: boolean[] }) {

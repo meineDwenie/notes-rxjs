@@ -342,11 +342,6 @@ export class App implements OnInit, AfterViewChecked {
 
       // Reset checkboxes to original state
       this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
-
-      console.log(
-        'Cancelled modal edit, reset checkboxes to:',
-        this.modalCheckboxes
-      ); // Debug log
     }
   }
 
@@ -374,8 +369,6 @@ export class App implements OnInit, AfterViewChecked {
           updatedAt: updatedNote.updatedAt,
         },
       };
-
-      console.log('Dispatching update:', update); // Debug log
 
       // Dispatches the update to the store first
       this.store.dispatch(NoteActions.updateNote({ update }));
@@ -413,13 +406,9 @@ export class App implements OnInit, AfterViewChecked {
 
       // Update the local selected note
       this.selectedNote = updatedNote;
-      this.isModalEditing = false;
+      //this.isModalEditing = false;
+      this.closeNoteModal();
       this.shouldAddCheckboxesOnOpen = false;
-
-      console.log(
-        'Note saved successfully with checkboxes:',
-        updatedNote.checkboxes
-      ); // Debug log
     }
   }
 

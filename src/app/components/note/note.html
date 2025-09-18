@@ -9,7 +9,9 @@
       @for (checkbox of note.checkboxes.slice(0, 4); track checkbox.id) {
       <div class="checkbox-item" [class.completed]="checkbox.checked">
         <span class="checkbox-icon">{{ checkbox.checked ? '☑' : '☐' }}</span>
-        <span class="checkbox-text" [class.checked]="checkbox.checked">{{ checkbox.text }}</span>
+        <span class="checkbox-text" [class.checked]="checkbox.checked"
+          >{{ checkbox.text }}</span
+        >
       </div>
       } @if (note.checkboxes.length > 4) {
       <div class="more-checkboxes">+{{ note.checkboxes.length - 4 }} more</div>
@@ -84,12 +86,16 @@
         title="Add reminder"
       ></app-button-feature>
 
+      <!-- Only show Add Checkboxes button when content is text and no checkboxes exist -->
+      @if (!note.checkboxes || note.checkboxes.length === 0 &&
+      note.content.trim()) {
       <app-button-feature
         customClass="add-checkboxes-button"
         icon="tabler:checkbox"
         title="Add checkboxes"
         (clicked)="onAddCheckboxes($event)"
       ></app-button-feature>
+      }
 
       <app-button-feature
         customClass="archive-button"

@@ -139,8 +139,8 @@ export class AllView implements OnInit {
   }
 
   // NOTES methods
-  openNoteModal(note: Note): void {
-    this.eventBus.emitNoteSelected(note);
+  openNoteModal(note: Note, shouldAddCheckboxes: boolean = false): void {
+    this.eventBus.openNoteInEditMode(note, shouldAddCheckboxes);
   }
 
   deleteNote(id: string): void {

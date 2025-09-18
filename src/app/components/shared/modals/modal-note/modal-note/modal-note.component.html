@@ -4,16 +4,7 @@
     (click)="$event.stopPropagation()"
     [style.backgroundColor]="modalColor"
   >
-    @if (!isEditing) {
-    <app-modal-note-view
-      [note]="note"
-      [images]="note.images || []"
-      [checkboxes]="modalCheckboxes"
-      (edit)="enableEditMode($event)"
-      (close)="closeModal()"
-      (checkboxToggle)="onCheckboxToggle($event)"
-    />
-    } @if (isEditing && note.id) {
+    @if (note.id) {
     <app-modal-note-edit
       [title]="modalTitle"
       [content]="modalContent"
@@ -32,7 +23,7 @@
       (removeImage)="removeImage.emit($event)"
       (imageLoad)="imageLoad.emit($event)"
       (save)="save.emit()"
-      (cancel)="cancel.emit()"
+      (cancel)="closeModal()"
       (checkboxesChange)="checkboxesChange.emit($event)"
     />
     }

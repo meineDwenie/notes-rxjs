@@ -43,6 +43,7 @@ export class NoteComponent {
   }>();
   @Output() showCheckboxes = new EventEmitter<Note>();
   @Output() addCheckboxes = new EventEmitter<Note>();
+  @Output() triggerEdit = new EventEmitter<Note>();
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 

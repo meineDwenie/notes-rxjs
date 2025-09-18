@@ -134,6 +134,7 @@
           (delete)="deleteNote($event)"
           (togglePin)="togglePin($event.note, $event.event)"
           (imageUpload)="handleImageUpload($event)"
+          (triggerEdit)="openNoteModal($event)"
         >
         </app-note>
         }
@@ -158,6 +159,7 @@
           (delete)="deleteNote($event)"
           (togglePin)="togglePin($event.note, $event.event)"
           (imageUpload)="handleImageUpload($event)"
+          (triggerEdit)="openNoteModal($event)"
         >
         </app-note>
         }

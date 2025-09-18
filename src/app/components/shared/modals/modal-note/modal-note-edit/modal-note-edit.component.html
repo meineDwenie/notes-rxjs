@@ -12,6 +12,7 @@
     />
 
     <!-- Toggle between checkboxes and regular content -->
+    @if (showCheckboxes) {
     <div class="content-mode-toggle">
       <button
         type="button"
@@ -19,10 +20,11 @@
         class="mode-toggle-btn"
         [class.active]="showCheckboxes"
       >
-        <i class="mode-icon">{{ showCheckboxes ? "📝" : "☑️" }}</i>
-        {{ showCheckboxes ? "Switch to Text" : "Switch to Checkboxes" }}
+        <i class="mode-icon">📝</i>
+        Switch to Text
       </button>
     </div>
+    }
 
     <!-- Checkboxes Mode -->
     @if (showCheckboxes) {
@@ -127,12 +129,15 @@
           title="Add reminder"
         ></app-button-feature>
 
+        <!-- Only show Add Checkboxes button when NOT in checkbox mode -->
+        @if (!showCheckboxes) {
         <app-button-feature
           customClass="add-checkboxes-button"
           icon="tabler:checkbox"
           title="Add checkboxes"
           (clicked)="onAddCheckboxes()"
         ></app-button-feature>
+        }
       </div>
 
       <div class="save-cancel-buttons">
