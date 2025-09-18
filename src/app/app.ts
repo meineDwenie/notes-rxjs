@@ -308,6 +308,8 @@ export class App implements OnInit, AfterViewChecked {
     this.modalImages = [...(this.selectedNote.images || [])];
     this.modalImageLoading = new Array(this.modalImages.length).fill(false);
     this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
+
+    console.log('Opening note modal with checkboxes:', this.modalCheckboxes); // Debug log
   }
 
   openNewNoteModal() {
@@ -337,6 +339,14 @@ export class App implements OnInit, AfterViewChecked {
       this.modalImages = [...(this.selectedNote.images || [])];
       this.modalImageLoading = new Array(this.modalImages.length).fill(false);
       this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
+
+      // Reset checkboxes to original state
+      this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
+
+      console.log(
+        'Cancelled modal edit, reset checkboxes to:',
+        this.modalCheckboxes
+      ); // Debug log
     }
   }
 
@@ -364,6 +374,8 @@ export class App implements OnInit, AfterViewChecked {
           updatedAt: updatedNote.updatedAt,
         },
       };
+
+      console.log('Dispatching update:', update); // Debug log
 
       // Dispatches the update to the store first
       this.store.dispatch(NoteActions.updateNote({ update }));
@@ -403,6 +415,11 @@ export class App implements OnInit, AfterViewChecked {
       this.selectedNote = updatedNote;
       this.isModalEditing = false;
       this.shouldAddCheckboxesOnOpen = false;
+
+      console.log(
+        'Note saved successfully with checkboxes:',
+        updatedNote.checkboxes
+      ); // Debug log
     }
   }
 
@@ -438,66 +455,77 @@ export class App implements OnInit, AfterViewChecked {
 
   // Checkbox Methods
   onModalCheckboxesUpdated(checkboxes: CheckboxItem[]) {
+    console.log('Parent received checkbox updates:', checkboxes); // Debug log
     this.modalCheckboxes = [...checkboxes];
+
+    // If we're in view mode, also update the note immediately for real-time updates
+    if (!this.isModalEditing && this.selectedNote) {
+      this.updateNoteCheckboxes(checkboxes);
+    }
+  }
+
+  private updateNoteCheckboxes(checkboxes: CheckboxItem[]) {
+    if (!this.selectedNote) return;
+
+    const updatedNote = {
+      ...this.selectedNote,
+      checkboxes: [...checkboxes],
+      updatedAt: Date.now(),
+    };
+
+    const update = {
+      id: updatedNote.id,
+      changes: {
+        checkboxes: updatedNote.checkboxes,
+        updatedAt: updatedNote.updatedAt,
+      },
+    };
+
+    this.store.dispatch(NoteActions.updateNote({ update }));
+
+    // Update notebooks that contain this note
+    this.notebooks$
+      .pipe(
+        map((notebooks) =>
+          notebooks.filter((notebook) =>
+            notebook.notes.some((note) => note.id === updatedNote.id)
+          )
+        ),
+        take(1)
+      )
+      .subscribe((notebooksWithNote) => {
+        notebooksWithNote.forEach((notebook) => {
+          const updatedNotebookNotes = notebook.notes.map((note) =>
+            note.id === updatedNote.id ? updatedNote : note
+          );
+
+          this.store.dispatch(
+            NotebookActions.updateNotebook({
+              update: {
+                id: notebook.id,
+                changes: {
+                  notes: updatedNotebookNotes,
+                },
+              },
+            })
+          );
+        });
+      });
+
+    // Update the local selected note
+    this.selectedNote = updatedNote;
   }
 
   onModalCheckboxToggle(event: { checkboxId: string; checked: boolean }): void {
-    if (this.selectedNote) {
-      // Update the checkbox in modalCheckboxes
-      this.modalCheckboxes = this.modalCheckboxes.map((cb) =>
-        cb.id === event.checkboxId ? { ...cb, checked: event.checked } : cb
-      );
+    console.log('Checkbox toggle event:', event); // Debug log
 
-      // Create updated note with new checkbox state
-      const updatedNote = {
-        ...this.selectedNote,
-        checkboxes: this.modalCheckboxes,
-        updatedAt: Date.now(),
-      };
+    // Update the checkbox in modalCheckboxes
+    this.modalCheckboxes = this.modalCheckboxes.map((cb) =>
+      cb.id === event.checkboxId ? { ...cb, checked: event.checked } : cb
+    );
 
-      // Update the note in the store
-      const update = {
-        id: updatedNote.id,
-        changes: {
-          checkboxes: updatedNote.checkboxes,
-          updatedAt: updatedNote.updatedAt,
-        },
-      };
-
-      this.store.dispatch(NoteActions.updateNote({ update }));
-
-      // Update notebooks that contain this note
-      this.notebooks$
-        .pipe(
-          map((notebooks) =>
-            notebooks.filter((notebook) =>
-              notebook.notes.some((note) => note.id === updatedNote.id)
-            )
-          ),
-          take(1)
-        )
-        .subscribe((notebooksWithNote) => {
-          notebooksWithNote.forEach((notebook) => {
-            const updatedNotebookNotes = notebook.notes.map((note) =>
-              note.id === updatedNote.id ? updatedNote : note
-            );
-
-            this.store.dispatch(
-              NotebookActions.updateNotebook({
-                update: {
-                  id: notebook.id,
-                  changes: {
-                    notes: updatedNotebookNotes,
-                  },
-                },
-              })
-            );
-          });
-        });
-
-      // Update the local selected note and modal state
-      this.selectedNote = updatedNote;
-    }
+    // Update the note immediately
+    this.updateNoteCheckboxes(this.modalCheckboxes);
   }
 
   // NOTEBOOKS methods ----------------------------------------------

@@ -25,15 +25,17 @@ export class DraggableCheckboxesComponent implements OnInit {
   draggingIndex: number = -1;
 
   ngOnInit() {
-    this.sortedCheckboxes = [...this.checkboxes].sort(
-      (a, b) => a.order - b.order
-    );
+    // Create mutable copies of the checkboxes
+    this.sortedCheckboxes = this.checkboxes
+      .map((cb) => ({ ...cb }))
+      .sort((a, b) => a.order - b.order);
   }
 
   ngOnChanges() {
-    this.sortedCheckboxes = [...this.checkboxes].sort(
-      (a, b) => a.order - b.order
-    );
+    // Create mutable copies of the checkboxes
+    this.sortedCheckboxes = this.checkboxes
+      .map((cb) => ({ ...cb }))
+      .sort((a, b) => a.order - b.order);
   }
 
   addNewCheckbox() {
@@ -41,7 +43,7 @@ export class DraggableCheckboxesComponent implements OnInit {
       id: Date.now().toString(),
       text: '',
       checked: false,
-      order: this.checkboxes.length,
+      order: this.sortedCheckboxes.length,
     };
 
     this.sortedCheckboxes.push(newCheckbox);
@@ -58,30 +60,31 @@ export class DraggableCheckboxesComponent implements OnInit {
   }
 
   toggleCheckbox(id: string) {
-    const checkbox = this.sortedCheckboxes.find((cb) => cb.id === id);
-    if (checkbox) {
-      checkbox.checked = !checkbox.checked;
-      this.emitChanges();
-    }
+    // Create a new array with updated checkbox
+    this.sortedCheckboxes = this.sortedCheckboxes.map((cb) =>
+      cb.id === id ? { ...cb, checked: !cb.checked } : cb
+    );
+    this.emitChanges();
   }
 
   updateCheckboxText(id: string, text: string) {
-    const checkbox = this.sortedCheckboxes.find((cb) => cb.id === id);
-    if (checkbox) {
-      checkbox.text = text.trim();
-      this.emitChanges();
-    }
+    // Create a new array with updated checkbox
+    this.sortedCheckboxes = this.sortedCheckboxes.map((cb) =>
+      cb.id === id ? { ...cb, text: text.trim() } : cb
+    );
+    this.emitChanges();
   }
 
-  // New method to handle real-time text updates
+  // Handle real-time text updates
   onTextInput(id: string, event: Event) {
     const input = event.target as HTMLInputElement;
-    const checkbox = this.sortedCheckboxes.find((cb) => cb.id === id);
-    if (checkbox) {
-      console.log('Text input changed:', id, input.value);
-      checkbox.text = input.value;
-      this.emitChanges();
-    }
+    console.log('Text input changed:', id, input.value);
+
+    // Create a new array with updated checkbox
+    this.sortedCheckboxes = this.sortedCheckboxes.map((cb) =>
+      cb.id === id ? { ...cb, text: input.value } : cb
+    );
+    this.emitChanges();
   }
 
   removeCheckbox(id: string) {
@@ -119,17 +122,21 @@ export class DraggableCheckboxesComponent implements OnInit {
     event.preventDefault();
 
     if (this.draggingIndex !== -1 && this.draggingIndex !== dropIndex) {
-      const draggedItem = this.sortedCheckboxes[this.draggingIndex];
+      const draggedItem = { ...this.sortedCheckboxes[this.draggingIndex] };
 
-      // Remove the dragged item
-      this.sortedCheckboxes.splice(this.draggingIndex, 1);
+      // Create new array without the dragged item
+      const withoutDragged = this.sortedCheckboxes.filter(
+        (_, index) => index !== this.draggingIndex
+      );
 
-      // Insert it at the new position
-      if (dropIndex > this.draggingIndex) {
-        this.sortedCheckboxes.splice(dropIndex - 1, 0, draggedItem);
-      } else {
-        this.sortedCheckboxes.splice(dropIndex, 0, draggedItem);
-      }
+      // Insert at new position
+      const targetIndex =
+        dropIndex > this.draggingIndex ? dropIndex - 1 : dropIndex;
+      this.sortedCheckboxes = [
+        ...withoutDragged.slice(0, targetIndex),
+        draggedItem,
+        ...withoutDragged.slice(targetIndex),
+      ];
 
       this.reorderCheckboxes();
       this.emitChanges();
@@ -141,9 +148,11 @@ export class DraggableCheckboxesComponent implements OnInit {
   }
 
   private reorderCheckboxes() {
-    this.sortedCheckboxes.forEach((checkbox, index) => {
-      checkbox.order = index;
-    });
+    // Create new array with updated order
+    this.sortedCheckboxes = this.sortedCheckboxes.map((checkbox, index) => ({
+      ...checkbox,
+      order: index,
+    }));
   }
 
   private emitChanges() {
