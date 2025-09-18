@@ -161,13 +161,27 @@ export class ModalNoteEditComponent implements OnInit {
         checked: false,
         order: this.localCheckboxes.length,
       });
-      this.checkboxesChange.emit(this.localCheckboxes);
+      this.emitCheckboxChanges();
     }
   }
 
   onCheckboxesChanged(checkboxes: CheckboxItem[]) {
-    this.localCheckboxes = checkboxes;
-    this.checkboxesChange.emit(checkboxes);
+    console.log('Modal edit received checkbox changes:', checkboxes);
+    this.localCheckboxes = [...checkboxes];
+    this.emitCheckboxChanges();
+  }
+
+  // New method to ensure checkbox changes are always emitted
+  private emitCheckboxChanges() {
+    this.checkboxesChange.emit([...this.localCheckboxes]);
+  }
+
+  // Method to handle individual checkbox updates (text changes, check/uncheck)
+  onCheckboxUpdated(updatedCheckbox: CheckboxItem) {
+    this.localCheckboxes = this.localCheckboxes.map((cb) =>
+      cb.id === updatedCheckbox.id ? { ...updatedCheckbox } : cb
+    );
+    this.emitCheckboxChanges();
   }
 
   convertContentToCheckboxes() {
@@ -194,7 +208,7 @@ export class ModalNoteEditComponent implements OnInit {
         },
       ];
     }
-    this.checkboxesChange.emit(this.localCheckboxes);
+    this.emitCheckboxChanges();
   }
 
   toggleCheckboxMode() {
@@ -211,7 +225,7 @@ export class ModalNoteEditComponent implements OnInit {
       this.content = contentFromCheckboxes;
       this.contentChange.emit(this.content);
       this.localCheckboxes = [];
-      this.checkboxesChange.emit([]);
+      this.emitCheckboxChanges();
     } else {
       this.convertContentToCheckboxes();
     }

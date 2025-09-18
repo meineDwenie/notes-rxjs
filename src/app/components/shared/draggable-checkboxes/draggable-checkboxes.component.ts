@@ -73,6 +73,17 @@ export class DraggableCheckboxesComponent implements OnInit {
     }
   }
 
+  // New method to handle real-time text updates
+  onTextInput(id: string, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const checkbox = this.sortedCheckboxes.find((cb) => cb.id === id);
+    if (checkbox) {
+      console.log('Text input changed:', id, input.value);
+      checkbox.text = input.value;
+      this.emitChanges();
+    }
+  }
+
   removeCheckbox(id: string) {
     this.sortedCheckboxes = this.sortedCheckboxes.filter((cb) => cb.id !== id);
     this.reorderCheckboxes();
@@ -136,6 +147,7 @@ export class DraggableCheckboxesComponent implements OnInit {
   }
 
   private emitChanges() {
+    console.log('Emitting checkbox changes:', this.sortedCheckboxes);
     this.checkboxesChange.emit([...this.sortedCheckboxes]);
   }
 

@@ -31,9 +31,9 @@ export class ModalNoteComponent implements OnInit, OnDestroy {
   @Input() modalTitle = '';
   @Input() modalContent = '';
   @Input() modalColor = '#ffffff';
+  @Input() availableColors: string[] = [];
   @Input() modalImages: string[] = [];
   @Input() modalImageLoading: boolean[] = [];
-  @Input() availableColors: string[] = [];
   @Input() modalCheckboxes: CheckboxItem[] = [];
   @Input() shouldAddCheckboxes: boolean = false;
 

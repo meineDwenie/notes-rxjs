@@ -27,6 +27,7 @@
     <input
       type="text"
       [(ngModel)]="checkbox.text"
+      (input)="onTextInput(checkbox.id, $event)"
       (blur)="updateCheckboxText(checkbox.id, checkbox.text)"
       (keyup.enter)="onEnterKey($event)"
       (keyup)="onKeyup($event, checkbox)"
