@@ -156,8 +156,8 @@ export class App implements OnInit, AfterViewChecked {
     });
 
     this.eventBus.openNoteInEditMode$.subscribe(({ note, addCheckboxes }) => {
-      this.openNoteModal(note);
       this.shouldAddCheckboxesOnOpen = addCheckboxes || false;
+      this.openNoteModal(note);
       this.enableModalEdit();
     });
 
@@ -307,9 +307,26 @@ export class App implements OnInit, AfterViewChecked {
     this.modalColor = this.selectedNote?.color || '#ffffff';
     this.modalImages = [...(this.selectedNote.images || [])];
     this.modalImageLoading = new Array(this.modalImages.length).fill(false);
-    this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
 
-    console.log('Opening note modal with checkboxes:', this.modalCheckboxes); // Debug log
+    if (
+      this.shouldAddCheckboxesOnOpen &&
+      !this.selectedNote.checkboxes?.length
+    ) {
+      const lines = this.modalContent
+        .split('\n')
+        .filter((line) => line.trim() !== '');
+
+      this.modalCheckboxes = lines.map((line, index) => ({
+        id: uuidv4(),
+        label: line.trim(),
+        checked: false,
+        text: line.trim(),
+        order: index,
+      }));
+      this.modalContent = ''; // Optional: clear plain content
+    } else {
+      this.modalCheckboxes = [...(this.selectedNote.checkboxes || [])];
+    }
   }
 
   openNewNoteModal() {
@@ -406,7 +423,6 @@ export class App implements OnInit, AfterViewChecked {
 
       // Update the local selected note
       this.selectedNote = updatedNote;
-      //this.isModalEditing = false;
       this.closeNoteModal();
       this.shouldAddCheckboxesOnOpen = false;
     }
@@ -444,12 +460,8 @@ export class App implements OnInit, AfterViewChecked {
 
   // Checkbox Methods
   onModalCheckboxesUpdated(checkboxes: CheckboxItem[]) {
-    console.log('Parent received checkbox updates:', checkboxes); // Debug log
-    this.modalCheckboxes = [...checkboxes];
-
-    // If we're in view mode, also update the note immediately for real-time updates
-    if (!this.isModalEditing && this.selectedNote) {
-      this.updateNoteCheckboxes(checkboxes);
+    if (this.isModalEditing && this.selectedNote) {
+      this.modalCheckboxes = [...checkboxes];
     }
   }
 

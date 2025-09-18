@@ -18,8 +18,6 @@ import {
   take,
 } from 'rxjs';
 
-import { ClickOutsideDirective } from '../../../directives/click-outside-directive';
-
 import { Note } from '../../../notes/note.model';
 import { Notebook } from '../../../notebooks/notebook.model';
 import * as NoteSelectors from '../../../notes/note.selectors';
@@ -56,12 +54,12 @@ export class AllView implements OnInit {
   hasPins$!: Observable<boolean>;
   hasUnpinnedNotes$!: Observable<boolean>;
 
-  //isEmpty$: Observable<boolean>;
-
   searchTerm: string = '';
   selectedNotebook: Notebook | null = null;
   openNotebookOptionsId: string | null = null;
-  // private searchTermSubject = new BehaviorSubject<string>('');
+
+  editingNote: Note | null = null;
+  showEditModal: boolean = false;
 
   constructor(
     private store: Store,

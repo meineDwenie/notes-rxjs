@@ -85,7 +85,7 @@ export class ModalNoteEditComponent implements OnInit {
       this.checkboxes.length > 0 || this.shouldAddCheckboxes;
 
     // If we should add checkboxes but don't have any yet
-    if (this.shouldAddCheckboxes && this.checkboxes.length === 0) {
+    if (this.shouldAddCheckboxes && this.localCheckboxes.length === 0) {
       this.convertContentToCheckboxes();
     }
   }
