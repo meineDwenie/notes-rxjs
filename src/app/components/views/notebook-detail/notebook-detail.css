@@ -2,6 +2,7 @@
   padding: 2rem 3rem;
   width: calc(100% - 400px);
   height: auto;
+  min-height: calc(100vh - 130px);
   margin-left: 340px;
   margin-top: 96px;
   margin-bottom: 2rem;
