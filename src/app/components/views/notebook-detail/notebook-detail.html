@@ -94,7 +94,7 @@
           <app-note
             [note]="note"
             [showNotebook]="false"
-            (open)="openNote($event)"
+            (open)="openNoteModal($event)"
             (delete)="deleteNote($event)"
             (removeFromNotebook)="removeNoteFromNotebook($event)"
             (togglePin)="togglePin($event.note, $event.event)"
@@ -121,7 +121,7 @@
           <app-note
             [note]="note"
             [showNotebook]="false"
-            (open)="openNote($event)"
+            (open)="openNoteModal($event)"
             (delete)="deleteNote($event)"
             (removeFromNotebook)="removeNoteFromNotebook($event)"
             (togglePin)="togglePin($event.note, $event.event)"

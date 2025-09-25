@@ -235,7 +235,7 @@
 /* CHECBOXES STYLES */
 /* Content Mode Toggle Buttons */
 .content-mode-toggle {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   display: flex;
   justify-content: center;
 }
@@ -244,11 +244,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid #e2e8f0;
+  padding: 0 1rem;
   border-radius: 20px;
   background: white;
-  color: #4a5568;
+  color: #5f6368;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -260,9 +259,14 @@
 }
 
 .mode-toggle-btn.active {
-  border-color: #3182ce;
-  background: #ebf8ff;
-  color: #3182ce;
+  background: #e7eaeb30;
+  border: 1px solid #5f6368;
+  color: #3e4042;
+
+  &:hover {
+    color: var(--feature-button-color-hover);
+    background-color: var(--feature-button-hover-background-color);
+  }
 }
 
 .mode-icon {

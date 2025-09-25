@@ -146,6 +146,10 @@ export class NotebookDetail implements OnInit, OnDestroy {
     this.eventBus.emitNoteSelected(note);
   }
 
+  openNoteModal(note: Note, shouldAddCheckboxes: boolean = false): void {
+    this.eventBus.openNoteInEditMode(note, shouldAddCheckboxes);
+  }
+
   editNotebook(notebook: Notebook) {
     this.startEditingNotebook(notebook);
   }

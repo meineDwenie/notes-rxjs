@@ -23,7 +23,7 @@
       [(ngModel)]="checkbox.text"
       (input)="onTextInput(checkbox.id, $event)"
       (blur)="updateCheckboxText(checkbox.id, checkbox.text)"
-      (keyup.enter)="onEnterKey($event)"
+      (keyup.enter)="addNewCheckbox()"
       (keyup)="onKeyup($event, checkbox)"
       class="checkbox-text-input"
       placeholder="Add item..."

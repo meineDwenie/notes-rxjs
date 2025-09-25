@@ -11,21 +11,6 @@
       #titleInput
     />
 
-    <!-- Toggle between checkboxes and regular content -->
-    @if (showCheckboxes) {
-    <div class="content-mode-toggle">
-      <button
-        type="button"
-        (click)="toggleCheckboxMode()"
-        class="mode-toggle-btn"
-        [class.active]="showCheckboxes"
-      >
-        <i class="mode-icon">📝</i>
-        Switch to Text
-      </button>
-    </div>
-    }
-
     <!-- Checkboxes Mode -->
     @if (showCheckboxes) {
     <app-draggable-checkboxes
@@ -129,7 +114,6 @@
           title="Add reminder"
         ></app-button-feature>
 
-        <!-- Only show Add Checkboxes button when NOT in checkbox mode -->
         @if (!showCheckboxes) {
         <app-button-feature
           customClass="add-checkboxes-button"
@@ -137,6 +121,19 @@
           title="Add checkboxes"
           (clicked)="onAddCheckboxes()"
         ></app-button-feature>
+        } @else {
+        <div class="content-mode-toggle">
+          <button
+            type="button"
+            class="mode-toggle-btn"
+            title="Switch to Text"
+            (click)="toggleCheckboxMode()"
+            [class.active]="showCheckboxes"
+          >
+            <i class="bi bi-card-text"></i>
+            Switch to Text
+          </button>
+        </div>
         }
       </div>
 
