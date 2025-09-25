@@ -14,13 +14,7 @@
       <i class="drag-icon">≡</i>
     </div>
 
-    <div class="checkbox-input-container">
-      <input
-        type="checkbox"
-        [checked]="checkbox.checked"
-        (change)="toggleCheckbox(checkbox.id)"
-        class="checkbox-input"
-      />
+    <div class="checkbox-input-container" (click)="toggleCheckbox(checkbox.id)">
       <span class="custom-checkbox">{{ checkbox.checked ? "☑" : "☐" }}</span>
     </div>
 
