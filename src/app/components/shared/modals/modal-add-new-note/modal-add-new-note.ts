@@ -42,6 +42,7 @@ import * as NotebookActions from '../../../../notebooks/notebook.actions';
 })
 export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   @Output() close = new EventEmitter<void>();
+  @Output() addCheckboxes = new EventEmitter<Note>();
 
   @ViewChild('noteTextArea') noteTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -74,6 +75,11 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
   // ADDING IMAGES
   selectedImage: string | null = null;
   selectedImages: { data: string; loading: boolean; id: string }[] = [];
+
+  // CHECKBOXES
+  noteCheckboxes: { text: string; checked: boolean }[] = [];
+  showCheckboxInput: boolean = false;
+  showCheckboxes: boolean = false;
 
   // NOTEBOOK
   notebooks$: Observable<Notebook[]>;
@@ -123,11 +129,12 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     const newNote: Note = {
       id: uuidv4(),
       title: this.noteTitle,
-      content: this.noteContent,
+      content: this.showCheckboxes ? '' : this.noteContent,
       color: this.noteColor,
       pinned: this.notePinned,
       createdAt: Date.now(),
       images: loadedImages,
+      //checkboxes: this.showCheckboxes ? this.noteCheckboxes : undefined,
     };
 
     this.store.dispatch(NoteActions.addNote({ note: newNote }));
@@ -170,6 +177,8 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
     this.notePinned = false;
     this.selectedNotebookId = null;
     this.selectedImages = [];
+    this.noteCheckboxes = [];
+    this.showCheckboxes = false;
 
     if (this.noteTextarea) {
       const el = this.noteTextarea.nativeElement;
@@ -280,5 +289,46 @@ export class ModalAddNewNoteComponent implements OnInit, OnDestroy {
       createdAt: Date.now(),
       images: loadedImages,
     };
+  }
+
+  /* CHECKBOXES Methods */
+  convertToCheckboxes() {
+    const lines = this.noteContent
+      .split('\n')
+      .filter((line) => line.trim().length > 0);
+
+    this.noteCheckboxes = lines.map((line) => ({
+      text: line.trim(),
+      checked: false,
+    }));
+
+    this.noteContent = '';
+    this.showCheckboxes = true;
+  }
+
+  addCheckbox() {
+    this.noteCheckboxes.push({ text: '', checked: false });
+  }
+
+  removeCheckbox(index: number) {
+    this.noteCheckboxes.splice(index, 1);
+  }
+
+  toggleCheckbox(index: number) {
+    this.noteCheckboxes[index].checked = !this.noteCheckboxes[index].checked;
+  }
+
+  toggleCheckboxMode() {
+    if (this.showCheckboxes) {
+      // Convert checkboxes back to plain text
+      this.noteContent = this.noteCheckboxes
+        .map((cb) => cb.text)
+        .filter((text) => text.trim())
+        .join('\n');
+      this.noteCheckboxes = [];
+      this.showCheckboxes = false;
+    } else {
+      this.convertToCheckboxes();
+    }
   }
 }

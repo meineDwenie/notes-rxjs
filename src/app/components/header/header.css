@@ -7,21 +7,9 @@ header {
   z-index: 999;
   padding: 1rem 4rem;
   /* background-color: var(--main-background-color-secondary); */
+  background-color: RED;
   /* border-bottom: 1px solid #e5e7eb; */
   backdrop-filter: blur(8px);
-}
-
-.view-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-}
-
-.current-view {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
 }
 
 .header-actions {
@@ -75,7 +63,7 @@ iconify-icon {
 }
 
 /* VIEW CHANGE BUTTONS */
-.view-change-btn-container {
+/* .view-change-btn-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,7 +74,7 @@ iconify-icon {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   background-color: var(--header-action-btn-secondary);
-}
+} */
 
 .header-btn {
   display: flex;
@@ -223,6 +211,14 @@ iconify-icon {
 
 .remove-filter:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/*RESPONSIVE STYLES*/
+@media (min-width: 1024px) and (max-width: 1440px) {
+  header {
+    left: 260px;
+    width: calc(100% - 260px);
+  }
 }
 
 @media (max-width: 768px) {

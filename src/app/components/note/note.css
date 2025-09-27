@@ -35,7 +35,7 @@ li {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre-wrap;
-  font-family: "Domine", serif;
+  /* font-family: "Domine", serif; */
 }
 
 p {

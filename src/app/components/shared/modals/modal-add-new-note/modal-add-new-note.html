@@ -27,6 +27,29 @@
         (keyup.esc)="close.emit()"
       />
 
+      <!-- Content or Checkboxes -->
+      @if (showCheckboxes) {
+      <div class="checkbox-list">
+        @for (checkbox of noteCheckboxes; track $index; let i = $index) {
+        <div class="checkbox-item" [class.checked]="checkbox.checked">
+          <input
+            type="checkbox"
+            [checked]="checkbox.checked"
+            (change)="toggleCheckbox(i)"
+          />
+          <input
+            type="text"
+            [(ngModel)]="checkbox.text"
+            placeholder="Checkbox item"
+          />
+          <button class="remove-checkbox" (click)="removeCheckbox(i)">×</button>
+        </div>
+        }
+
+        <!-- Add new checkbox -->
+        <button class="add-checkbox" (click)="addCheckbox()">+ Add Item</button>
+      </div>
+      } @else {
       <textarea
         #noteTextArea
         placeholder="Take a note..."
@@ -34,6 +57,7 @@
         [(ngModel)]="noteContent"
         (keyup.esc)="close.emit()"
       ></textarea>
+      }
     </div>
 
     <!-- Image Preview with Loading States -->
@@ -142,6 +166,28 @@
           icon="carbon:reminder"
           title="Add reminder"
         ></app-button-feature>
+
+        <!-- If NOT using checkboxes and content exists -->
+        @if (!showCheckboxes) {
+        <app-button-feature
+          customClass="add-checkboxes-button"
+          icon="tabler:checkbox"
+          title="Convert to checkboxes"
+          (clicked)="toggleCheckboxMode()"
+        ></app-button-feature>
+        } @else {
+        <div class="content-mode-toggle">
+          <button
+            type="button"
+            class="mode-toggle-btn"
+            title="Switch to Text"
+            (click)="toggleCheckboxMode()"
+          >
+            <i class="bi bi-card-text"></i>
+            Switch to Text
+          </button>
+        </div>
+        }
       </div>
     </div>
 
