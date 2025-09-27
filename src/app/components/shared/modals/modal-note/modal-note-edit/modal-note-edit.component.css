@@ -246,20 +246,14 @@
   gap: 0.5rem;
   padding: 0 1rem;
   border-radius: 20px;
-  background: white;
   color: #5f6368;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.mode-toggle-btn:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
-}
-
 .mode-toggle-btn.active {
-  background: #e7eaeb30;
+  background: transparent;
   border: 1px solid #5f6368;
   color: #3e4042;
 
