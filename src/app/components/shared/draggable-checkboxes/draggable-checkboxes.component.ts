@@ -169,12 +169,6 @@ export class DraggableCheckboxesComponent implements OnInit {
     this.checkboxesChange.emit([...this.sortedCheckboxes]);
   }
 
-  // onEnterKey(event: Event) {
-  //   const keyboardEvent = event as KeyboardEvent;
-  //   const input = keyboardEvent.target as HTMLInputElement;
-  //   input.blur();
-  // }
-
   onKeyup(event: Event, checkbox: CheckboxItem) {
     const keyboardEvent = event as KeyboardEvent;
     if (

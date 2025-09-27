@@ -36,6 +36,7 @@
       placeholder="Add item..."
     />
 
+    <!-- Remove Item Button -->
     <button
       (click)="removeCheckbox(checkbox.id)"
       class="remove-checkbox-btn"
@@ -46,7 +47,9 @@
   </div>
   }
 
+  <!-- Add Checkbox Button -->
   <button (click)="addNewCheckbox()" class="add-checkbox-btn" type="button">
-    + Add item
+    <iconify-icon icon="gravity-ui:plus"></iconify-icon>
+    Add item
   </button>
 </div>

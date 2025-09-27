@@ -50,6 +50,9 @@
 
 iconify-icon {
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-self: center;
 }
 
 .checkbox-input-container {
@@ -83,7 +86,7 @@ iconify-icon {
 }
 
 .checkbox-text-input:focus {
-  background: #f7fafc;
+  background: transparent;
   border-radius: 2px;
 }
 
@@ -114,12 +117,16 @@ iconify-icon {
   background: none;
   border: 1px dashed #cbd5e0;
   color: #4a5568;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2.5rem;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   width: 100%;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 1rem;
 }
 
 .add-checkbox-btn:hover {
