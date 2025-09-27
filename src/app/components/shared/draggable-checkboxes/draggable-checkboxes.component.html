@@ -11,11 +11,18 @@
     (dragend)="onDragEnd()"
   >
     <div class="drag-handle">
-      <i class="drag-icon">≡</i>
+      <iconify-icon icon="formkit:draghandle"></iconify-icon>
     </div>
 
     <div class="checkbox-input-container" (click)="toggleCheckbox(checkbox.id)">
-      <span class="custom-checkbox">{{ checkbox.checked ? "☑" : "☐" }}</span>
+      <iconify-icon
+        class="custom-checkbox"
+        [icon]="
+          checkbox.checked
+            ? 'material-symbols:check-box-outline-rounded'
+            : 'material-symbols:square-outline-rounded'
+        "
+      ></iconify-icon>
     </div>
 
     <input
@@ -34,7 +41,7 @@
       class="remove-checkbox-btn"
       type="button"
     >
-      ×
+      <iconify-icon icon="fa7-solid:remove"></iconify-icon>
     </button>
   </div>
   }

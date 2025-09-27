@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface CheckboxItem {
@@ -15,6 +22,8 @@ export interface CheckboxItem {
   imports: [CommonModule, FormsModule],
   templateUrl: './draggable-checkboxes.component.html',
   styleUrl: './draggable-checkboxes.component.css',
+
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DraggableCheckboxesComponent implements OnInit {
   @Input() checkboxes: CheckboxItem[] = [];
