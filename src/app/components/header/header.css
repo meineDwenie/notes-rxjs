@@ -6,9 +6,9 @@ header {
   height: 86px;
   z-index: 999;
   padding: 1rem 4rem;
-  /* background-color: var(--main-background-color-secondary); */
-  background-color: RED;
-  /* border-bottom: 1px solid #e5e7eb; */
+  background-color: var(--main-background-color-secondary);
+  /* background-color: RED; */
+  border-bottom: 1px solid #e5e7eb;
   backdrop-filter: blur(8px);
 }
 
@@ -25,6 +25,41 @@ header {
   gap: 1rem;
 }
 
+.add-notebook-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--header-action-btn-main);
+  background: transparent;
+  color: white;
+  color: var(--header-action-btn-main);
+  border: var(--header-action-btn-main);
+  outline: solid 1px var(--header-action-btn-main);
+  border-radius: 8px;
+  padding: 0.8rem 1.6rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  /* box-shadow: 0 2px 12px rgba(10, 27, 41, 0.3); */
+  transition: all 0.2s ease;
+
+  iconify-icon {
+    font-size: 24px;
+    color: var(--header-action-btn-main);
+    opacity: 1;
+  }
+
+  &:hover {
+    background: var(--header-action-btn-main);
+    outline: solid 1px rgb(116, 174, 175);
+    box-shadow: 0 4px 6px rgba(116, 198, 209, 0.5);
+
+    iconify-icon {
+      font-size: 24px;
+      color: white;
+    }
+  }
+}
+
 .header-action-btn {
   display: flex;
   align-items: center;
@@ -33,7 +68,7 @@ header {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.8rem 1.2rem;
+  padding: 0.8rem 1.6rem;
   cursor: pointer;
   font-size: 0.875rem;
   box-shadow: 0 2px 12px rgba(10, 27, 41, 0.3);
@@ -109,7 +144,7 @@ iconify-icon {
 /* SEARCH BAR */
 .search-section {
   flex: 1;
-  max-width: 300px;
+  max-width: 600px;
 }
 
 .search-container {

@@ -61,7 +61,7 @@
             <!-- Notes tab (for added notes to notebook visualization)-->
             <div class="note-tabs">
               <div
-                *ngFor="let note of notebook.notes.slice(0, 8); let i = index"
+                *ngFor="let note of notebook.notes.slice(0, 6); let i = index"
                 class="note-tab"
                 [ngStyle]="{
       'background-color': note.color || '#ccc',
@@ -69,6 +69,8 @@
     }"
               ></div>
             </div>
+
+            <div class="note-tabs-hole"></div>
 
             <div class="notebook-content">
               <div class="notebook-header">
